@@ -1,0 +1,51 @@
+{
+  "name": "as-serde-transform",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "author": "yjhmelody <yjh465402634@gmail.com>",
+  "description": "Serde-as is a simple (de)serialization framework for AssemblyScript",
+  "keywords": [
+    "assemblyscript",
+    "serde",
+    "serialize",
+    "deserialize",
+    "encode",
+    "decode",
+    "framework"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com:yjhmelody/serde-as"
+  },
+  "scripts": {
+    "checks": "tsc -p tsconfig.json --noEmit",
+    "test": "jest .",
+    "coverage": "jest . --coverage",
+    "build": "rm -rf dist/* && tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "assemblyscript": "^0.19.7",
+    "visitor-as": "0.6"
+  },
+  "dependencies": {
+    "assemblyscript": "^0.19.7",
+    "debug": "^4.3.2",
+    "lodash": "4.17",
+    "visitor-as": "0.6"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.5",
+    "@types/jest": "^26.0.24",
+    "@types/lodash": "4.14.171",
+    "@types/node": "^16.3.1",
+    "jest": "^26.5",
+    "ts-jest": "^26.5",
+    "ts-node": "^9",
+    "typescript": "^4.3"
+  },
+  "files": [
+    "README.md",
+    "dist"
+  ]
+}

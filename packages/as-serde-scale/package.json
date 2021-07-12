@@ -1,0 +1,39 @@
+{
+  "name": "as-serde-scale",
+  "version": "0.1.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "author": "yjhmelody <yjh465402634@gmail.com>",
+  "description": "A scale (de)serializer for AssemblyScript",
+  "keywords": [
+    "assemblyscript",
+    "serde",
+    "serialize",
+    "deserialize",
+    "encode",
+    "decode",
+    "scale"
+  ],
+  "devDependencies": {
+    "@as-pect/cli": "^6.2",
+    "as-serde-transform": "^0.1.0",
+    "assemblyscript": "^0.19.7"
+  },
+  "dependencies": {
+    "as-bignum": "^0.2.18",
+    "as-buffers": "^0.1.0",
+    "as-serde": "^0.1.0"
+  },
+  "scripts": {
+    "build": "echo no build",
+    "checks": "asc ./index.ts --noEmit --measure",
+    "test": "asp --verbose"
+  },
+  "files": [
+    "README.md",
+    "assembly",
+    "asconfig.json",
+    "index.ts",
+    "index.d.ts"
+  ]
+}

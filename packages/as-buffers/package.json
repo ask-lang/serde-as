@@ -1,0 +1,36 @@
+{
+  "name": "as-buffers",
+  "version": "0.1.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "author": "yjhmelody <yjh465402634@gmail.com>",
+  "description": "Some Buffer classes for AssemblyScript",
+  "keywords": [
+    "assemblyscript",
+    "stringBuffer",
+    "bytesBuffer",
+    "bytes",
+    "string"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com:yjhmelody/serde-as"
+  },
+  "devDependencies": {
+    "@as-pect/cli": "^6.2",
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.3.1",
+    "assemblyscript": "^0.19.7"
+  },
+  "scripts": {
+    "build": "echo no build",
+    "checks": "asc ./index.ts --noEmit --measure",
+    "test": "asp --verbose"
+  },
+  "files": [
+    "README.md",
+    "assembly",
+    "index.ts",
+    "index.d.ts"
+  ]
+}
