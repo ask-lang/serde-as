@@ -1,4 +1,4 @@
-# as-serde-json(WIP)
+# as-serde-json
 
 `as-serde-json` provides a `JSONSerializer` which implements serde-as `Serializer`.
 

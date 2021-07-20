@@ -14,6 +14,9 @@ export class Buffer {
         protected _offset: i32 = 0
     ) {}
 
+    /**
+     * Returns a pointer about inner buffer.
+     */
     @unsafe
     get dataStart(): usize {
         return changetype<usize>(this._buffer);
