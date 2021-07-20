@@ -24,7 +24,7 @@
   "devDependencies": {
     "@as-pect/cli": "^6.2",
     "@types/jest": "^26.0.24",
-    "@types/node": "^16.3.1",
+    "@types/node": "^16.3.3",
     "assemblyscript": "^0.19.7"
   },
   "scripts": {
