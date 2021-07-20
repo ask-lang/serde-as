@@ -1,4 +1,4 @@
-# AS-Buffers
+# as-buffers
 
 `as-buffers` provides some Buffer types for reading/writing string/bytes efficiently and simply.
 

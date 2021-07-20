@@ -14,6 +14,9 @@ export class BytesBuffer extends Buffer {
         super(buffer, 0);
     }
 
+    /**
+     * Returns latest read offset.
+     */
     @inline
     get readOffset(): i32 {
         return this._readOffset;
@@ -97,10 +100,17 @@ export class BytesBuffer extends Buffer {
         }
     }
 
+    /**
+     * Creates a BytesBuffer with init capacity.
+     * @param capacity
+     * @returns
+     */
     @inline
-    static withCapacity(cap: i32): BytesBuffer {
+    static withCapacity(capacity: i32): BytesBuffer {
         return new BytesBuffer(
-            changetype<StaticArray<u8>>(__new(cap, idof<StaticArray<u8>>()))
+            changetype<StaticArray<u8>>(
+                __new(capacity, idof<StaticArray<u8>>())
+            )
         );
     }
 
@@ -186,6 +196,13 @@ export class BytesBuffer extends Buffer {
         );
     }
 
+    /**
+     * Reads number from buffer at the specified offset.
+     * Number of bytes to skip before starting to read. Must satisfy 0 <= offset <= buf.length - sizeof<T>. Default: the offset last read.
+     * @param offset
+     * @param isLittle default to false
+     * @returns
+     */
     @inline
     readNumber<T>(offset: i32 = this._readOffset, isLittle: bool = false): T {
         return isLittle
@@ -193,6 +210,12 @@ export class BytesBuffer extends Buffer {
             : this.readNumberBE<T>(offset);
     }
 
+    /**
+     * Writes value to buffer at the specified offset.
+     *
+     * @param val
+     * @param isLittle default to false
+     */
     @inline
     writeNumber<T>(val: T, isLittle: bool = false): void {
         isLittle ? this.writeNumberLE<T>(val) : this.writeNumberBE<T>(val);
@@ -200,7 +223,7 @@ export class BytesBuffer extends Buffer {
 
     /**
      * Reads big-endian number from buffer at the specified offset.
-     * Number of bytes to skip before starting to read. Must satisfy 0 <= offset <= buf.length - sizeof<T>. Default: last offset.
+     * Number of bytes to skip before starting to read. Must satisfy 0 <= offset <= buf.length - sizeof<T>. Default: the offset last read.
      * @param offset read offset for reading data, default to the last offset.
      * @returns number T
      */
@@ -301,7 +324,7 @@ export class BytesBuffer extends Buffer {
     /**
      * Writes value to buffer at the specified offset as big-endian.
      * @param val Number to be written to buffer.
-     * @param offset Number of bytes to skip before starting to write. Must satisfy 0 <= offset <= buf.length - 2. Default: the offset last written.
+     * @param offset Number of bytes to skip before starting to write. Must satisfy 0 <= offset <= buf.length - sizeof<T>. Default: the offset last written.
      */
     @inline
     writeNumberBE<T>(val: T, offset: i32 = this._offset): void {

@@ -15,9 +15,14 @@ export class StringBuffer extends Buffer {
         );
     }
 
+    /**
+     * Creates a StringBuffer with init capacity.
+     * @param capacity
+     * @returns
+     */
     @inline
-    static withCapacity(cap: i32): StringBuffer {
-        return new StringBuffer(cap);
+    static withCapacity(capacity: i32): StringBuffer {
+        return new StringBuffer(capacity);
     }
 
     /**
