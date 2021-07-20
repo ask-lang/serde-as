@@ -8,8 +8,8 @@
 
 There are 2 useful buffer classes here: `BytesBuffer` and `StringBuffer`.
 
-- `BytesBuffer` provides bytes related/endian related methods.
-- `StringBuffer` provides string (UTF16) related methods.
+-   `BytesBuffer` provides bytes related/endian related methods.
+-   `StringBuffer`(is forked from [MaxGraey](https://github.com/MaxGraey/as-string-sink)) provides string (UTF16) related methods.
 
 ### Write/Read bytes
 
@@ -30,5 +30,7 @@ expect(buf.toString()).toBe("hello");
 ```
 
 ### More usages
+
+In addition to some safe methods, they also have some unsafe methods to improve performance. You need to pay attention to the buffer capacity and read/write offset.
 
 See unit tests and source comments.
