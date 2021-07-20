@@ -14,6 +14,10 @@
     "decode",
     "scale"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com:yjhmelody/serde-as"
+  },
   "devDependencies": {
     "@as-pect/cli": "^6.2",
     "as-serde-transform": "^0.1.0",
