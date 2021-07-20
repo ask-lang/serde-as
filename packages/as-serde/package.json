@@ -1,6 +1,6 @@
 {
   "name": "as-serde",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.ts",
   "license": "MIT",
   "author": "yjhmelody <yjh465402634@gmail.com>",
@@ -19,7 +19,7 @@
     "url": "git+https://github.com:yjhmelody/serde-as"
   },
   "dependencies": {
-    "as-serde-transform": "^0.1.0"
+    "as-serde-transform": "^0.1.1"
   },
   "devDependencies": {
     "@as-pect/cli": "^6.2",

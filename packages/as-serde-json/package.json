@@ -1,6 +1,6 @@
 {
   "name": "as-serde-json",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.ts",
   "license": "MIT",
   "author": "yjhmelody <yjh465402634@gmail.com>",
@@ -20,13 +20,13 @@
   },
   "devDependencies": {
     "@as-pect/cli": "^6.2",
-    "as-serde-transform": "^0.1.0",
+    "as-serde-transform": "^0.1.1",
     "assemblyscript": "^0.19.7"
   },
   "dependencies": {
     "as-base64": "^0.2.0",
-    "as-buffers": "^0.1.0",
-    "as-serde": "^0.1.0"
+    "as-buffers": "^0.1.1",
+    "as-serde": "^0.1.1"
   },
   "scripts": {
     "build": "echo no build",
