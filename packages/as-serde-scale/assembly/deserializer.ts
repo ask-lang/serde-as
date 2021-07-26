@@ -156,11 +156,11 @@ export class ScaleDeserializer extends Deserializer {
     }
     deserializeF32(): f32 {
         assert(false, FLOAT_UNSPPORTED);
-        unreachable();
+        return 0;
     }
     deserializeF64(): f64 {
         assert(false, FLOAT_UNSPPORTED);
-        unreachable();
+        return 0;
     }
 
     @inline
