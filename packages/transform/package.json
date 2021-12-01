@@ -37,7 +37,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.6",
     "@types/jest": "^26.0.24",
-    "@types/lodash": "4.14.176",
+    "@types/lodash": "4.14.177",
     "@types/node": "^16.3.1",
     "jest": "^26.5",
     "ts-jest": "^26.5",
