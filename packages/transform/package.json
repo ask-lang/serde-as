@@ -26,13 +26,13 @@
   },
   "peerDependencies": {
     "assemblyscript": "^0.19.7",
-    "visitor-as": "0.6"
+    "visitor-as": "0.8"
   },
   "dependencies": {
     "assemblyscript": "^0.19.7",
     "debug": "^4.3.2",
     "lodash": "4.17",
-    "visitor-as": "0.6"
+    "visitor-as": "0.8"
   },
   "devDependencies": {
     "@types/debug": "^4.1.6",
