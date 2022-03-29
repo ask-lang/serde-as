@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-loss-of-precision */
 import { BytesBuffer } from "..";
 
 // TODO:
