@@ -21,7 +21,7 @@
   "devDependencies": {
     "@as-pect/cli": "^6.2",
     "as-serde-transform": "^0.1.1",
-    "assemblyscript": "^0.19.7"
+    "assemblyscript": "^0.20.3"
   },
   "dependencies": {
     "as-base64": "^0.2.0",
