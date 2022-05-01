@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.6",
-    "@types/lodash": "4.14.181"
+    "@types/lodash": "4.14.182"
   },
   "files": [
     "README.md",
