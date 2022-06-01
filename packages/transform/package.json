@@ -25,11 +25,11 @@
     "build": "rm -rf dist/* && tsc -p tsconfig.json"
   },
   "peerDependencies": {
-    "assemblyscript": "^0.19.7",
+    "assemblyscript": "^0.20.7",
     "visitor-as": "0.8"
   },
   "dependencies": {
-    "assemblyscript": "^0.19.7",
+    "assemblyscript": "^0.20.7",
     "debug": "^4.3.2",
     "lodash": "4.17",
     "visitor-as": "0.8"
