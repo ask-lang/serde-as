@@ -24,7 +24,7 @@
   "devDependencies": {
     "@as-pect/cli": "^6.2",
     "@types/node": "^18.0.0",
-    "assemblyscript": "^0.19.7"
+    "assemblyscript": "^0.20.13"
   },
   "scripts": {
     "build": "echo no build",
