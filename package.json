@@ -27,7 +27,8 @@
     "test": "yarn workspaces run test",
     "test:ts": "yarn workspace as-serde-transform run test",
     "test:as": "asp --verbose",
-    "changelog": "conventional-changelog -i CHANGELOG.md -s"
+    "changelog": "conventional-changelog -i CHANGELOG.md -s",
+    "prepublishOnly": "yarn build"
   },
   "devDependencies": {
     "@as-pect/cli": "^6.2",
@@ -41,5 +42,8 @@
     "ts-jest": "^27",
     "ts-node": "^10",
     "typescript": "^4.6"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

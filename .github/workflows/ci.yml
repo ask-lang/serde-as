@@ -36,5 +36,4 @@ jobs:
         run: |
           yarn install --immutable
           yarn build
-          # See https://github.com/AssemblyScript/assemblyscript/issues/1948
-          yarn test:as
+          yarn test

@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com:yjhmelody/serde-as"
+    "url": "git+https://github.com:ask-lang/serde-as"
   },
   "scripts": {
     "checks": "tsc -p tsconfig.json --noEmit",
@@ -25,11 +25,11 @@
     "build": "rm -rf dist/* && tsc -p tsconfig.json"
   },
   "peerDependencies": {
-    "assemblyscript": "^0.19.7",
+    "assemblyscript": "^0.19",
     "visitor-as": "0.8"
   },
   "dependencies": {
-    "assemblyscript": "^0.19.7",
+    "assemblyscript": "^0.19",
     "debug": "^4.3.2",
     "lodash": "4.17",
     "visitor-as": "0.8"
