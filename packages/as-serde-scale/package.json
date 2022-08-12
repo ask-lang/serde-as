@@ -20,11 +20,11 @@
   },
   "devDependencies": {
     "@as-pect/cli": "^6.2",
-    "as-serde-transform": "^0.1.1",
-    "assemblyscript": "^0.19.7"
+    "as-serde-transform": "^0.1",
+    "assemblyscript": "^0.19"
   },
   "dependencies": {
-    "as-bignum": "^0.2.18",
+    "as-bignum": "^0.2",
     "as-buffers": "^0.1.2",
     "as-serde": "^0.1.1"
   },
