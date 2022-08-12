@@ -1,6 +1,6 @@
 {
   "name": "as-serde-transform",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "main": "dist/index.js",
   "license": "MIT",
   "author": "yjhmelody <yjh465402634@gmail.com>",
