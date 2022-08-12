@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com:yjhmelody/serde-as"
+    "url": "git+https://github.com:ask-lang/serde-as"
   },
   "dependencies": {
     "as-serde-transform": "^0.1"
