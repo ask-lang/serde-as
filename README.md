@@ -4,9 +4,9 @@
 
 ![as-serde](https://img.shields.io/npm/v/as-serde?color=light-green&label=as-serde)
 ![as-serde-transform](https://img.shields.io/npm/v/as-serde-transform?color=light-green&label=as-serde-transform)
-![as-buffers](https://img.shields.io/npm/v/as-serde?color=light-green&label=as-buffers)
-![as-serde-json](https://img.shields.io/npm/v/as-serde?color=light-green&label=as-serde-json)
-![as-serde-scale](https://img.shields.io/npm/v/as-serde?color=light-green&label=as-serde-scale)
+![as-buffers](https://img.shields.io/npm/v/as-buffers?color=light-green&label=as-buffers)
+![as-serde-json](https://img.shields.io/npm/v/as-serde-json?color=light-green&label=as-serde-json)
+![as-serde-scale](https://img.shields.io/npm/v/as-serde-scale?color=light-green&label=as-serde-scale)
 
 `Serde-as` is a framework for serializing and deserializing AssemblyScript data structures efficiently and simply.
 
