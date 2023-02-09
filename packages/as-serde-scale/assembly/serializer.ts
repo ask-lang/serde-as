@@ -1,8 +1,8 @@
-import { Serializer } from "as-serde";
+import { ISerialize, Serializer } from "as-serde";
 import { BytesBuffer } from "as-buffers";
 import { Compact } from "./compactInt";
 import { FLOAT_UNSPPORTED } from "./misc";
-import { i128, u128 } from "as-bignum/assembly";
+import { i128, u128 } from "./index";
 
 export class ScaleSerializer extends Serializer<BytesBuffer> {
     @lazy
@@ -145,18 +145,20 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     @inline
-    serializeClass<C>(value: C): BytesBuffer {
-        if (!isNullable<C>()) {
-            // @ts-ignore
-            value.serialize<BytesBuffer, this>(this);
-        } else if (value !== null) {
-            this._buffer.writeByte(0x01);
-            // @ts-ignore
-            value.serialize<BytesBuffer, this>(this);
-        } else {
-            this._buffer.writeByte(0x00);
-        }
+    serializeClass<C extends ISerialize>(value: C): BytesBuffer {
+        // if (!isNullable(value)) {
+        //     // @ts-ignore
+        //     value.serialize<BytesBuffer, this>(this);
+        // } else if (value !== null) {
+        //     this._buffer.writeByte(0x01);
+        //     // @ts-ignore
+        //     value.serialize<BytesBuffer, this>(this);
+        // } else {
+        //     this._buffer.writeByte(0x00);
+        // }
 
+        // @ts-ignore
+        value.serialize<BytesBuffer, this>(this);
         return this._buffer;
     }
 

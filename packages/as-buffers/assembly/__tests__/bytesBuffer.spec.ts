@@ -14,7 +14,7 @@ describe("BytesBuffer", () => {
             arr2[0] = 0x11;
             let buf = BytesBuffer.wrap(arr);
             buf.writeByte(0x11);
-            expect(changetype<usize>(arr)).toBe(buf.dataStart);
+            expect(changetype<usize>(arr)).toStrictEqual(buf.dataStart);
             expect(buf.offset).toBe(5);
             expect(buf.capacity).toBe(8);
             expect(buf.remainCapacity).toBe(3);
@@ -29,7 +29,7 @@ describe("BytesBuffer", () => {
             arr2[0] = 0x11;
             let buf = BytesBuffer.wrap(arr);
             buf.writeByte(0x11);
-            expect(changetype<usize>(arr)).toBe(buf.dataStart);
+            expect(changetype<usize>(arr)).toStrictEqual(buf.dataStart);
             expect(buf.offset).toBe(5);
             expect(buf.capacity).toBe(8);
             expect(buf.remainCapacity).toBe(3);
@@ -48,7 +48,7 @@ describe("BytesBuffer", () => {
             expect(changetype<ArrayBuffer>(buf.dataStart)).toStrictEqual(
                 arr2.buffer
             );
-            expect(changetype<usize>(arr.buffer)).toBe(buf.dataStart);
+            expect(changetype<usize>(arr.buffer)).toStrictEqual(buf.dataStart);
             expect(buf.offset).toBe(5);
             expect(buf.capacity).toBe(8);
             expect(buf.remainCapacity).toBe(3);
@@ -468,11 +468,11 @@ describe("BytesBuffer", () => {
     it("toString", () => {
         {
             let s = "我的世界";
-            expect(new BytesBuffer().toString()).toStrictEqual("");
+            expect(new BytesBuffer().toString()).toBe("");
             let buf = BytesBuffer.wrap(changetype<ArrayBuffer>(s));
-            expect(buf.toString()).toStrictEqual(s);
+            expect(buf.toString()).toBe(s);
             buf.writeBytes(changetype<StaticArray<u8>>("\nhello world"));
-            expect(buf.toString()).toStrictEqual("我的世界\nhello world");
+            expect(buf.toString()).toBe("我的世界\nhello world");
         }
     });
 });

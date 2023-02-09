@@ -1,3 +1,4 @@
+import { ISerialize } from './index';
 /**
  * All methods of CoreSerializer will be used in as-serde-transfrom
  */
@@ -79,7 +80,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
     abstract serializeSet<K, T extends Set<K>>(value: T): R;
     abstract serializeMap<K, V, T extends Map<K, V>>(value: T): R;
 
-    abstract serializeClass<C>(value: C): R;
+    abstract serializeClass<C extends ISerialize>(value: C): R;
 
     abstract startSerializeTuple(): R;
     abstract endSerializeTuple(): R;
@@ -336,7 +337,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
             // @ts-ignore
         } else {
             // for compile error
-            return this.serializeClass<T>(value);
+            return this.serializeClass(value);
         }
     }
 }

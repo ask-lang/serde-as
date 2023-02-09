@@ -1,4 +1,4 @@
-import { i128, u128 } from "as-bignum";
+import { i128, u128 } from "../index";
 import { ISerialize, IDeserialize } from "as-serde";
 
 export class TestData<T1, T2> {

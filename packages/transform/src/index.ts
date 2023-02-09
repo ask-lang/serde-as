@@ -17,6 +17,7 @@ class SerdeTransform extends TransformVisitor {
         node: ClassDeclaration,
         _isDefault?: boolean
     ): ClassDeclaration {
+
         if (utils.hasDecorator(node, SerdeKind.Serialize)) {
             this.hasSerde = true;
             const visitor = new SerializeVisitor(this.parser);

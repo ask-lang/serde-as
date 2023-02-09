@@ -278,77 +278,79 @@ export abstract class Deserializer extends CoreDeserializer {
 
     @inline
     protected _deserializeDyn<T>(): T {
-        // for sub-class
-        let value: T;
-        // @ts-ignore
-        if (value instanceof StaticArray) {
-            // @ts-ignore
-            return this.deserializeStaticArray<T>();
-        }
-        // for sub-class
-        // @ts-ignore
-        else if (value instanceof ArrayBuffer) {
-            // @ts-ignore
-            return this.deserializeArrayBuffer<T>();
-        }
-        // @ts-ignore
-        else if (value instanceof Uint8Array) {
-            // @ts-ignore
-            return this.deserializeUint8Array<T>();
-            // @ts-ignore
-        } else if (value instanceof Uint16Array) {
-            // @ts-ignore
-            return this.deserializeUint16Array<T>();
-            // @ts-ignore
-        } else if (value instanceof Uint32Array) {
-            // @ts-ignore
-            return this.deserializeUint32Array<T>();
-            // @ts-ignore
-        } else if (value instanceof Uint64Array) {
-            // @ts-ignore
-            return this.deserializeUint64Array<T>();
-            // @ts-ignore
-        } else if (value instanceof Int8Array) {
-            // @ts-ignore
-            return this.deserializeInt8Array<T>();
-            // @ts-ignore
-        } else if (value instanceof Int16Array) {
-            // @ts-ignore
-            return this.deserializeInt16Array<T>();
-            // @ts-ignore
-        } else if (value instanceof Int32Array) {
-            // @ts-ignore
-            return this.deserializeInt32Array<T>();
-            // @ts-ignore
-        } else if (value instanceof Int64Array) {
-            // @ts-ignore
-            return this.deserializeInt64Array<T>();
-            // @ts-ignore
-        } else if (value instanceof Float32Array) {
-            // @ts-ignore
-            return this.deserializeFloat32Array<T>();
-            // @ts-ignore
-        } else if (value instanceof Float64Array) {
-            // @ts-ignore
-            return this.deserializeFloat64Array<T>();
-        } else if (isArrayLike<T>()) {
-            // @ts-ignore
-            return this.deserializeArrayLike<T>();
-            // @ts-ignore
-        } else if (value instanceof Error) {
-            // @ts-ignore
-            return this.deserializeError();
-            // @ts-ignore
-        } else if (value instanceof Set) {
-            // @ts-ignore
-            return this.deserializeSet<indexof<T>, T>();
-            // @ts-ignore
-        } else if (value instanceof Map) {
-            // @ts-ignore
-            return this.deserializeMap<indexof<T>, valueof<T>, T>();
-        } else {
-            // for compile error
-            return this.deserializeClass<T>();
-        }
+        return unreachable();
+        // TODO: idof
+    //     // for sub-class
+    //     let value: T;
+    //     // @ts-ignore
+    //     if (value instanceof StaticArray) {
+    //         // @ts-ignore
+    //         return this.deserializeStaticArray<T>();
+    //     }
+    //     // for sub-class
+    //     // @ts-ignore
+    //     else if (value instanceof ArrayBuffer) {
+    //         // @ts-ignore
+    //         return this.deserializeArrayBuffer<T>();
+    //     }
+    //     // @ts-ignore
+    //     else if (value instanceof Uint8Array) {
+    //         // @ts-ignore
+    //         return this.deserializeUint8Array<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Uint16Array) {
+    //         // @ts-ignore
+    //         return this.deserializeUint16Array<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Uint32Array) {
+    //         // @ts-ignore
+    //         return this.deserializeUint32Array<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Uint64Array) {
+    //         // @ts-ignore
+    //         return this.deserializeUint64Array<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Int8Array) {
+    //         // @ts-ignore
+    //         return this.deserializeInt8Array<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Int16Array) {
+    //         // @ts-ignore
+    //         return this.deserializeInt16Array<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Int32Array) {
+    //         // @ts-ignore
+    //         return this.deserializeInt32Array<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Int64Array) {
+    //         // @ts-ignore
+    //         return this.deserializeInt64Array<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Float32Array) {
+    //         // @ts-ignore
+    //         return this.deserializeFloat32Array<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Float64Array) {
+    //         // @ts-ignore
+    //         return this.deserializeFloat64Array<T>();
+    //     } else if (isArrayLike<T>()) {
+    //         // @ts-ignore
+    //         return this.deserializeArrayLike<T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Error) {
+    //         // @ts-ignore
+    //         return this.deserializeError();
+    //         // @ts-ignore
+    //     } else if (value instanceof Set) {
+    //         // @ts-ignore
+    //         return this.deserializeSet<indexof<T>, T>();
+    //         // @ts-ignore
+    //     } else if (value instanceof Map) {
+    //         // @ts-ignore
+    //         return this.deserializeMap<indexof<T>, valueof<T>, T>();
+    //     } else {
+    //         // for compile error
+    //         return this.deserializeClass<T>();
+    //     }
     }
 }

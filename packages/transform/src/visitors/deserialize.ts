@@ -30,6 +30,7 @@ export class DeserializeVisitor extends TransformVisitor {
 
     constructor(public readonly emitter: DiagnosticEmitter) {
         super();
+        throw new Error("test");
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
