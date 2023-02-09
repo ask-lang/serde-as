@@ -10,11 +10,11 @@ import {
     Source,
     SourceKind,
     TypeNode,
-} from "assemblyscript";
-import { getName } from "visitor-as/dist/utils";
+} from "assemblyscript/dist/assemblyscript.js";
+import { utils } from "visitor-as";
 
 export function getNameNullable(type: TypeNode): string {
-    let ty = getName(type);
+    let ty = utils.getName(type);
     if (type.isNullable && !ty.endsWith("null")) {
         ty = `${ty} | null`;
     }
@@ -22,13 +22,13 @@ export function getNameNullable(type: TypeNode): string {
 }
 
 export function isUserEntry(node: Node): boolean {
-    return node.range.source.sourceKind == SourceKind.USER_ENTRY;
+    return node.range.source.sourceKind == SourceKind.UserEntry;
 }
 
 export function isEntry(node: Node): boolean {
     return (
         isUserEntry(node) ||
-        node.range.source.sourceKind == SourceKind.LIBRARY_ENTRY
+        node.range.source.sourceKind == SourceKind.LibraryEntry
     );
 }
 
@@ -48,7 +48,7 @@ export function updateSource(program: Program, newSource: Source): void {
  * @returns return true if emitter have ERROR message
  */
 export function hasErrorMessage(emitter: DiagnosticEmitter): boolean {
-    return hasMessage(emitter, DiagnosticCategory.ERROR);
+    return hasMessage(emitter, DiagnosticCategory.Error);
 }
 
 /**
@@ -57,7 +57,7 @@ export function hasErrorMessage(emitter: DiagnosticEmitter): boolean {
  * @returns return true if emitter have WARNING message
  */
 export function hasWarningMessage(emitter: DiagnosticEmitter): boolean {
-    return hasMessage(emitter, DiagnosticCategory.WARNING);
+    return hasMessage(emitter, DiagnosticCategory.Warning);
 }
 
 function hasMessage(

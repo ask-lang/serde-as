@@ -48,7 +48,6 @@ export class Buffer {
     /**
      * Clear inner buffer and reset the offset to 0 and inner buffer size to default.
      */
-    @inline
     clearBuffer(): void {
         this.resetOffset();
         this._buffer = changetype<StaticArray<u8>>(

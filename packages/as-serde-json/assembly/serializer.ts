@@ -1,9 +1,10 @@
-import { Serializer } from "as-serde";
-import * as base64 from "as-base64";
+import { Serializer, CoreSerializer } from "as-serde";
+import * as base64 from "as-base64/assembly";
 import { StringBuffer } from "as-buffers";
 
 // @ts-ignore
 @lazy const NULL = "null";
+// @ts-ignore
 @lazy const HAVE_NO_NAME = "field have no name";
 
 /**
@@ -24,9 +25,9 @@ export class JSONSerializer extends Serializer<StringBuffer> {
      * @returns
      */
     @inline
-    static serialize<C>(value: C): string {
+    static serialize<T>(value: T): string {
         JSONSerializer.json.clear();
-        return JSONSerializer.json.serialize<C>(value).toString();
+        return JSONSerializer.json.serialize<T>(value).toString();
     }
 
     @unsafe

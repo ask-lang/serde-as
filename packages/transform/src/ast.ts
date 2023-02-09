@@ -1,4 +1,3 @@
-import { SerdeKind } from "./consts";
 import {
     ClassDeclaration,
     DecoratorNode,
@@ -8,8 +7,9 @@ import {
     LiteralKind,
     NodeKind,
     ObjectLiteralExpression,
-} from "assemblyscript";
-import { utils } from "visitor-as/dist";
+} from "assemblyscript/dist/assemblyscript.js";
+import { utils } from "visitor-as";
+import { SerdeKind } from "./consts.js";
 
 export interface SerdeNode {
     /** serde Kind of this node. */
@@ -56,7 +56,7 @@ export function extractLiteralObject(
     const args = decorator.args ? decorator.args : [];
     const literals: ObjectLiteralExpression[] = [];
     for (const arg of args) {
-        if (arg.kind !== NodeKind.LITERAL) {
+        if (arg.kind !== NodeKind.Literal) {
             // TODO: define error type
             emitter.errorRelated(
                 DiagnosticCode.User_defined_0,
@@ -66,7 +66,7 @@ export function extractLiteralObject(
             );
         }
         const literalArg = arg as LiteralExpression;
-        if (literalArg.literalKind !== LiteralKind.OBJECT) {
+        if (!literalArg.isLiteralKind(LiteralKind.Object)) {
             emitter.errorRelated(
                 DiagnosticCode.User_defined_0,
                 decorator.range,
@@ -100,10 +100,10 @@ export function extractConfigFromLiteral(
         const value = node.values[i];
         // we only support the folllowing literals
         if (
-            value.isLiteralKind(LiteralKind.INTEGER) ||
-            value.isLiteralKind(LiteralKind.STRING) ||
-            value.kind === NodeKind.TRUE ||
-            value.kind === NodeKind.FALSE
+            value.isLiteralKind(LiteralKind.Integer) ||
+            value.isLiteralKind(LiteralKind.String) ||
+            value.kind === NodeKind.True ||
+            value.kind === NodeKind.False
         ) {
             map.set(key, value.range.toString());
         } else {

@@ -2,7 +2,7 @@ import { Deserializer } from "as-serde";
 import { BytesBuffer } from "as-buffers";
 import { Compact } from ".";
 import { FLOAT_UNSPPORTED, instantiateRaw } from "./misc";
-import { i128, u128 } from "as-bignum";
+import { i128, u128 } from "as-bignum/assembly";
 
 export class ScaleDeserializer extends Deserializer {
 

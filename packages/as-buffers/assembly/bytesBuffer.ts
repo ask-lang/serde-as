@@ -40,20 +40,20 @@ export class BytesBuffer extends Buffer {
     @unsafe
     // @ts-ignore
     static wrap<A>(arr: A): BytesBuffer {
-        let dummy: A;
-        if (idof<A>() == idof<StaticArray<u8>>()) {
+        const id = idof<A>();
+        if (id == idof<StaticArray<u8>>()) {
             let arr2 = changetype<StaticArray<u8>>(arr);
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
-        } else if (idof<A>() == idof<ArrayBuffer>()) {
+        } else if (id == idof<ArrayBuffer>()) {
             let arr2 = changetype<StaticArray<u8>>(arr);
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
         }
         // @ts-ignore
-        else if (dummy instanceof Uint8Array) {
+        else if (id == idof<Uint8Array>()) {
             // @ts-ignore
             let arr2 = changetype<StaticArray<u8>>(arr.buffer);
             const res = new BytesBuffer(arr2);
@@ -73,20 +73,20 @@ export class BytesBuffer extends Buffer {
     // @ts-ignore
     static from<A>(arr: A): BytesBuffer {
         // @ts-ignore
-        let dummy: A;
-        if (idof<A>() == idof<StaticArray<u8>>()) {
+        const id = idof<A>();
+        if (id == idof<StaticArray<u8>>()) {
             let arr2 = StaticArray.slice(changetype<StaticArray<u8>>(arr));
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
-        } else if (idof<A>() == idof<ArrayBuffer>()) {
+        } else if (id == idof<ArrayBuffer>()) {
             let arr2 = StaticArray.slice(changetype<StaticArray<u8>>(arr));
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
         }
         // @ts-ignore
-        else if (dummy instanceof Uint8Array) {
+        else if (id == idof<Uint8Array>()) {
             let arr2 = StaticArray.slice(
                 // @ts-ignore
                 changetype<StaticArray<u8>>(arr.buffer)

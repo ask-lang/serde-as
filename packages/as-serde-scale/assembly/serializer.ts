@@ -2,7 +2,7 @@ import { Serializer } from "as-serde";
 import { BytesBuffer } from "as-buffers";
 import { Compact } from "./compactInt";
 import { FLOAT_UNSPPORTED } from "./misc";
-import { i128, u128 } from "as-bignum";
+import { i128, u128 } from "as-bignum/assembly";
 
 export class ScaleSerializer extends Serializer<BytesBuffer> {
     @lazy

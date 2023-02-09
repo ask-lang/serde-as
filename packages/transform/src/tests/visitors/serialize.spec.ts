@@ -1,27 +1,17 @@
-import { ASTBuilder } from "visitor-as";
-import { newProgram, newOptions, Parser, Node } from "visitor-as/as";
-import { SerializeVisitor } from "../../visitors";
-import { hasErrorMessage, hasWarningMessage } from "../../utils";
+import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
+import { SerializeVisitor } from "../../visitors/index.js";
+import { checkVisitor } from "./common.js";
 
 // Note: in tests we have to use two spaces as ident because of ASTBuilder.
 
 function checkSerializeVisitor(
-    code: string,
-    expected: string,
-    warn = false,
-    error = false
+  code: string,
+  expected: string,
+  warn = false,
+  error = false
 ): void {
-    const visitor = new SerializeVisitor(newProgram(newOptions()));
-    const parser = new Parser();
-    parser.parseFile(code, "index.ts", true);
-    const res = visitor.visit(parser.sources[0]);
-    expect(hasWarningMessage(visitor.emitter)).toBe(warn);
-    expect(hasErrorMessage(visitor.emitter)).toBe(error);
-    // when meet error, we don't check expected code
-    if (error == false) {
-        const actual = ASTBuilder.build(res as Node);
-        expect(actual.trim()).toBe(expected);
-    }
+  const visitor = new SerializeVisitor(newProgram(newOptions()));
+  checkVisitor(visitor, code, expected, warn, error)
 }
 
 describe("SerializeVisitor", () => {

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TransformVisitor } from "visitor-as";
-import { Parser, ClassDeclaration, Source, ASTBuilder } from "visitor-as/as";
-
+import { Parser, ClassDeclaration, Source, ASTBuilder
+} from "assemblyscript/dist/assemblyscript.js";
 import { utils } from "visitor-as";
-import { SerdeKind } from "./consts";
-import { DeserializeVisitor, SerializeVisitor } from "./visitors";
-import { isEntry, updateSource } from "./utils";
 import debug from "debug";
+import { SerdeKind } from "./consts.js";
+import { DeserializeVisitor, SerializeVisitor } from "./visitors/index.js";
+import { isEntry, updateSource } from "./utils.js";
 
 const log = debug("SerdeTransform");
 class SerdeTransform extends TransformVisitor {
@@ -60,4 +60,4 @@ class SerdeTransform extends TransformVisitor {
     }
 }
 
-export = SerdeTransform;
+export default SerdeTransform;

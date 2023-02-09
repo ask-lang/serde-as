@@ -5,9 +5,9 @@ import {
     DiagnosticCode,
     FieldDeclaration,
     CommonFlags,
-} from "assemblyscript";
-import { toString, isMethodNamed } from "visitor-as/dist/utils";
-
+} from "assemblyscript/dist/assemblyscript.js";
+import { toString, isMethodNamed } from "visitor-as/dist/utils.js";
+import _ from "lodash";
 import {
     METHOD_DES,
     METHOD_DES_ARG_NAME,
@@ -19,10 +19,9 @@ import {
     METHOD_END_DES_FIELD,
     METHOD_START_DES_FIELD,
     SerdeKind,
-} from "../consts";
-import { uniqBy } from "lodash";
-import { extractDecorator, getNameNullable } from "../utils";
-import { DeserializeDeclaration, extractConfigFromDecorator } from "../ast";
+} from "../consts.js";
+import { extractDecorator, getNameNullable } from "../utils.js";
+import { DeserializeDeclaration, extractConfigFromDecorator } from "../ast.js";
 
 export class DeserializeVisitor extends TransformVisitor {
     private fields: FieldDeclaration[] = [];
@@ -34,7 +33,7 @@ export class DeserializeVisitor extends TransformVisitor {
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
-        if (node.is(CommonFlags.STATIC)) {
+        if (node.is(CommonFlags.Static)) {
             return node;
         }
         this.fields.push(node);
@@ -57,7 +56,7 @@ export class DeserializeVisitor extends TransformVisitor {
 
         super.visitClassDeclaration(node);
         // for fields declared in constructor
-        this.fields = uniqBy(this.fields, (f) => f);
+        this.fields = _.uniqBy(this.fields, (f) => f);
         const lastField = this.fields[this.fields.length - 1];
         const fields = this.fields.slice(0, -1);
         const stmts = fields

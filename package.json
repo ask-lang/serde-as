@@ -2,6 +2,7 @@
   "name": "serde-as",
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "license": "MIT",
+  "type": "module",
   "description": "Serde-as is a simple (de)serialization framework for AssemblyScript",
   "keywords": [
     "assemblyscript",
@@ -31,17 +32,15 @@
     "prepublishOnly": "yarn build"
   },
   "devDependencies": {
-    "@as-pect/cli": "^6.2",
+    "@as-pect/cli": "^8.0",
     "@types/jest": "^29",
     "@types/node": "^18.0",
     "@typescript-eslint/eslint-plugin": "^5.16",
     "@typescript-eslint/parser": "^5.16",
     "eslint": "8.31.0",
-    "jest": "^27",
-    "lerna": "^4.0.0",
-    "ts-jest": "^27",
+    "mocha": "^10.0",
     "ts-node": "^10",
-    "typescript": "^4.6"
+    "typescript": "^4.9"
   },
   "publishConfig": {
     "access": "public"

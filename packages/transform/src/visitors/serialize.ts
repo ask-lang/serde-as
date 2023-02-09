@@ -5,9 +5,9 @@ import {
     DiagnosticCode,
     FieldDeclaration,
     CommonFlags,
-} from "assemblyscript";
-import { toString, isMethodNamed } from "visitor-as/dist/utils";
-
+} from "assemblyscript/dist/assemblyscript.js";
+import { toString, isMethodNamed } from "visitor-as/dist/utils.js";
+import _ from "lodash";
 import {
     METHOD_END_SER_FIELD,
     METHOD_SER,
@@ -18,11 +18,10 @@ import {
     METHOD_SER_NONNULL_LAST_FIELD,
     METHOD_SER_SIG,
     METHOD_START_SER_FIELD,
-} from "../consts";
-import { uniqBy } from "lodash";
-import { extractDecorator, getNameNullable } from "../utils";
-import { extractConfigFromDecorator, SerializeDeclaration } from "../ast";
-import { SerdeKind } from "../consts";
+    SerdeKind
+} from "../consts.js";
+import { extractDecorator, getNameNullable } from "../utils.js";
+import { extractConfigFromDecorator, SerializeDeclaration } from "../ast.js";
 
 export class SerializeVisitor extends TransformVisitor {
     private fields: FieldDeclaration[] = [];
@@ -34,7 +33,7 @@ export class SerializeVisitor extends TransformVisitor {
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
-        if (node.is(CommonFlags.STATIC)) {
+        if (node.is(CommonFlags.Static)) {
             return node;
         }
         this.fields.push(node);
@@ -59,7 +58,7 @@ export class SerializeVisitor extends TransformVisitor {
 
         super.visitClassDeclaration(node);
         // for fields declared in constructor
-        this.fields = uniqBy(this.fields, (f) => f);
+        this.fields = _.uniqBy(this.fields, (f) => f);
         const lastField = this.fields[this.fields.length - 1];
         const fields = this.fields.slice(0, -1);
         const stmts = fields

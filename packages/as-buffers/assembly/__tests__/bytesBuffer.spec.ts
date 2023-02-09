@@ -2,8 +2,6 @@
 /* eslint-disable @typescript-eslint/no-loss-of-precision */
 import { BytesBuffer } from "..";
 
-// TODO:
-
 describe("BytesBuffer Unsafe", () => {
     it("unsafe", () => {});
 });
