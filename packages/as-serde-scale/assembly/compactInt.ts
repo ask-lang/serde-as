@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { Deserializer, Serializer } from "as-serde";
 
@@ -8,13 +9,13 @@ export interface CompactLen {
     compactLen(): i32;
 }
 
-// @ts-ignore
+
 @lazy const U8_OUT_OF_RANGE: string = "out of range decoding Compact<u8>";
-// @ts-ignore
+
 @lazy const U16_OUT_OF_RANGE: string = "out of range decoding Compact<u16>";
-// @ts-ignore
+
 @lazy const U32_OUT_OF_RANGE: string = "out of range decoding Compact<u32>";
-// @ts-ignore
+
 @lazy const U64_OUT_OF_RANGE: string = "out of range decoding Compact<u64>";
 // @lazy const U128_OUT_OF_RANGE: string = "out of range decoding Compact<u128>";
 
@@ -22,7 +23,7 @@ export interface CompactLen {
  * Compact wraps a unsigned integer into a compaction mode.
  */
 export class Compact<T extends number> implements CompactLen {
-    // @ts-ignore
+    
     constructor(protected _value: T = 0) {
         if (!isInteger<T>() || isSigned<T>()) {
             unreachable();
@@ -80,10 +81,10 @@ export class Compact<T extends number> implements CompactLen {
                 let v = this._value;
                 for (let i: u8 = 0; i < u8(bytesNeeded); i++) {
                     ret = serializer.serializeU8(v as u8);
-                    // @ts-ignore
+                    
                     v >>= 8;
                 }
-                // @ts-ignore
+                
                 assert(
                     v == 0,
                     "shifted sufficient bits right to lead only leading zeros; qed"
@@ -96,17 +97,17 @@ export class Compact<T extends number> implements CompactLen {
     @inline
     deserialize<S extends Deserializer>(deserializer: S): this {
         if (sizeof<T>() == 1) {
-            // @ts-ignore
+            
             return this.deserializeU8(deserializer);
         } else if (sizeof<T>() == 2) {
-            // @ts-ignore
+            
             return this.deserializeU16(deserializer);
         } else if (sizeof<T>() == 4) {
-            // @ts-ignore
+            
             return this.deserializeU32(deserializer);
         } else {
             // sizeof<N>() == 8
-            // @ts-ignore
+            
             return this.deserializeU64(deserializer);
         }
     }

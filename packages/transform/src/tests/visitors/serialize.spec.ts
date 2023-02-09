@@ -1,17 +1,18 @@
 import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
 import { SerializeVisitor } from "../../visitors/index.js";
 import { checkVisitor } from "./common.js";
+import { SerdeKind } from "../../consts.js";
 
 // Note: in tests we have to use two spaces as ident because of ASTBuilder.
 
 function checkSerializeVisitor(
-  code: string,
-  expected: string,
-  warn = false,
-  error = false
+    code: string,
+    expected: string,
+    warn = false,
+    error = false
 ): void {
-  const visitor = new SerializeVisitor(newProgram(newOptions()));
-  checkVisitor(visitor, code, expected, warn, error)
+    const visitor = new SerializeVisitor(newProgram(newOptions()));
+    checkVisitor(visitor, code, expected, warn, error, SerdeKind.Serialize);
 }
 
 describe("SerializeVisitor", () => {

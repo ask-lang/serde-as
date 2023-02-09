@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Buffer } from "./buffer";
 import { nextPowerOf2 } from "./util";
 
@@ -38,7 +39,6 @@ export class BytesBuffer extends Buffer {
      */
     @inline
     @unsafe
-    // @ts-ignore
     static wrap<A>(arr: A): BytesBuffer {
         const id = idof<A>();
         if (id == idof<StaticArray<u8>>()) {
@@ -52,9 +52,9 @@ export class BytesBuffer extends Buffer {
             res.resetOffset(arr2.length);
             return res;
         }
-        // @ts-ignore
+        
         else if (id == idof<Uint8Array>()) {
-            // @ts-ignore
+            
             let arr2 = changetype<StaticArray<u8>>(arr.buffer);
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
@@ -70,9 +70,7 @@ export class BytesBuffer extends Buffer {
      * @param arr
      */
     @inline
-    // @ts-ignore
     static from<A>(arr: A): BytesBuffer {
-        // @ts-ignore
         const id = idof<A>();
         if (id == idof<StaticArray<u8>>()) {
             let arr2 = StaticArray.slice(changetype<StaticArray<u8>>(arr));
@@ -85,13 +83,10 @@ export class BytesBuffer extends Buffer {
             res.resetOffset(arr2.length);
             return res;
         }
-        // @ts-ignore
         else if (id == idof<Uint8Array>()) {
             let arr2 = StaticArray.slice(
-                // @ts-ignore
                 changetype<StaticArray<u8>>(arr.buffer)
             );
-            // @ts-ignore
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
@@ -231,41 +226,31 @@ export class BytesBuffer extends Buffer {
     readNumberBE<T>(offset: i32 = this._readOffset): T {
         if (isFloat<T>()) {
             if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readF32BE(offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 return this.readF64BE(offset);
             }
         } else if (isSigned<T>()) {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 return this.readInt8(offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 return this.readInt16BE(offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readInt32BE(offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 return this.readInt64BE(offset);
             }
         } else {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 return this.readUInt8(offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 return this.readUInt16BE(offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readUInt32BE(offset);
             } else {
                 // (sizeof<T>() == 8)
-                // @ts-ignore
                 return this.readUInt64BE(offset);
             }
         }
@@ -281,41 +266,31 @@ export class BytesBuffer extends Buffer {
     readNumberLE<T>(offset: i32 = this._readOffset): T {
         if (isFloat<T>()) {
             if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readF32LE(offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 return this.readF64LE(offset);
             }
         } else if (isSigned<T>()) {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 return this.readInt8(offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 return this.readInt16LE(offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readInt32LE(offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 return this.readInt64LE(offset);
             }
         } else {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 return this.readUInt8(offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 return this.readUInt16LE(offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readUInt32LE(offset);
             } else {
                 // (sizeof<T>() == 8)
-                // @ts-ignore
                 return this.readUInt64LE(offset);
             }
         }
@@ -330,41 +305,31 @@ export class BytesBuffer extends Buffer {
     writeNumberBE<T>(val: T, offset: i32 = this._offset): void {
         if (isFloat<T>()) {
             if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeF32BE(val, offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 this.writeF64BE(val, offset);
             }
         } else if (isSigned<T>()) {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 this.writeInt8(val, offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 this.writeInt16BE(val, offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeInt32BE(val, offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 this.writeInt64BE(val, offset);
             }
         } else {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 this.writeUInt8(val, offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 this.writeUInt16BE(val, offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeUInt32BE(val, offset);
             } else {
                 // (sizeof<T>() == 8)
-                // @ts-ignore
                 this.writeUInt64BE(val, offset);
             }
         }
@@ -379,41 +344,31 @@ export class BytesBuffer extends Buffer {
     writeNumberLE<T>(val: T, offset: i32 = this._offset): void {
         if (isFloat<T>()) {
             if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeF32LE(val, offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 this.writeF64LE(val, offset);
             }
         } else if (isSigned<T>()) {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 this.writeInt8(val, offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 this.writeInt16LE(val, offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeInt32LE(val, offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 this.writeInt64LE(val, offset);
             }
         } else {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 this.writeUInt8(val, offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 this.writeUInt16LE(val, offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeUInt32LE(val, offset);
             } else {
                 // (sizeof<T>() == 8)
-                // @ts-ignore
                 this.writeUInt64LE(val, offset);
             }
         }
@@ -764,11 +719,9 @@ export class BytesBuffer extends Buffer {
             idof<A>() == idof<Uint8Array>() ||
             idof<A>() == idof<Array<u8>>()
         ) {
-            // @ts-ignore
             this.reserve(src.length);
             this.writeBytesUnsafe(src);
         } else if (idof<A>() == idof<ArrayBuffer>()) {
-            // @ts-ignore
             this.reserve(src.byteLength);
             this.writeBytesUnsafe(src);
         } else {
@@ -780,16 +733,12 @@ export class BytesBuffer extends Buffer {
     @inline
     writeBytesUnsafe<A>(src: A): void {
         if (idof<A>() == idof<StaticArray<u8>>()) {
-            // @ts-ignore
             this._writeUnsafe(changetype<usize>(src), src.length);
         } else if (idof<A>() == idof<Uint8Array>()) {
-            // @ts-ignore
             this._writeUnsafe(changetype<usize>(src.buffer), src.length);
         } else if (idof<A>() == idof<Array<u8>>()) {
-            // @ts-ignore
             this._writeUnsafe(src.dataStart, src.length);
         } else if (idof<A>() == idof<ArrayBuffer>()) {
-            // @ts-ignore
             this._writeUnsafe(changetype<usize>(src), src.byteLength);
         } else {
             unreachable();
@@ -851,16 +800,12 @@ export class BytesBuffer extends Buffer {
     @inline
     as<A>(): A {
         if (idof<A>() == idof<ArrayBuffer>()) {
-            // @ts-ignore
             return this.toArrayBuffer();
         } else if (idof<A>() == idof<Uint8Array>()) {
-            // @ts-ignore
             return this.toUint8Array();
         } else if (idof<A>() == idof<StaticArray<u8>>()) {
-            // @ts-ignore
             return this.toStaticArray();
         } else {
-            // @ts-ignore
             return this.toArray();
         }
     }

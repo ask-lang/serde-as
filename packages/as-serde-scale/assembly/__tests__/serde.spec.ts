@@ -1,6 +1,7 @@
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { BytesBuffer, ScaleDeserializer, ScaleSerializer } from "..";
-// import { Empty, SuperEmpty } from "./testdata";
+import { BytesBuffer, ScaleDeserializer, ScaleSerializer, ISerialize } from "..";
+import { Empty, SuperEmpty } from "./testdata";
 import {
     Arrays,
     Bools,
@@ -14,35 +15,69 @@ import {
 } from "./testdata";
 
 describe("ScaleSerializer", () => {
-    // it("Empty", () => {
-    //     let tests: Array<TestData<Empty, StaticArray<u8>>> = [
-    //         new TestData(new Empty(), []),
-    //     ];
-    //     for (let i = 0; i < tests.length; i++) {
-    //         let test = tests[i];
-    //         let serData = ScaleSerializer.serialize(test.input);
-    //         expect(serData).toBe(test.output);
-    //         let desData = ScaleDeserializer.deserialize<Empty>(
-    //             BytesBuffer.wrap(test.output)
-    //         );
-    //         expect(desData).toBe(test.input);
-    //     }
-    // });
 
-    // it("SuperEmpty", () => {
-    //     let tests: Array<TestData<SuperEmpty, StaticArray<u8>>> = [
-    //         new TestData(new SuperEmpty(), []),
-    //     ];
-    //     for (let i = 0; i < tests.length; i++) {
-    //         let test = tests[i];
-    //         let serData = ScaleSerializer.serialize(test.input);
-    //         expect(serData).toBe(test.output);
-    //         let desData = ScaleDeserializer.deserialize<SuperEmpty>(
-    //             BytesBuffer.wrap(test.output)
-    //         );
-    //         expect(desData).toBe(test.input);
-    //     }
-    // });
+    it("Empty Inteface", () => {
+        let tests: Array<TestData<ISerialize, StaticArray<u8>>> = [
+            new TestData(new Empty() as ISerialize, []),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<Empty>(
+                BytesBuffer.wrap(test.output)
+            );
+            expect(desData).toStrictEqual(test.input as Empty);
+            expect(test.input instanceof ISerialize).toBeTruthy();
+        }
+    });
+
+    it("Bools Inteface", () => {
+        let tests: Array<TestData<ISerialize, StaticArray<u8>>> = [
+            new TestData(new Bools() as ISerialize, [0x00, 0x01]),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<Bools>(
+                BytesBuffer.wrap(test.output)
+            );
+            expect(desData).toStrictEqual(test.input as Bools);
+            expect(test.input instanceof ISerialize).toBeTruthy();
+        }
+    });
+    
+    
+    it("Empty", () => {
+        let tests: Array<TestData<Empty, StaticArray<u8>>> = [
+            new TestData(new Empty(), []),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<Empty>(
+                BytesBuffer.wrap(test.output)
+            );
+            expect(desData).toStrictEqual(test.input);
+        }
+    });
+
+    it("SuperEmpty", () => {
+        let tests: Array<TestData<SuperEmpty, StaticArray<u8>>> = [
+            new TestData(new SuperEmpty(), []),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<SuperEmpty>(
+                BytesBuffer.wrap(test.output)
+            );
+            expect(desData).toStrictEqual(test.input);
+        }
+    });
 
     it("Bools", () => {
         let tests: Array<TestData<Bools, StaticArray<u8>>> = [
@@ -51,11 +86,11 @@ describe("ScaleSerializer", () => {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             let serData = ScaleSerializer.serialize(test.input);
-            expect(serData).toBe(test.output);
+            expect(serData).toStrictEqual(test.output);
             let desData = ScaleDeserializer.deserialize<Bools>(
                 BytesBuffer.wrap(test.output)
             );
-            expect(desData).toBe(test.input);
+            expect(desData).toStrictEqual(test.input);
         }
     });
 
@@ -66,11 +101,11 @@ describe("ScaleSerializer", () => {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             let serData = ScaleSerializer.serialize(test.input);
-            expect(serData).toBe(test.output);
+            expect(serData).toStrictEqual(test.output);
             let desData = ScaleDeserializer.deserialize<Bools>(
                 BytesBuffer.wrap(test.output)
             );
-            expect(desData).toBe(test.input);
+            expect(desData).toStrictEqual(test.input);
         }
     });
 
@@ -111,12 +146,12 @@ describe("ScaleSerializer", () => {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             let serData = ScaleSerializer.serialize(test.input);
-            expect(serData).toBe(test.output);
-            expect(serData.length).toBe(test.output.length);
+            expect(serData).toStrictEqual(test.output);
+            expect(serData.length).toStrictEqual(test.output.length);
             let desData = ScaleDeserializer.deserialize<Numbers>(
                 BytesBuffer.wrap(test.output)
             );
-            expect(desData).toBe(test.input);
+            expect(desData).toStrictEqual(test.input);
         }
     });
 
@@ -134,11 +169,11 @@ describe("ScaleSerializer", () => {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             let serData = ScaleSerializer.serialize(test.input);
-            expect(serData).toBe(test.output);
+            expect(serData).toStrictEqual(test.output);
             let desData = ScaleDeserializer.deserialize<string>(
                 BytesBuffer.wrap(test.output)
             );
-            expect(desData).toBe(test.input);
+            expect(desData).toStrictEqual(test.input);
         }
 
         {
@@ -168,11 +203,11 @@ describe("ScaleSerializer", () => {
             for (let i = 0; i < tests.length; i++) {
                 let test = tests[i];
                 let serData = ScaleSerializer.serialize(test.input);
-                expect(serData).toBe(test.output);
+                expect(serData).toStrictEqual(test.output);
                 let desData = ScaleDeserializer.deserialize<Array<string>>(
                     BytesBuffer.wrap(test.output)
                 );
-                expect(desData).toBe(test.input);
+                expect(desData).toStrictEqual(test.input);
             }
         }
     });
@@ -185,25 +220,25 @@ describe("ScaleSerializer", () => {
         ];
         {
             let res = ScaleSerializer.serialize(new Error(s));
-            expect(res).toBe(expected);
+            expect(res).toStrictEqual(expected);
         }
 
         {
             let res = ScaleSerializer.serialize(new SyntaxError(s));
-            expect(res).toBe(expected);
+            expect(res).toStrictEqual(expected);
         }
 
         {
             let res = ScaleSerializer.serialize(new RangeError(s));
-            expect(res).toBe(expected);
+            expect(res).toStrictEqual(expected);
         }
         {
             let res = ScaleSerializer.serialize(new URIError(s));
-            expect(res).toBe(expected);
+            expect(res).toStrictEqual(expected);
         }
         {
             let res = ScaleSerializer.serialize(new TypeError(s));
-            expect(res).toBe(expected);
+            expect(res).toStrictEqual(expected);
         }
     });
 
@@ -217,11 +252,11 @@ describe("ScaleSerializer", () => {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             let serData = ScaleSerializer.serialize(test.input);
-            expect(serData).toBe(test.output);
+            expect(serData).toStrictEqual(test.output);
             let desData = ScaleDeserializer.deserialize<Arrays>(
                 BytesBuffer.wrap(test.output)
             );
-            expect(desData).toBe(test.input);
+            expect(desData).toStrictEqual(test.input);
         }
     });
 
@@ -245,11 +280,11 @@ describe("ScaleSerializer", () => {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             let serData = ScaleSerializer.serialize(test.input);
-            expect(serData).toBe(test.output);
+            expect(serData).toStrictEqual(test.output);
             let desData = ScaleDeserializer.deserialize<OtherArrays>(
                 BytesBuffer.wrap(test.output)
             );
-            expect(desData).toBe(test.input);
+            expect(desData).toStrictEqual(test.input);
         }
     });
 
@@ -267,11 +302,11 @@ describe("ScaleSerializer", () => {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             let serData = ScaleSerializer.serialize(test.input);
-            expect(serData).toBe(test.output);
+            expect(serData).toStrictEqual(test.output);
             let desData = ScaleDeserializer.deserialize<Sets>(
                 BytesBuffer.wrap(test.output)
             );
-            expect(desData).toBe(test.input);
+            expect(desData).toStrictEqual(test.input);
         }
     });
 
@@ -298,11 +333,11 @@ describe("ScaleSerializer", () => {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             let serData = ScaleSerializer.serialize(test.input);
-            expect(serData).toBe(test.output);
+            expect(serData).toStrictEqual(test.output);
             let desData = ScaleDeserializer.deserialize<Maps>(
                 BytesBuffer.wrap(test.output)
             );
-            expect(desData).toBe(test.input);
+            expect(desData).toStrictEqual(test.input);
         }
 
         {
@@ -320,11 +355,11 @@ describe("ScaleSerializer", () => {
             for (let i = 0; i < tests.length; i++) {
                 let test = tests[i];
                 let serData = ScaleSerializer.serialize(test.input);
-                expect(serData).toBe(test.output);
+                expect(serData).toStrictEqual(test.output);
                 let desData = ScaleDeserializer.deserialize<
                     Map<string, string>
                 >(BytesBuffer.wrap(test.output));
-                expect(desData).toBe(test.input);
+                expect(desData).toStrictEqual(test.input);
             }
         }
     });
@@ -337,11 +372,11 @@ describe("ScaleSerializer", () => {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             let serData = ScaleSerializer.serialize(test.input);
-            expect(serData).toBe(test.output);
+            expect(serData).toStrictEqual(test.output);
             let desData = ScaleDeserializer.deserialize<Nulls>(
                 BytesBuffer.wrap(test.output)
             );
-            expect(desData).toBe(test.input);
+            expect(desData).toStrictEqual(test.input);
         }
     });
 });

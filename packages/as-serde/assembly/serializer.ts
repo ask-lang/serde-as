@@ -1,4 +1,5 @@
-import { ISerialize } from './index';
+// @ts-nocheck
+import { ISerialize } from 'as-serde';
 /**
  * All methods of CoreSerializer will be used in as-serde-transfrom
  */
@@ -18,7 +19,7 @@ export abstract class CoreSerializer<R> {
      * @param name field name
      * @param value field value
      */
-    abstract serializeField<T>(name: string | null, value: T | null): R;
+    abstract serializeField<T>(name: string | null, value: T): R;
 
     /**
      * serializeNonNullField is called by a class `serialize` method for non-null type.
@@ -82,6 +83,8 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
 
     abstract serializeClass<C extends ISerialize>(value: C): R;
 
+    abstract serializeIserialize(value: ISerialize): R;
+
     abstract startSerializeTuple(): R;
     abstract endSerializeTuple(): R;
     abstract serializeTupleElem<T>(value: T): R;
@@ -107,14 +110,14 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
      * This is the default method for all other types.
      * @param value array value
      */
-    // @ts-ignore
+    
     abstract serializeArrayLike<A extends ArrayLike<valueof<A>>>(value: A): R;
 
     @inline
     serializeArray<A extends Array<valueof<A>>>(value: A): R {
         return this.serializeArrayLike(value);
     }
-    // @ts-ignore
+    
     serializeStaticArray<A extends StaticArray<valueof<A>>>(value: A): R {
         return this.serializeArrayLike(value);
     }
@@ -169,7 +172,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
         return this.serializeTypedArray(value);
     }
     @inline
-    // @ts-ignore
+    
     serializeTypedArray<A extends TypedArray<valueof<A>>>(value: A): R {
         return this.serializeArrayLike(value);
     }
@@ -213,129 +216,129 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
         if (isNullable<T>()) {
             return this.serializeNullable<T>(value);
         } else if (isBoolean<T>()) {
-            // @ts-ignore
+            
             return this.serializeBool(value);
         } else if (isInteger<T>() || isFloat<T>()) {
-            // @ts-ignore
+            
             return this.serializeNumber<T>(value);
         } else if (isString<T>()) {
-            // @ts-ignore
+            
             return this.serializeString(value);
         }
         // try custom method first
-        // @ts-ignore
-        else if (isDefined(value.serialize)) {
-            return this.serializeClass(value);
-        } else if (isArray<T>()) {
-            // @ts-ignore
+        
+        else if (isArray<T>()) {
+            
             return this.serializeArray<T>(value);
         } else if (idof<T>() == idof<ArrayBuffer>()) {
-            // @ts-ignore
+            
             return this.serializeArrayBuffer(value);
         }
         // opt for Int8Array
         else if (idof<T>() == idof<Int8Array>()) {
-            // @ts-ignore
+            
             return this.serializeInt8Array<T>(value);
         }
         // opt for Int16Array
         else if (idof<T>() == idof<Int16Array>()) {
-            // @ts-ignore
+            
             return this.serializeInt16Array<T>(value);
         } // opt for Int32Array
         else if (idof<T>() == idof<Int32Array>()) {
-            // @ts-ignore
+            
             return this.serializeInt32Array<T>(value);
         } // opt for Int64Array
         else if (idof<T>() == idof<Int64Array>()) {
-            // @ts-ignore
+            
             return this.serializeInt64Array<T>(value);
         }
         // opt for Uint8Array
         else if (idof<T>() == idof<Uint8Array>()) {
-            // @ts-ignore
+            
             return this.serializeUint8Array<T>(value);
         }
         // opt for Uint16Array
         else if (idof<T>() == idof<Uint16Array>()) {
-            // @ts-ignore
+            
             return this.serializeUint16Array<T>(value);
         } // opt for Uint32Array
         else if (idof<T>() == idof<Uint32Array>()) {
-            // @ts-ignore
+            
             return this.serializeUint32Array<T>(value);
         } // opt for Uint64Array
         else if (idof<T>() == idof<Uint64Array>()) {
-            // @ts-ignore
+            
             return this.serializeUint64Array<T>(value);
         }
         // opt for Float32Array
         else if (idof<T>() == idof<Float32Array>()) {
-            // @ts-ignore
+            
             return this.serializeFloat32Array<T>(value);
         }
         // opt for Float64Array
         else if (idof<T>() == idof<Float64Array>()) {
-            // @ts-ignore
+            
             return this.serializeFloat64Array<T>(value);
-        } else {
+        } 
+        else {
             return this._serializeDyn<T>(value);
         }
     }
 
     protected _serializeDyn<T>(value: T): R {
         if (value instanceof Array) {
-            // @ts-ignore
+            
             return this.serializeArray<T>(value);
         } else if (value instanceof StaticArray) {
-            // @ts-ignore
+            
             return this.serializeStaticArray<T>(value);
         } else if (value instanceof ArrayBuffer) {
-            // @ts-ignore
+            
             return this.serializeArrayBuffer<T>(value);
         } else if (value instanceof Uint8Array) {
-            // @ts-ignore
+            
             return this.serializeUint8Array<T>(value);
         } else if (value instanceof Uint16Array) {
-            // @ts-ignore
+            
             return this.serializeUint16Array<T>(value);
         } else if (value instanceof Uint32Array) {
-            // @ts-ignore
+            
             return this.serializeUint32Array<T>(value);
         } else if (value instanceof Uint64Array) {
-            // @ts-ignore
+            
             return this.serializeUint64Array<T>(value);
         } else if (value instanceof Int8Array) {
-            // @ts-ignore
+            
             return this.serializeInt8Array<T>(value);
         } else if (value instanceof Int16Array) {
-            // @ts-ignore
+            
             return this.serializeInt16Array<T>(value);
         } else if (value instanceof Int32Array) {
-            // @ts-ignore
+            
             return this.serializeInt32Array<T>(value);
         } else if (value instanceof Int64Array) {
-            // @ts-ignore
+            
             return this.serializeInt64Array<T>(value);
         } else if (value instanceof Float32Array) {
-            // @ts-ignore
+            
             return this.serializeFloat32Array<T>(value);
         } else if (value instanceof Float64Array) {
-            // @ts-ignore
+            
             return this.serializeFloat64Array<T>(value);
         } else if (isArrayLike<T>()) {
-            // @ts-ignore
+            
             return this.serializeArrayLike<T>(value);
         } else if (value instanceof Error) {
-            return this.serializeError(value);
+            return this.serializeError(value as Error);
         } else if (value instanceof Set) {
-            // @ts-ignore
+            
             return this.serializeSet<indexof<T>, T>(value);
         } else if (value instanceof Map) {
-            // @ts-ignore
+            
             return this.serializeMap<indexof<T>, valueof<T>, T>(value);
-            // @ts-ignore
-        } else {
+            
+        } 
+        else {
             // for compile error
             return this.serializeClass(value);
         }

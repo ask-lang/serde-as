@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ISerialize, Serializer } from "as-serde";
 import { BytesBuffer } from "as-buffers";
 import { Compact } from "./compactInt";
@@ -146,20 +147,20 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
 
     @inline
     serializeClass<C extends ISerialize>(value: C): BytesBuffer {
-        // if (!isNullable(value)) {
-        //     // @ts-ignore
-        //     value.serialize<BytesBuffer, this>(this);
-        // } else if (value !== null) {
-        //     this._buffer.writeByte(0x01);
-        //     // @ts-ignore
-        //     value.serialize<BytesBuffer, this>(this);
-        // } else {
-        //     this._buffer.writeByte(0x00);
-        // }
+        if (!isNullable(value)) {
+            value.serialize<BytesBuffer, this>(this);
+        } else if (value !== null) {
+            this._buffer.writeByte(0x01);
+            value.serialize<BytesBuffer, this>(this);
+        } else {
+            this._buffer.writeByte(0x00);
+        }
 
-        // @ts-ignore
-        value.serialize<BytesBuffer, this>(this);
         return this._buffer;
+    }
+
+    serializeIserialize(s: ISerialize): BytesBuffer {
+        return s.serialize<BytesBuffer, this>(this);
     }
 
     startSerializeTuple(): BytesBuffer {
@@ -218,12 +219,12 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
         return this._buffer;
     }
 
-    // @ts-ignore
+    
     serializeArrayLike<A extends ArrayLike<valueof<A>>>(value: A): BytesBuffer {
         this.serializeCompactInt<u32>(value.length);
         const len = value.length;
         for (let i = 0; i < len; i++) {
-            // @ts-ignore
+            
             this.serialize<valueof<A>>(value[i]);
         }
         return this._buffer;
@@ -233,10 +234,10 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     serialize<T>(value: T): BytesBuffer {
         if (isReference<T>()) {
             if (idof<T>() == idof<i128>()) {
-                // @ts-ignore
+                
                 return this.serializeI128(value);
             } else if (idof<T>() == idof<u128>()) {
-                // @ts-ignore
+                
                 return this.serializeU128(value);
             }
         }

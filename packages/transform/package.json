@@ -22,7 +22,6 @@
   "scripts": {
     "checks": "tsc -p tsconfig.json --noEmit",
     "test": "mocha dist/tests/**/*.spec.js",
-    "coverage": "jest . --coverage",
     "build": "rm -rf dist/* && tsc -p tsconfig.json"
   },
   "peerDependencies": {

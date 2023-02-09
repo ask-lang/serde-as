@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { i128, u128 } from "../index";
 import { ISerialize, IDeserialize } from "as-serde";
 
@@ -44,9 +46,11 @@ export class Numbers {
     }
 }
 
+
 @serialize()
+
 @deserialize()
-export class Bools {
+export class Bools implements ISerialize, IDeserialize {
     b1: bool = false;
     b2: bool = true;
 }
@@ -134,7 +138,7 @@ export class Maps {
 
 @serialize()
 @deserialize()
-export class Nulls {
+export class Nulls  {
     constructor(
         public n1: string | null = null,
         public n2: string[] | null = null,

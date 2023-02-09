@@ -22,6 +22,10 @@ import {
 } from "../consts.js";
 import { extractDecorator, getNameNullable } from "../utils.js";
 import { extractConfigFromDecorator, SerializeDeclaration } from "../ast.js";
+import debug from "debug";
+import { ASTBuilder } from 'assemblyscript/dist/assemblyscript.js';
+
+const log = debug("SerializeVisitor");
 
 export class SerializeVisitor extends TransformVisitor {
     private fields: FieldDeclaration[] = [];
@@ -84,6 +88,7 @@ ${METHOD_SER_SIG} {
 
         const methodNode = SimpleParser.parseClassMember(methodDecl, node);
         node.members.push(methodNode);
+        log(ASTBuilder.build(node));
         return node;
     }
 

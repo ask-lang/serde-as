@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { ISerialize } from "as-serde";
 
@@ -229,7 +230,7 @@ export class Empty implements ISerialize {}
 export class SuperEmpty extends Empty {}
 
 @serialize()
-export class Tree<T> {
+export class Tree<T> implements ISerialize {
     left: Tree<T> | null = null;
     right: Tree<T> | null = null;
     value: T;

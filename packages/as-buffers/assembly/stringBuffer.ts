@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { Buffer } from "./buffer";
 
-// @ts-ignore
+
 @lazy const NEW_LINE_CHAR: u16 = 0x0a; // \n
 
 export class StringBuffer extends Buffer {
@@ -36,7 +37,7 @@ export class StringBuffer extends Buffer {
     /**
      * UTF-16 string length.
      */
-    // @ts-ignore
+    
     @inline
     set length(len: i32) {
         this._offset = len << 1;
