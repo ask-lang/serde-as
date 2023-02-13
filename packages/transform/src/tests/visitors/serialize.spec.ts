@@ -5,12 +5,7 @@ import { SerdeKind } from "../../consts.js";
 
 // Note: in tests we have to use two spaces as ident because of ASTBuilder.
 
-function checkSerializeVisitor(
-    code: string,
-    expected: string,
-    warn = false,
-    error = false
-): void {
+function checkSerializeVisitor(code: string, expected: string, warn = false, error = false): void {
     const visitor = new SerializeVisitor(newProgram(newOptions()));
     checkVisitor(visitor, code, expected, warn, error, SerdeKind.Serialize);
 }

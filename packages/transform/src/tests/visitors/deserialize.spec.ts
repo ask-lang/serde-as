@@ -9,7 +9,7 @@ function checkDeserializeVisitor(
     code: string,
     expected: string,
     warn = false,
-    error = false
+    error = false,
 ): void {
     const visitor = new DeserializeVisitor(newProgram(newOptions()));
     checkVisitor(visitor, code, expected, warn, error, SerdeKind.Deserialize);

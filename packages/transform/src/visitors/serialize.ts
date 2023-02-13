@@ -18,12 +18,12 @@ import {
     METHOD_SER_NONNULL_LAST_FIELD,
     METHOD_SER_SIG,
     METHOD_START_SER_FIELD,
-    SerdeKind
+    SerdeKind,
 } from "../consts.js";
 import { extractDecorator, getNameNullable } from "../utils.js";
 import { extractConfigFromDecorator, SerializeDeclaration } from "../ast.js";
 import debug from "debug";
-import { ASTBuilder } from 'assemblyscript/dist/assemblyscript.js';
+import { ASTBuilder } from "assemblyscript/dist/assemblyscript.js";
 
 const log = debug("SerializeVisitor");
 
@@ -52,11 +52,7 @@ export class SerializeVisitor extends TransformVisitor {
         }
         this.hasBase = node.extendsType ? true : false;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const decorator = extractDecorator(
-            this.emitter,
-            node,
-            SerdeKind.Serialize
-        )!;
+        const decorator = extractDecorator(this.emitter, node, SerdeKind.Serialize)!;
         const cfg = extractConfigFromDecorator(this.emitter, decorator);
         this.decl = SerializeDeclaration.extractFrom(node, cfg);
 
@@ -99,14 +95,12 @@ ${METHOD_SER_SIG} {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
                 node.range,
-                `serde-as: field '${name}' need a type declaration`
+                `serde-as: field '${name}' need a type declaration`,
             );
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            const method = node.type.isNullable
-                ? METHOD_SER_FIELD
-                : METHOD_SER_NONNULL_FIELD;
+            const method = node.type.isNullable ? METHOD_SER_FIELD : METHOD_SER_NONNULL_FIELD;
             return `${METHOD_SER_ARG_NAME}.${method}<${ty}>(${nameStr}, this.${name});`;
         }
     }
@@ -118,7 +112,7 @@ ${METHOD_SER_SIG} {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
                 node.range,
-                `serde-as: field '${name}' need a type declaration`
+                `serde-as: field '${name}' need a type declaration`,
             );
             return null;
         } else {

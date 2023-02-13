@@ -25,6 +25,8 @@
     "lint": "eslint .",
     "build": "yarn workspace as-serde-transform build",
     "checks": "yarn workspaces run checks",
+    "fmt": "prettier -w './**/*.ts' --config ./.prettierrc.cjs",
+    "fmt-check": "prettier -w './**/*.ts' --config ./.prettierrc.c`js --check",
     "test": "yarn workspaces run test",
     "test:ts": "yarn workspace as-serde-transform run test",
     "test:as": "asp --verbose",
@@ -37,6 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^5.16",
     "@typescript-eslint/parser": "^5.16",
     "eslint": "8.31.0",
+    "prettier": "^2.6",
     "mocha": "^10.0",
     "ts-node": "^10",
     "typescript": "^4.9"

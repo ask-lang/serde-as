@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { JSONSerializer, ISerialize } from '../index';
+import { JSONSerializer, ISerialize } from "../index";
 import {
     Arrays,
     Bools,
@@ -26,7 +26,6 @@ describe("JSONSerializer", () => {
         const expected = `{}`;
         expect(res).toBe(expected);
     });
-
 
     it("Empty", () => {
         let res = JSONSerializer.serialize(new Empty());
@@ -89,9 +88,7 @@ describe("JSONSerializer", () => {
             expect(res).toBe(expected);
         }
         {
-            let res = JSONSerializer.serialize<TailCommas2>(
-                TailCommas2.test1()
-            );
+            let res = JSONSerializer.serialize<TailCommas2>(TailCommas2.test1());
             const expected = `{"t":{"a":"","b":null},"c":""}`;
             expect(res).toBe(expected);
         }

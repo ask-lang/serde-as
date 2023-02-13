@@ -14,10 +14,10 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     /**
-     * Serialize a value to a Array. 
+     * Serialize a value to a Array.
      * It reuse a global ScaleSerializer.
      * @param value value to be serialized
-     * @returns 
+     * @returns
      */
     @inline
     static serialize<C>(value: C): StaticArray<u8> {
@@ -219,12 +219,10 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
         return this._buffer;
     }
 
-    
     serializeArrayLike<A extends ArrayLike<valueof<A>>>(value: A): BytesBuffer {
         this.serializeCompactInt<u32>(value.length);
         const len = value.length;
         for (let i = 0; i < len; i++) {
-            
             this.serialize<valueof<A>>(value[i]);
         }
         return this._buffer;
@@ -234,10 +232,8 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     serialize<T>(value: T): BytesBuffer {
         if (isReference<T>()) {
             if (idof<T>() == idof<i128>()) {
-                
                 return this.serializeI128(value);
             } else if (idof<T>() == idof<u128>()) {
-                
                 return this.serializeU128(value);
             }
         }

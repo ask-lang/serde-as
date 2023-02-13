@@ -129,7 +129,7 @@ export class Sets {
         public s2: Set<u8> = new Set(),
         public s3: Set<i32> = new Set(),
         public s4: Set<i32> = new Set(),
-        public s5: Set<string> = new Set()
+        public s5: Set<string> = new Set(),
     ) {}
 
     static test1(): Sets {
@@ -150,7 +150,7 @@ export class Maps {
         public m1: Map<u8, bool> = new Map(),
         public m2: Map<u8, i32> = new Map(),
         public m3: Map<i32, string> = new Map(),
-        public m4: Map<string, string> = new Map() // Should error // public m5: Map<string | null, string> = new Map()
+        public m4: Map<string, string> = new Map(), // Should error // public m5: Map<string | null, string> = new Map()
     ) {}
 
     static test1(): Maps {
@@ -170,7 +170,7 @@ export class Nulls {
         public n1: string | null = null,
         public n2: string[] | null = null,
         public n3: Set<string | null> | null = null,
-        public n4: Map<string, string | null> | null = null
+        public n4: Map<string, string | null> | null = null,
     ) {}
 
     static test1(): Nulls {
@@ -180,10 +180,7 @@ export class Nulls {
         n.n3 = new Set<string | null>() as Set<string | null> | null;
         n.n3!.add(null);
         n.n3!.add("233");
-        n.n4 = new Map<string, string | null>() as Map<
-            string,
-            string | null
-        > | null;
+        n.n4 = new Map<string, string | null>() as Map<string, string | null> | null;
         n.n4!.set("233", "233");
         n.n4!.set("null", null);
 

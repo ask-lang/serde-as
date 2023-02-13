@@ -46,11 +46,7 @@ export class DeserializeVisitor extends TransformVisitor {
         }
         this.hasBase = node.extendsType ? true : false;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const decorator = extractDecorator(
-            this.emitter,
-            node,
-            SerdeKind.Deserialize
-        )!;
+        const decorator = extractDecorator(this.emitter, node, SerdeKind.Deserialize)!;
         const cfg = extractConfigFromDecorator(this.emitter, decorator);
         this.decl = DeserializeDeclaration.extractFrom(node, cfg);
 
@@ -93,14 +89,12 @@ ${METHOD_DES_SIG} {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
                 node.range,
-                `serde-as: field '${name}' need a type declaration`
+                `serde-as: field '${name}' need a type declaration`,
             );
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            const method = node.type.isNullable
-                ? METHOD_DES_FIELD
-                : METHOD_DES_NONNULL_FIELD;
+            const method = node.type.isNullable ? METHOD_DES_FIELD : METHOD_DES_NONNULL_FIELD;
             return `this.${name} = ${METHOD_DES_ARG_NAME}.${method}<${ty}>(${nameStr});`;
         }
     }
@@ -112,7 +106,7 @@ ${METHOD_DES_SIG} {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
                 node.range,
-                `serde-as: field '${name}' need a type declaration`
+                `serde-as: field '${name}' need a type declaration`,
             );
             return null;
         } else {
@@ -120,9 +114,9 @@ ${METHOD_DES_SIG} {
             const method = node.type.isNullable
                 ? METHOD_DES_LAST_FIELD
                 : METHOD_DES_NONNULL_LAST_FIELD;
-            return [
-                `this.${name} = ${METHOD_DES_ARG_NAME}.${method}<${ty}>(${nameStr});`,
-            ].join("\n");
+            return [`this.${name} = ${METHOD_DES_ARG_NAME}.${method}<${ty}>(${nameStr});`].join(
+                "\n",
+            );
         }
     }
 }

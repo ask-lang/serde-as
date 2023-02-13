@@ -1,5 +1,6 @@
 // @ts-nocheck
-import { IDeserialize } from './index';
+import { IDeserialize } from "./index";
+
 export abstract class CoreDeserializer {
     /**
      * startDeserializeField is called by a class `deserialize` method at the beginning.
@@ -109,12 +110,10 @@ export abstract class Deserializer extends CoreDeserializer {
     }
 
     @inline
-    
     deserializeTypedArray<A extends TypedArray<valueof<A>>>(): A {
         return this.deserializeArrayLike<A>();
     }
 
-    
     abstract deserializeArrayLike<A extends ArrayLike<valueof<A>>>(): A;
 
     abstract deserializeNullable<T>(): T;
@@ -205,59 +204,46 @@ export abstract class Deserializer extends CoreDeserializer {
         else if (isDefined(value.deserialize)) {
             return this.deserializeClass<T>();
         } else if (isArray<T>()) {
-            
             return this.deserializeArray<T>();
         } else if (idof<T>() == idof<ArrayBuffer>()) {
-            
             return this.deserializeArrayBuffer();
         }
         // opt for Int8Array
         else if (idof<T>() == idof<Int8Array>()) {
-            
             return this.deserializeInt8Array<T>();
         }
         // opt for Int16Array
         else if (idof<T>() == idof<Int16Array>()) {
-            
             return this.deserializeInt16Array<T>();
         } // opt for Int32Array
         else if (idof<T>() == idof<Int32Array>()) {
-            
             return this.deserializeInt32Array<T>();
         } // opt for Int64Array
         else if (idof<T>() == idof<Int64Array>()) {
-            
             return this.deserializeInt64Array<T>();
         }
         // opt for Uint8Array
         else if (idof<T>() == idof<Uint8Array>()) {
-            
             return this.deserializeUint8Array<T>();
         }
         // opt for Uint16Array
         else if (idof<T>() == idof<Uint16Array>()) {
-            
             return this.deserializeUint16Array<T>();
         } // opt for Uint32Array
         else if (idof<T>() == idof<Uint32Array>()) {
-            
             return this.deserializeUint32Array<T>();
         } // opt for Uint64Array
         else if (idof<T>() == idof<Uint64Array>()) {
-            
             return this.deserializeUint64Array<T>();
         }
         // opt for Float32Array
         else if (idof<T>() == idof<Float32Array>()) {
-            
             return this.deserializeFloat32Array<T>();
         }
         // opt for Float64Array
         else if (idof<T>() == idof<Float64Array>()) {
-            
             return this.deserializeFloat64Array<T>();
         } else if (isArrayLike<T>()) {
-            
             return this.deserializeArrayLike<T>();
         } else {
             // return this.deserializeIDeserialize<T>();
@@ -276,7 +262,7 @@ export abstract class Deserializer extends CoreDeserializer {
         // for sub-class
         else if (value instanceof ArrayBuffer) {
             return this.deserializeArrayBuffer();
-        }else if (value instanceof Uint8Array) {
+        } else if (value instanceof Uint8Array) {
             return this.deserializeUint8Array<T>();
         } else if (value instanceof Uint16Array) {
             return this.deserializeUint16Array<T>();

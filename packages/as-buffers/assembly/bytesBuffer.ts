@@ -9,8 +9,8 @@ export class BytesBuffer extends Buffer {
 
     constructor(
         buffer: StaticArray<u8> = changetype<StaticArray<u8>>(
-            __new(BytesBuffer.DEFAULT_BUFFER_SIZE, idof<StaticArray<u8>>())
-        )
+            __new(BytesBuffer.DEFAULT_BUFFER_SIZE, idof<StaticArray<u8>>()),
+        ),
     ) {
         super(buffer, 0);
     }
@@ -51,10 +51,7 @@ export class BytesBuffer extends Buffer {
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
-        }
-        
-        else if (id == idof<Uint8Array>()) {
-            
+        } else if (id == idof<Uint8Array>()) {
             let arr2 = changetype<StaticArray<u8>>(arr.buffer);
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
@@ -82,11 +79,8 @@ export class BytesBuffer extends Buffer {
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
-        }
-        else if (id == idof<Uint8Array>()) {
-            let arr2 = StaticArray.slice(
-                changetype<StaticArray<u8>>(arr.buffer)
-            );
+        } else if (id == idof<Uint8Array>()) {
+            let arr2 = StaticArray.slice(changetype<StaticArray<u8>>(arr.buffer));
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
@@ -103,9 +97,7 @@ export class BytesBuffer extends Buffer {
     @inline
     static withCapacity(capacity: i32): BytesBuffer {
         return new BytesBuffer(
-            changetype<StaticArray<u8>>(
-                __new(capacity, idof<StaticArray<u8>>())
-            )
+            changetype<StaticArray<u8>>(__new(capacity, idof<StaticArray<u8>>())),
         );
     }
 
@@ -117,10 +109,7 @@ export class BytesBuffer extends Buffer {
             return new BytesBuffer();
         }
         let res = BytesBuffer.withCapacity(nextPowerOf2(end - start));
-        res._writeUnsafe(
-            changetype<usize>(this._buffer) + (start as usize),
-            size
-        );
+        res._writeUnsafe(changetype<usize>(this._buffer) + (start as usize), size);
         return res;
     }
 
@@ -143,7 +132,7 @@ export class BytesBuffer extends Buffer {
     writeBytesSlice<A extends ArrayLike<u8>>(
         src: A,
         start: i32 = 0,
-        end: i32 = i32.MAX_VALUE
+        end: i32 = i32.MAX_VALUE,
     ): void {
         const len = this.sliceLen(src.length, start, end);
         if (!len) return;
@@ -156,7 +145,7 @@ export class BytesBuffer extends Buffer {
     writeBytesSliceUnsafe<A extends ArrayLike<u8>>(
         src: A,
         start: i32 = 0,
-        end: i32 = i32.MAX_VALUE
+        end: i32 = i32.MAX_VALUE,
     ): void {
         const len = this.sliceLen(src.length, start, end);
         if (!len) return;
@@ -167,10 +156,7 @@ export class BytesBuffer extends Buffer {
     clearBuffer(): void {
         this._offset = 0;
         this._buffer = changetype<StaticArray<u8>>(
-            __renew(
-                changetype<usize>(this._buffer),
-                <i32>BytesBuffer.DEFAULT_BUFFER_SIZE
-            )
+            __renew(changetype<usize>(this._buffer), <i32>BytesBuffer.DEFAULT_BUFFER_SIZE),
         );
     }
 
@@ -179,16 +165,13 @@ export class BytesBuffer extends Buffer {
         this._buffer = changetype<StaticArray<u8>>(
             __renew(
                 changetype<usize>(this._buffer),
-                <i32>max(this._offset, BytesBuffer.DEFAULT_BUFFER_SIZE)
-            )
+                <i32>max(this._offset, BytesBuffer.DEFAULT_BUFFER_SIZE),
+            ),
         );
     }
 
     toString(): string {
-        return String.UTF16.decodeUnsafe(
-            changetype<usize>(this._buffer),
-            this._offset
-        );
+        return String.UTF16.decodeUnsafe(changetype<usize>(this._buffer), this._offset);
     }
 
     /**
@@ -200,9 +183,7 @@ export class BytesBuffer extends Buffer {
      */
     @inline
     readNumber<T>(offset: i32 = this._readOffset, isLittle: bool = false): T {
-        return isLittle
-            ? this.readNumberLE<T>(offset)
-            : this.readNumberBE<T>(offset);
+        return isLittle ? this.readNumberLE<T>(offset) : this.readNumberBE<T>(offset);
     }
 
     /**
@@ -749,11 +730,7 @@ export class BytesBuffer extends Buffer {
         const size = this._offset;
         if (!size) return new ArrayBuffer(0);
         const out = new ArrayBuffer(size);
-        memory.copy(
-            changetype<usize>(out),
-            changetype<usize>(this._buffer),
-            size
-        );
+        memory.copy(changetype<usize>(out), changetype<usize>(this._buffer), size);
         return out;
     }
 
@@ -761,11 +738,7 @@ export class BytesBuffer extends Buffer {
         const size = this._offset;
         if (!size) return new Uint8Array(0);
         const out = new Uint8Array(size);
-        memory.copy(
-            changetype<usize>(out.dataStart),
-            changetype<usize>(this._buffer),
-            size
-        );
+        memory.copy(changetype<usize>(out.dataStart), changetype<usize>(this._buffer), size);
         return out;
     }
 
@@ -773,11 +746,7 @@ export class BytesBuffer extends Buffer {
         const size = this._offset;
         if (!size) return new StaticArray<u8>(0);
         const out = new StaticArray<u8>(size);
-        memory.copy(
-            changetype<usize>(out),
-            changetype<usize>(this._buffer),
-            size
-        );
+        memory.copy(changetype<usize>(out), changetype<usize>(this._buffer), size);
         return out;
     }
 
@@ -785,11 +754,7 @@ export class BytesBuffer extends Buffer {
         const size = this._offset;
         if (!size) return new Array<u8>(0);
         const out = new Array<u8>(size);
-        memory.copy(
-            changetype<usize>(out.dataStart),
-            changetype<usize>(this._buffer),
-            size
-        );
+        memory.copy(changetype<usize>(out.dataStart), changetype<usize>(this._buffer), size);
         return out;
     }
 

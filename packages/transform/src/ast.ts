@@ -20,10 +20,7 @@ const CFG_OMIT_NAME = "omitName";
 const CFG_SKIP_SUPER = "skipSuper";
 
 export class DecoratorConfig extends Map<string, string> {
-    static extractFrom(
-        emitter: DiagnosticEmitter,
-        decorator: DecoratorNode
-    ): DecoratorConfig {
+    static extractFrom(emitter: DiagnosticEmitter, decorator: DecoratorNode): DecoratorConfig {
         return extractConfigFromDecorator(emitter, decorator);
     }
 }
@@ -35,7 +32,7 @@ export class DecoratorConfig extends Map<string, string> {
  */
 export function extractConfigFromDecorator(
     emitter: DiagnosticEmitter,
-    decorator: DecoratorNode
+    decorator: DecoratorNode,
 ): DecoratorConfig {
     const obj = extractLiteralObject(emitter, decorator);
     const cfg = extractConfigFromLiteral(emitter, obj);
@@ -51,7 +48,7 @@ export function extractConfigFromDecorator(
  */
 export function extractLiteralObject(
     emitter: DiagnosticEmitter,
-    decorator: DecoratorNode
+    decorator: DecoratorNode,
 ): ObjectLiteralExpression | null {
     const args = decorator.args ? decorator.args : [];
     const literals: ObjectLiteralExpression[] = [];
@@ -62,7 +59,7 @@ export function extractLiteralObject(
                 DiagnosticCode.User_defined_0,
                 decorator.range,
                 arg.range,
-                "Ask-lang: Arguments must be object literal"
+                "Ask-lang: Arguments must be object literal",
             );
         }
         const literalArg = arg as LiteralExpression;
@@ -71,7 +68,7 @@ export function extractLiteralObject(
                 DiagnosticCode.User_defined_0,
                 decorator.range,
                 arg.range,
-                "Ask-lang: Arguments must be object literal"
+                "Ask-lang: Arguments must be object literal",
             );
         }
         literals.push(literalArg as ObjectLiteralExpression);
@@ -89,7 +86,7 @@ export function extractLiteralObject(
  */
 export function extractConfigFromLiteral(
     emitter: DiagnosticEmitter,
-    node: ObjectLiteralExpression | null
+    node: ObjectLiteralExpression | null,
 ): DecoratorConfig {
     const map = new Map();
     if (node == null) {
@@ -110,7 +107,7 @@ export function extractConfigFromLiteral(
             emitter.error(
                 DiagnosticCode.User_defined_0,
                 node.range,
-                "Ask-lang: Unspported decorator param syntax"
+                "Ask-lang: Unspported decorator param syntax",
             );
         }
     }
@@ -122,12 +119,12 @@ export interface SerdeConfig {
     readonly omitName: boolean;
 }
 
-function getBoolConfigValue(map: Map<string, string>, key: string) : boolean {
+function getBoolConfigValue(map: Map<string, string>, key: string): boolean {
     const val = map.get(key);
     if (val) {
         if (val === "true") {
             return true;
-        } else if (val === "false" ) {
+        } else if (val === "false") {
             return false;
         }
     }
@@ -138,7 +135,7 @@ function getBoolConfigValue(map: Map<string, string>, key: string) : boolean {
 function serdeConfigFrom(cfg: DecoratorConfig): SerdeConfig {
     const skipSuper = getBoolConfigValue(cfg, CFG_SKIP_SUPER);
     const omitName = getBoolConfigValue(cfg, CFG_OMIT_NAME);
-   
+
     return {
         skipSuper,
         omitName,
@@ -150,7 +147,7 @@ export class SerializeDeclaration implements SerdeNode {
 
     constructor(
         public readonly classDeclaration: ClassDeclaration,
-        public readonly serdeConfig: SerdeConfig
+        public readonly serdeConfig: SerdeConfig,
     ) {}
 
     /**
@@ -159,10 +156,7 @@ export class SerializeDeclaration implements SerdeNode {
      * @param cfg
      * @returns
      */
-    static extractFrom(
-        node: ClassDeclaration,
-        cfg: DecoratorConfig
-    ): SerializeDeclaration {
+    static extractFrom(node: ClassDeclaration, cfg: DecoratorConfig): SerializeDeclaration {
         const serdeConfig = serdeConfigFrom(cfg);
         return new SerializeDeclaration(utils.cloneNode(node), serdeConfig);
     }
@@ -173,7 +167,7 @@ export class DeserializeDeclaration implements SerdeNode {
 
     constructor(
         public readonly classDeclaration: ClassDeclaration,
-        public readonly serdeConfig: SerdeConfig
+        public readonly serdeConfig: SerdeConfig,
     ) {}
 
     /**
@@ -182,10 +176,7 @@ export class DeserializeDeclaration implements SerdeNode {
      * @param cfg
      * @returns
      */
-    static extractFrom(
-        node: ClassDeclaration,
-        cfg: DecoratorConfig
-    ): DeserializeDeclaration {
+    static extractFrom(node: ClassDeclaration, cfg: DecoratorConfig): DeserializeDeclaration {
         const serdeConfig = serdeConfigFrom(cfg);
         return new DeserializeDeclaration(utils.cloneNode(node), serdeConfig);
     }
