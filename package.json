@@ -37,7 +37,7 @@
     "@as-pect/cli": "^8.0",
     "@types/node": "^18.0",
     "@typescript-eslint/eslint-plugin": "^5.16",
-    "@typescript-eslint/parser": "^5.16",
+    "@typescript-eslint/parser": "^5.51",
     "eslint": "8.31.0",
     "prettier": "^2.6",
     "mocha": "^10.0",
