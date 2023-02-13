@@ -120,9 +120,6 @@ export class OtherArrays {
 
     a10: Float32Array = new Float32Array(4);
     a11: Float64Array = new Float64Array(4);
-
-    // TODO:
-    // a12: ArrayBuffer = new ArrayBuffer(4);
 }
 
 @serialize()

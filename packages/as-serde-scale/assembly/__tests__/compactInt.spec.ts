@@ -62,7 +62,6 @@ describe("Compact", () => {
             let res = num.serialize<BytesBuffer, ScaleSerializer>(ser).toStaticArray();
             expect(res).toStrictEqual(test.output);
 
-            // TODO: meet the wasm-validator error
             if (test.input <= (u8.MAX_VALUE as u64)) {
                 let num = new Compact<u8>(test.input as u8);
                 ser.clear();
@@ -70,7 +69,6 @@ describe("Compact", () => {
                 expect(res).toStrictEqual(test.output);
             }
 
-            // TODO: meet the wasm-validator error
             if (test.input <= (u16.MAX_VALUE as u64)) {
                 let num = new Compact<u16>(test.input as u16);
                 ser.clear();

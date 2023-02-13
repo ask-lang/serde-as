@@ -18,9 +18,6 @@ class SerdeTransform extends TransformVisitor {
         node: ClassDeclaration,
         _isDefault?: boolean
     ): ClassDeclaration {
-        // TODO: fix hasDecorator and seem have no our class enter this function.
-        log(utils.hasDecorator(node, SerdeKind.Serialize));
-        log(node.name.text);
         if (utils.hasDecorator(node, SerdeKind.Serialize)) {
             this.hasSerde = true;
             const visitor = new SerializeVisitor(this.parser);

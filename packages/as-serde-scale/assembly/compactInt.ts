@@ -69,7 +69,6 @@ export class Compact<T extends number> implements CompactLen {
             }
 
             default: {
-                // TODO: meet the wasm-validator error
                 let bytesNeeded = 8 - clz(this._value as u64) / 8;
                 assert(
                     bytesNeeded >= 4,
