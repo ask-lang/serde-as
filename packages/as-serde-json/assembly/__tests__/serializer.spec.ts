@@ -1,5 +1,6 @@
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { JSONSerializer } from "../serializer";
+import { JSONSerializer, ISerialize } from "../index";
 import {
     Arrays,
     Bools,
@@ -20,6 +21,11 @@ import {
 } from "./testdata";
 
 describe("JSONSerializer", () => {
+    it("Empty Interface", () => {
+        let res = JSONSerializer.serialize(new Empty() as ISerialize);
+        const expected = `{}`;
+        expect(res).toBe(expected);
+    });
 
     it("Empty", () => {
         let res = JSONSerializer.serialize(new Empty());
@@ -49,6 +55,22 @@ describe("JSONSerializer", () => {
         }
     });
 
+    it("Tree Interface", () => {
+        {
+            let res = JSONSerializer.serialize(new Tree<i32>(1) as ISerialize);
+            const expected = `{"left":null,"right":null,"value":1}`;
+            expect(res).toBe(expected);
+        }
+        {
+            let tree = new Tree<i32>(1);
+            tree.left = new Tree<i32>(2);
+            tree.right = new Tree<i32>(3);
+            let res = JSONSerializer.serialize(tree as ISerialize);
+            const expected = `{"left":{"left":null,"right":null,"value":2},"right":{"left":null,"right":null,"value":3},"value":1}`;
+            expect(res).toBe(expected);
+        }
+    });
+
     it("TailCommas", () => {
         {
             let res = JSONSerializer.serialize<TailCommas>(new TailCommas());
@@ -66,9 +88,7 @@ describe("JSONSerializer", () => {
             expect(res).toBe(expected);
         }
         {
-            let res = JSONSerializer.serialize<TailCommas2>(
-                TailCommas2.test1()
-            );
+            let res = JSONSerializer.serialize<TailCommas2>(TailCommas2.test1());
             const expected = `{"t":{"a":"","b":null},"c":""}`;
             expect(res).toBe(expected);
         }

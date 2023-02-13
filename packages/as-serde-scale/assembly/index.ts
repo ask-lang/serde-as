@@ -1,6 +1,7 @@
 /// <reference types="as-serde" />
 
-export { i128, u128, u256 } from "as-bignum";
+export * from "as-serde";
+export { i128, u128, u256 } from "as-bignum/assembly";
 export { instantiateRaw } from "./misc";
 export * from "as-buffers";
 export * from "./serializer";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Buffer } from "./buffer";
 import { nextPowerOf2 } from "./util";
 
@@ -8,8 +9,8 @@ export class BytesBuffer extends Buffer {
 
     constructor(
         buffer: StaticArray<u8> = changetype<StaticArray<u8>>(
-            __new(BytesBuffer.DEFAULT_BUFFER_SIZE, idof<StaticArray<u8>>())
-        )
+            __new(BytesBuffer.DEFAULT_BUFFER_SIZE, idof<StaticArray<u8>>()),
+        ),
     ) {
         super(buffer, 0);
     }
@@ -38,23 +39,19 @@ export class BytesBuffer extends Buffer {
      */
     @inline
     @unsafe
-    // @ts-ignore
     static wrap<A>(arr: A): BytesBuffer {
-        let dummy: A;
-        if (idof<A>() == idof<StaticArray<u8>>()) {
+        const id = idof<A>();
+        if (id == idof<StaticArray<u8>>()) {
             let arr2 = changetype<StaticArray<u8>>(arr);
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
-        } else if (idof<A>() == idof<ArrayBuffer>()) {
+        } else if (id == idof<ArrayBuffer>()) {
             let arr2 = changetype<StaticArray<u8>>(arr);
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
-        }
-        // @ts-ignore
-        else if (dummy instanceof Uint8Array) {
-            // @ts-ignore
+        } else if (id == idof<Uint8Array>()) {
             let arr2 = changetype<StaticArray<u8>>(arr.buffer);
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
@@ -70,28 +67,20 @@ export class BytesBuffer extends Buffer {
      * @param arr
      */
     @inline
-    // @ts-ignore
     static from<A>(arr: A): BytesBuffer {
-        // @ts-ignore
-        let dummy: A;
-        if (idof<A>() == idof<StaticArray<u8>>()) {
+        const id = idof<A>();
+        if (id == idof<StaticArray<u8>>()) {
             let arr2 = StaticArray.slice(changetype<StaticArray<u8>>(arr));
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
-        } else if (idof<A>() == idof<ArrayBuffer>()) {
+        } else if (id == idof<ArrayBuffer>()) {
             let arr2 = StaticArray.slice(changetype<StaticArray<u8>>(arr));
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
-        }
-        // @ts-ignore
-        else if (dummy instanceof Uint8Array) {
-            let arr2 = StaticArray.slice(
-                // @ts-ignore
-                changetype<StaticArray<u8>>(arr.buffer)
-            );
-            // @ts-ignore
+        } else if (id == idof<Uint8Array>()) {
+            let arr2 = StaticArray.slice(changetype<StaticArray<u8>>(arr.buffer));
             const res = new BytesBuffer(arr2);
             res.resetOffset(arr2.length);
             return res;
@@ -108,9 +97,7 @@ export class BytesBuffer extends Buffer {
     @inline
     static withCapacity(capacity: i32): BytesBuffer {
         return new BytesBuffer(
-            changetype<StaticArray<u8>>(
-                __new(capacity, idof<StaticArray<u8>>())
-            )
+            changetype<StaticArray<u8>>(__new(capacity, idof<StaticArray<u8>>())),
         );
     }
 
@@ -122,10 +109,7 @@ export class BytesBuffer extends Buffer {
             return new BytesBuffer();
         }
         let res = BytesBuffer.withCapacity(nextPowerOf2(end - start));
-        res._writeUnsafe(
-            changetype<usize>(this._buffer) + (start as usize),
-            size
-        );
+        res._writeUnsafe(changetype<usize>(this._buffer) + (start as usize), size);
         return res;
     }
 
@@ -148,7 +132,7 @@ export class BytesBuffer extends Buffer {
     writeBytesSlice<A extends ArrayLike<u8>>(
         src: A,
         start: i32 = 0,
-        end: i32 = i32.MAX_VALUE
+        end: i32 = i32.MAX_VALUE,
     ): void {
         const len = this.sliceLen(src.length, start, end);
         if (!len) return;
@@ -161,7 +145,7 @@ export class BytesBuffer extends Buffer {
     writeBytesSliceUnsafe<A extends ArrayLike<u8>>(
         src: A,
         start: i32 = 0,
-        end: i32 = i32.MAX_VALUE
+        end: i32 = i32.MAX_VALUE,
     ): void {
         const len = this.sliceLen(src.length, start, end);
         if (!len) return;
@@ -172,10 +156,7 @@ export class BytesBuffer extends Buffer {
     clearBuffer(): void {
         this._offset = 0;
         this._buffer = changetype<StaticArray<u8>>(
-            __renew(
-                changetype<usize>(this._buffer),
-                <i32>BytesBuffer.DEFAULT_BUFFER_SIZE
-            )
+            __renew(changetype<usize>(this._buffer), <i32>BytesBuffer.DEFAULT_BUFFER_SIZE),
         );
     }
 
@@ -184,16 +165,13 @@ export class BytesBuffer extends Buffer {
         this._buffer = changetype<StaticArray<u8>>(
             __renew(
                 changetype<usize>(this._buffer),
-                <i32>max(this._offset, BytesBuffer.DEFAULT_BUFFER_SIZE)
-            )
+                <i32>max(this._offset, BytesBuffer.DEFAULT_BUFFER_SIZE),
+            ),
         );
     }
 
     toString(): string {
-        return String.UTF16.decodeUnsafe(
-            changetype<usize>(this._buffer),
-            this._offset
-        );
+        return String.UTF16.decodeUnsafe(changetype<usize>(this._buffer), this._offset);
     }
 
     /**
@@ -205,9 +183,7 @@ export class BytesBuffer extends Buffer {
      */
     @inline
     readNumber<T>(offset: i32 = this._readOffset, isLittle: bool = false): T {
-        return isLittle
-            ? this.readNumberLE<T>(offset)
-            : this.readNumberBE<T>(offset);
+        return isLittle ? this.readNumberLE<T>(offset) : this.readNumberBE<T>(offset);
     }
 
     /**
@@ -231,41 +207,31 @@ export class BytesBuffer extends Buffer {
     readNumberBE<T>(offset: i32 = this._readOffset): T {
         if (isFloat<T>()) {
             if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readF32BE(offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 return this.readF64BE(offset);
             }
         } else if (isSigned<T>()) {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 return this.readInt8(offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 return this.readInt16BE(offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readInt32BE(offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 return this.readInt64BE(offset);
             }
         } else {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 return this.readUInt8(offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 return this.readUInt16BE(offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readUInt32BE(offset);
             } else {
                 // (sizeof<T>() == 8)
-                // @ts-ignore
                 return this.readUInt64BE(offset);
             }
         }
@@ -281,41 +247,31 @@ export class BytesBuffer extends Buffer {
     readNumberLE<T>(offset: i32 = this._readOffset): T {
         if (isFloat<T>()) {
             if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readF32LE(offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 return this.readF64LE(offset);
             }
         } else if (isSigned<T>()) {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 return this.readInt8(offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 return this.readInt16LE(offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readInt32LE(offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 return this.readInt64LE(offset);
             }
         } else {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 return this.readUInt8(offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 return this.readUInt16LE(offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 return this.readUInt32LE(offset);
             } else {
                 // (sizeof<T>() == 8)
-                // @ts-ignore
                 return this.readUInt64LE(offset);
             }
         }
@@ -330,41 +286,31 @@ export class BytesBuffer extends Buffer {
     writeNumberBE<T>(val: T, offset: i32 = this._offset): void {
         if (isFloat<T>()) {
             if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeF32BE(val, offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 this.writeF64BE(val, offset);
             }
         } else if (isSigned<T>()) {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 this.writeInt8(val, offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 this.writeInt16BE(val, offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeInt32BE(val, offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 this.writeInt64BE(val, offset);
             }
         } else {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 this.writeUInt8(val, offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 this.writeUInt16BE(val, offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeUInt32BE(val, offset);
             } else {
                 // (sizeof<T>() == 8)
-                // @ts-ignore
                 this.writeUInt64BE(val, offset);
             }
         }
@@ -379,41 +325,31 @@ export class BytesBuffer extends Buffer {
     writeNumberLE<T>(val: T, offset: i32 = this._offset): void {
         if (isFloat<T>()) {
             if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeF32LE(val, offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 this.writeF64LE(val, offset);
             }
         } else if (isSigned<T>()) {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 this.writeInt8(val, offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 this.writeInt16LE(val, offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeInt32LE(val, offset);
             } else {
                 // sizeof<N>() == 8
-                // @ts-ignore
                 this.writeInt64LE(val, offset);
             }
         } else {
             if (sizeof<T>() == 1) {
-                // @ts-ignore
                 this.writeUInt8(val, offset);
             } else if (sizeof<T>() == 2) {
-                // @ts-ignore
                 this.writeUInt16LE(val, offset);
             } else if (sizeof<T>() == 4) {
-                // @ts-ignore
                 this.writeUInt32LE(val, offset);
             } else {
                 // (sizeof<T>() == 8)
-                // @ts-ignore
                 this.writeUInt64LE(val, offset);
             }
         }
@@ -764,11 +700,9 @@ export class BytesBuffer extends Buffer {
             idof<A>() == idof<Uint8Array>() ||
             idof<A>() == idof<Array<u8>>()
         ) {
-            // @ts-ignore
             this.reserve(src.length);
             this.writeBytesUnsafe(src);
         } else if (idof<A>() == idof<ArrayBuffer>()) {
-            // @ts-ignore
             this.reserve(src.byteLength);
             this.writeBytesUnsafe(src);
         } else {
@@ -780,16 +714,12 @@ export class BytesBuffer extends Buffer {
     @inline
     writeBytesUnsafe<A>(src: A): void {
         if (idof<A>() == idof<StaticArray<u8>>()) {
-            // @ts-ignore
             this._writeUnsafe(changetype<usize>(src), src.length);
         } else if (idof<A>() == idof<Uint8Array>()) {
-            // @ts-ignore
             this._writeUnsafe(changetype<usize>(src.buffer), src.length);
         } else if (idof<A>() == idof<Array<u8>>()) {
-            // @ts-ignore
             this._writeUnsafe(src.dataStart, src.length);
         } else if (idof<A>() == idof<ArrayBuffer>()) {
-            // @ts-ignore
             this._writeUnsafe(changetype<usize>(src), src.byteLength);
         } else {
             unreachable();
@@ -800,11 +730,7 @@ export class BytesBuffer extends Buffer {
         const size = this._offset;
         if (!size) return new ArrayBuffer(0);
         const out = new ArrayBuffer(size);
-        memory.copy(
-            changetype<usize>(out),
-            changetype<usize>(this._buffer),
-            size
-        );
+        memory.copy(changetype<usize>(out), changetype<usize>(this._buffer), size);
         return out;
     }
 
@@ -812,11 +738,7 @@ export class BytesBuffer extends Buffer {
         const size = this._offset;
         if (!size) return new Uint8Array(0);
         const out = new Uint8Array(size);
-        memory.copy(
-            changetype<usize>(out.dataStart),
-            changetype<usize>(this._buffer),
-            size
-        );
+        memory.copy(changetype<usize>(out.dataStart), changetype<usize>(this._buffer), size);
         return out;
     }
 
@@ -824,11 +746,7 @@ export class BytesBuffer extends Buffer {
         const size = this._offset;
         if (!size) return new StaticArray<u8>(0);
         const out = new StaticArray<u8>(size);
-        memory.copy(
-            changetype<usize>(out),
-            changetype<usize>(this._buffer),
-            size
-        );
+        memory.copy(changetype<usize>(out), changetype<usize>(this._buffer), size);
         return out;
     }
 
@@ -836,11 +754,7 @@ export class BytesBuffer extends Buffer {
         const size = this._offset;
         if (!size) return new Array<u8>(0);
         const out = new Array<u8>(size);
-        memory.copy(
-            changetype<usize>(out.dataStart),
-            changetype<usize>(this._buffer),
-            size
-        );
+        memory.copy(changetype<usize>(out.dataStart), changetype<usize>(this._buffer), size);
         return out;
     }
 
@@ -851,16 +765,12 @@ export class BytesBuffer extends Buffer {
     @inline
     as<A>(): A {
         if (idof<A>() == idof<ArrayBuffer>()) {
-            // @ts-ignore
             return this.toArrayBuffer();
         } else if (idof<A>() == idof<Uint8Array>()) {
-            // @ts-ignore
             return this.toUint8Array();
         } else if (idof<A>() == idof<StaticArray<u8>>()) {
-            // @ts-ignore
             return this.toStaticArray();
         } else {
-            // @ts-ignore
             return this.toArray();
         }
     }

@@ -2,8 +2,6 @@
 /* eslint-disable @typescript-eslint/no-loss-of-precision */
 import { BytesBuffer } from "..";
 
-// TODO:
-
 describe("BytesBuffer Unsafe", () => {
     it("unsafe", () => {});
 });
@@ -16,7 +14,7 @@ describe("BytesBuffer", () => {
             arr2[0] = 0x11;
             let buf = BytesBuffer.wrap(arr);
             buf.writeByte(0x11);
-            expect(changetype<usize>(arr)).toBe(buf.dataStart);
+            expect(changetype<usize>(arr)).toStrictEqual(buf.dataStart);
             expect(buf.offset).toBe(5);
             expect(buf.capacity).toBe(8);
             expect(buf.remainCapacity).toBe(3);
@@ -31,7 +29,7 @@ describe("BytesBuffer", () => {
             arr2[0] = 0x11;
             let buf = BytesBuffer.wrap(arr);
             buf.writeByte(0x11);
-            expect(changetype<usize>(arr)).toBe(buf.dataStart);
+            expect(changetype<usize>(arr)).toStrictEqual(buf.dataStart);
             expect(buf.offset).toBe(5);
             expect(buf.capacity).toBe(8);
             expect(buf.remainCapacity).toBe(3);
@@ -47,10 +45,8 @@ describe("BytesBuffer", () => {
             buf.writeByte(0x11);
             let arr2 = new Uint8Array(8);
             arr2[4] = 0x11;
-            expect(changetype<ArrayBuffer>(buf.dataStart)).toStrictEqual(
-                arr2.buffer
-            );
-            expect(changetype<usize>(arr.buffer)).toBe(buf.dataStart);
+            expect(changetype<ArrayBuffer>(buf.dataStart)).toStrictEqual(arr2.buffer);
+            expect(changetype<usize>(arr.buffer)).toStrictEqual(buf.dataStart);
             expect(buf.offset).toBe(5);
             expect(buf.capacity).toBe(8);
             expect(buf.remainCapacity).toBe(3);
@@ -103,35 +99,31 @@ describe("BytesBuffer", () => {
     });
 
     it("slice", () => {
-        let arr: StaticArray<u8> = [
-            0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-        ];
+        let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
         let buf = BytesBuffer.wrap(arr);
         {
             let buf2 = buf.slice(4);
             expect(changetype<StaticArray<u8>>(buf2.dataStart)).toStrictEqual(
-                StaticArray.slice(arr, 4)
+                StaticArray.slice(arr, 4),
             );
         }
         {
             let buf2 = buf.slice(4, 5);
             expect(changetype<StaticArray<u8>>(buf2.dataStart)).toStrictEqual(
-                StaticArray.slice(arr, 4, 5)
+                StaticArray.slice(arr, 4, 5),
             );
         }
         {
             let buf2 = buf.slice(-1, 100);
             expect(changetype<StaticArray<u8>>(buf2.dataStart)).toStrictEqual(
-                StaticArray.slice(arr, -100)
+                StaticArray.slice(arr, -100),
             );
         }
     });
 
     it("readNumberBE", () => {
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberBE<i8>(0);
             expect(res).toBe(0x01);
@@ -141,9 +133,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberBE<i16>(0);
             expect(res).toBe(0x0102);
@@ -153,9 +143,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberBE<i32>(0);
             expect(res).toBe(0x01020304);
@@ -165,9 +153,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberBE<i64>(0);
             expect(res).toBe(0x0102030411121314);
@@ -177,9 +163,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberBE<f32>(0);
             expect(res).toBe(reinterpret<f32>(0x01020304));
@@ -187,9 +171,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberBE<f64>(0);
             expect(res).toBe(reinterpret<f64>(0x0102030411121314));
@@ -199,9 +181,7 @@ describe("BytesBuffer", () => {
 
     it("readNumberLE", () => {
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberLE<i8>(0);
             expect(res).toBe(0x01);
@@ -211,9 +191,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberLE<i16>(0);
             expect(res).toBe(0x0201);
@@ -223,9 +201,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberLE<i32>(0);
             expect(res).toBe(0x04030201);
@@ -235,9 +211,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberLE<i64>(0);
             expect(res).toBe(0x1413121104030201);
@@ -247,9 +221,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberLE<f32>(0);
             expect(res).toBe(reinterpret<f32>(0x04030201));
@@ -257,9 +229,7 @@ describe("BytesBuffer", () => {
         }
 
         {
-            let arr: StaticArray<u8> = [
-                0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14,
-            ];
+            let arr: StaticArray<u8> = [0x01, 0x02, 0x03, 0x04, 0x11, 0x12, 0x13, 0x14];
             let buf = BytesBuffer.wrap(arr);
             let res = buf.readNumberLE<f64>(0);
             expect(res).toBe(reinterpret<f64>(0x1413121104030201));
@@ -435,9 +405,7 @@ describe("BytesBuffer", () => {
             let bytes: StaticArray<u8> = [0x01, 0x02];
             buf.writeBytes(bytes);
             buf.writeBytes(bytes);
-            expect(buf.as<StaticArray<u8>>()).toStrictEqual([
-                0x01, 0x02, 0x01, 0x02,
-            ]);
+            expect(buf.as<StaticArray<u8>>()).toStrictEqual([0x01, 0x02, 0x01, 0x02]);
         }
 
         {
@@ -470,11 +438,11 @@ describe("BytesBuffer", () => {
     it("toString", () => {
         {
             let s = "我的世界";
-            expect(new BytesBuffer().toString()).toStrictEqual("");
+            expect(new BytesBuffer().toString()).toBe("");
             let buf = BytesBuffer.wrap(changetype<ArrayBuffer>(s));
-            expect(buf.toString()).toStrictEqual(s);
+            expect(buf.toString()).toBe(s);
             buf.writeBytes(changetype<StaticArray<u8>>("\nhello world"));
-            expect(buf.toString()).toStrictEqual("我的世界\nhello world");
+            expect(buf.toString()).toBe("我的世界\nhello world");
         }
     });
 });

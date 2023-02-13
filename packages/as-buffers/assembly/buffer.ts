@@ -11,7 +11,7 @@ export class Buffer {
         /**
          * The position of the data to be written in the buffer, default to 0.
          */
-        protected _offset: i32 = 0
+        protected _offset: i32 = 0,
     ) {}
 
     /**
@@ -48,14 +48,10 @@ export class Buffer {
     /**
      * Clear inner buffer and reset the offset to 0 and inner buffer size to default.
      */
-    @inline
     clearBuffer(): void {
         this.resetOffset();
         this._buffer = changetype<StaticArray<u8>>(
-            __renew(
-                changetype<usize>(this._buffer),
-                <i32>Buffer.DEFAULT_BUFFER_SIZE
-            )
+            __renew(changetype<usize>(this._buffer), <i32>Buffer.DEFAULT_BUFFER_SIZE),
         );
     }
 
@@ -75,8 +71,8 @@ export class Buffer {
         this._buffer = changetype<StaticArray<u8>>(
             __renew(
                 changetype<usize>(this._buffer),
-                <i32>max(this._offset, Buffer.DEFAULT_BUFFER_SIZE)
-            )
+                <i32>max(this._offset, Buffer.DEFAULT_BUFFER_SIZE),
+            ),
         );
     }
 
@@ -90,10 +86,7 @@ export class Buffer {
         const newSize = oldSize + additional;
         if (newSize > this.capacity) {
             this._buffer = changetype<StaticArray<u8>>(
-                __renew(
-                    changetype<usize>(this._buffer),
-                    <i32>nextPowerOf2(newSize)
-                )
+                __renew(changetype<usize>(this._buffer), <i32>nextPowerOf2(newSize)),
             );
         }
     }
@@ -107,11 +100,7 @@ export class Buffer {
     @inline
     _writeUnsafe(src: usize, size: u32): void {
         const offset = this._offset;
-        memory.copy(
-            changetype<usize>(this._buffer) + offset,
-            changetype<usize>(src),
-            size
-        );
+        memory.copy(changetype<usize>(this._buffer) + offset, changetype<usize>(src), size);
         this.resetOffset(offset + size);
     }
 }

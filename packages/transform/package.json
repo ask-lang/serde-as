@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "main": "dist/index.js",
   "license": "MIT",
+  "type": "module",
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "description": "Serde-as is a simple (de)serialization framework for AssemblyScript",
   "keywords": [
@@ -20,23 +21,23 @@
   },
   "scripts": {
     "checks": "tsc -p tsconfig.json --noEmit",
-    "test": "jest .",
-    "coverage": "jest . --coverage",
+    "test": "mocha dist/tests/**/*.spec.js",
     "build": "rm -rf dist/* && tsc -p tsconfig.json"
   },
   "peerDependencies": {
-    "assemblyscript": "^0.19",
-    "visitor-as": "0.8"
+    "assemblyscript": "^0.25",
+    "visitor-as": "^0.11.4"
   },
   "dependencies": {
-    "assemblyscript": "^0.19",
+    "assemblyscript": "^0.25",
     "debug": "^4.3.2",
     "lodash": "4.17",
-    "visitor-as": "0.8"
+    "visitor-as": "^0.11.4"
   },
   "devDependencies": {
     "@types/debug": "^4.1.6",
-    "@types/lodash": "4.14.191"
+    "@types/lodash": "4.14.191",
+    "@types/mocha": "^10.0"
   },
   "files": [
     "README.md",

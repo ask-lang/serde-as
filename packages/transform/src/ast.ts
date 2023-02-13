@@ -1,4 +1,3 @@
-import { SerdeKind } from "./consts";
 import {
     ClassDeclaration,
     DecoratorNode,
@@ -8,8 +7,9 @@ import {
     LiteralKind,
     NodeKind,
     ObjectLiteralExpression,
-} from "assemblyscript";
-import { utils } from "visitor-as/dist";
+} from "assemblyscript/dist/assemblyscript.js";
+import { utils } from "visitor-as";
+import { SerdeKind } from "./consts.js";
 
 export interface SerdeNode {
     /** serde Kind of this node. */
@@ -20,10 +20,7 @@ const CFG_OMIT_NAME = "omitName";
 const CFG_SKIP_SUPER = "skipSuper";
 
 export class DecoratorConfig extends Map<string, string> {
-    static extractFrom(
-        emitter: DiagnosticEmitter,
-        decorator: DecoratorNode
-    ): DecoratorConfig {
+    static extractFrom(emitter: DiagnosticEmitter, decorator: DecoratorNode): DecoratorConfig {
         return extractConfigFromDecorator(emitter, decorator);
     }
 }
@@ -35,7 +32,7 @@ export class DecoratorConfig extends Map<string, string> {
  */
 export function extractConfigFromDecorator(
     emitter: DiagnosticEmitter,
-    decorator: DecoratorNode
+    decorator: DecoratorNode,
 ): DecoratorConfig {
     const obj = extractLiteralObject(emitter, decorator);
     const cfg = extractConfigFromLiteral(emitter, obj);
@@ -51,27 +48,27 @@ export function extractConfigFromDecorator(
  */
 export function extractLiteralObject(
     emitter: DiagnosticEmitter,
-    decorator: DecoratorNode
+    decorator: DecoratorNode,
 ): ObjectLiteralExpression | null {
     const args = decorator.args ? decorator.args : [];
     const literals: ObjectLiteralExpression[] = [];
     for (const arg of args) {
-        if (arg.kind !== NodeKind.LITERAL) {
+        if (arg.kind !== NodeKind.Literal) {
             // TODO: define error type
             emitter.errorRelated(
                 DiagnosticCode.User_defined_0,
                 decorator.range,
                 arg.range,
-                "Ask-lang: Arguments must be object literal"
+                "Ask-lang: Arguments must be object literal",
             );
         }
         const literalArg = arg as LiteralExpression;
-        if (literalArg.literalKind !== LiteralKind.OBJECT) {
+        if (!literalArg.isLiteralKind(LiteralKind.Object)) {
             emitter.errorRelated(
                 DiagnosticCode.User_defined_0,
                 decorator.range,
                 arg.range,
-                "Ask-lang: Arguments must be object literal"
+                "Ask-lang: Arguments must be object literal",
             );
         }
         literals.push(literalArg as ObjectLiteralExpression);
@@ -89,7 +86,7 @@ export function extractLiteralObject(
  */
 export function extractConfigFromLiteral(
     emitter: DiagnosticEmitter,
-    node: ObjectLiteralExpression | null
+    node: ObjectLiteralExpression | null,
 ): DecoratorConfig {
     const map = new Map();
     if (node == null) {
@@ -100,17 +97,17 @@ export function extractConfigFromLiteral(
         const value = node.values[i];
         // we only support the folllowing literals
         if (
-            value.isLiteralKind(LiteralKind.INTEGER) ||
-            value.isLiteralKind(LiteralKind.STRING) ||
-            value.kind === NodeKind.TRUE ||
-            value.kind === NodeKind.FALSE
+            value.isLiteralKind(LiteralKind.Integer) ||
+            value.isLiteralKind(LiteralKind.String) ||
+            value.kind === NodeKind.True ||
+            value.kind === NodeKind.False
         ) {
             map.set(key, value.range.toString());
         } else {
             emitter.error(
                 DiagnosticCode.User_defined_0,
                 node.range,
-                "Ask-lang: Unspported decorator param syntax"
+                "Ask-lang: Unspported decorator param syntax",
             );
         }
     }
@@ -122,26 +119,22 @@ export interface SerdeConfig {
     readonly omitName: boolean;
 }
 
-function serdeConfigFrom(cfg: DecoratorConfig): SerdeConfig {
-    let skipSuper = false;
-    const cfgSkipSuper = cfg.get(CFG_SKIP_SUPER);
-    if (cfgSkipSuper) {
-        if (cfgSkipSuper === "true") {
-            skipSuper = true;
-        } else {
-            // TODO: warning
+function getBoolConfigValue(map: Map<string, string>, key: string): boolean {
+    const val = map.get(key);
+    if (val) {
+        if (val === "true") {
+            return true;
+        } else if (val === "false") {
+            return false;
         }
     }
+    // TODO: warning
+    return false;
+}
 
-    let omitName = false;
-    const cfgOmitName = cfg.get(CFG_OMIT_NAME);
-    if (cfgOmitName) {
-        if (cfgOmitName === "true") {
-            omitName = true;
-        } else {
-            // TODO: warning
-        }
-    }
+function serdeConfigFrom(cfg: DecoratorConfig): SerdeConfig {
+    const skipSuper = getBoolConfigValue(cfg, CFG_SKIP_SUPER);
+    const omitName = getBoolConfigValue(cfg, CFG_OMIT_NAME);
 
     return {
         skipSuper,
@@ -154,7 +147,7 @@ export class SerializeDeclaration implements SerdeNode {
 
     constructor(
         public readonly classDeclaration: ClassDeclaration,
-        public readonly serdeConfig: SerdeConfig
+        public readonly serdeConfig: SerdeConfig,
     ) {}
 
     /**
@@ -163,10 +156,7 @@ export class SerializeDeclaration implements SerdeNode {
      * @param cfg
      * @returns
      */
-    static extractFrom(
-        node: ClassDeclaration,
-        cfg: DecoratorConfig
-    ): SerializeDeclaration {
+    static extractFrom(node: ClassDeclaration, cfg: DecoratorConfig): SerializeDeclaration {
         const serdeConfig = serdeConfigFrom(cfg);
         return new SerializeDeclaration(utils.cloneNode(node), serdeConfig);
     }
@@ -177,7 +167,7 @@ export class DeserializeDeclaration implements SerdeNode {
 
     constructor(
         public readonly classDeclaration: ClassDeclaration,
-        public readonly serdeConfig: SerdeConfig
+        public readonly serdeConfig: SerdeConfig,
     ) {}
 
     /**
@@ -186,10 +176,7 @@ export class DeserializeDeclaration implements SerdeNode {
      * @param cfg
      * @returns
      */
-    static extractFrom(
-        node: ClassDeclaration,
-        cfg: DecoratorConfig
-    ): DeserializeDeclaration {
+    static extractFrom(node: ClassDeclaration, cfg: DecoratorConfig): DeserializeDeclaration {
         const serdeConfig = serdeConfigFrom(cfg);
         return new DeserializeDeclaration(utils.cloneNode(node), serdeConfig);
     }

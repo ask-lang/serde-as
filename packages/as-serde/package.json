@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "main": "index.ts",
   "license": "MIT",
+  "type": "module",
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "description": "Serde-as is a simple (de)serialization framework for AssemblyScript",
   "keywords": [
@@ -18,13 +19,12 @@
     "type": "git",
     "url": "git+https://github.com:ask-lang/serde-as"
   },
-  "dependencies": {
+  "peerDependencies": {
     "as-serde-transform": "^0.2.0"
   },
-  "devDependencies": {
-    "@as-pect/cli": "^6.2",
-    "@types/node": "^18.0.0",
-    "assemblyscript": "^0.19"
+  "dependencies": {
+    "as-base64": "^0.2.0",
+    "as-serde-transform": "^0.2.0"
   },
   "scripts": {
     "build": "echo no build",

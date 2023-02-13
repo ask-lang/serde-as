@@ -12,14 +12,13 @@ let tests: Array<TestData<u64, StaticArray<u8>>> = [
     new TestData(1073741823, [0xfe, 0xff, 0xff, 0xff]),
     new TestData(1073741824, [0x03, 0x00, 0x00, 0x00, 0x40]),
     new TestData((1 << 32) - 1, [0x03, 0xff, 0xff, 0xff, 0xff]),
-    new TestData((1 << 32), [0x07, 0x00, 0x00, 0x00, 0x00, 0x01]),
-    new TestData((1 << 40), [0x0b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
-    new TestData((1 << 48), [0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
+    new TestData(1 << 32, [0x07, 0x00, 0x00, 0x00, 0x00, 0x01]),
+    new TestData(1 << 40, [0x0b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
+    new TestData(1 << 48, [0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     new TestData((1 << 56) - 1, [0x0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]),
-    new TestData((1 << 56), [0x13, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
+    new TestData(1 << 56, [0x13, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     new TestData(u64.MAX_VALUE, [0x13, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]),
 ];
-
 
 describe("Compact", () => {
     it("deserialize", () => {
@@ -62,7 +61,6 @@ describe("Compact", () => {
             let res = num.serialize<BytesBuffer, ScaleSerializer>(ser).toStaticArray();
             expect(res).toStrictEqual(test.output);
 
-            // TODO: meet the wasm-validator error
             if (test.input <= (u8.MAX_VALUE as u64)) {
                 let num = new Compact<u8>(test.input as u8);
                 ser.clear();
@@ -70,7 +68,6 @@ describe("Compact", () => {
                 expect(res).toStrictEqual(test.output);
             }
 
-            // TODO: meet the wasm-validator error
             if (test.input <= (u16.MAX_VALUE as u64)) {
                 let num = new Compact<u16>(test.input as u16);
                 ser.clear();

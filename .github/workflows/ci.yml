@@ -1,18 +1,19 @@
 name: CI
+
 on: [pull_request]
 
 jobs:
   lint:
     strategy:
       matrix:
-        node-version: ["14.x", "16.x"]
-        platform: [ubuntu-18.04]
+        node-version: ["16.x", "18.x"]
+        platform: [ubuntu-20.04]
     runs-on: ${{ matrix.platform }}
     name: "lint in ${{ matrix.platform }} ${{ matrix.node-version }}"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: lint
@@ -22,14 +23,14 @@ jobs:
   test:
     strategy:
       matrix:
-        node-version: ["14.x", "16.x"]
-        platform: [ubuntu-18.04]
+        node-version: ["16.x", "18.x"]
+        platform: [ubuntu-20.04]
     runs-on: ${{ matrix.platform }}
     name: "test in ${{ matrix.platform }} ${{ matrix.node-version }}"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: test

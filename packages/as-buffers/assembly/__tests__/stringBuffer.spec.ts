@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { StringBuffer } from "..";
 
-// TODO:
-
 describe("StringBuffer Unsafe", () => {
     it("unsafe", () => {});
 });

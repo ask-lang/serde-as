@@ -1,8 +1,9 @@
-import { Serializer } from "as-serde";
+// @ts-nocheck
+import { ISerialize, Serializer } from "as-serde";
 import { BytesBuffer } from "as-buffers";
 import { Compact } from "./compactInt";
 import { FLOAT_UNSPPORTED } from "./misc";
-import { i128, u128 } from "as-bignum";
+import { i128, u128 } from "./index";
 
 export class ScaleSerializer extends Serializer<BytesBuffer> {
     @lazy
@@ -13,10 +14,10 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     /**
-     * Serialize a value to a Array. 
+     * Serialize a value to a Array.
      * It reuse a global ScaleSerializer.
      * @param value value to be serialized
-     * @returns 
+     * @returns
      */
     @inline
     static serialize<C>(value: C): StaticArray<u8> {
@@ -145,19 +146,21 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     @inline
-    serializeClass<C>(value: C): BytesBuffer {
-        if (!isNullable<C>()) {
-            // @ts-ignore
+    serializeClass<C extends ISerialize>(value: C): BytesBuffer {
+        if (!isNullable(value)) {
             value.serialize<BytesBuffer, this>(this);
         } else if (value !== null) {
             this._buffer.writeByte(0x01);
-            // @ts-ignore
             value.serialize<BytesBuffer, this>(this);
         } else {
             this._buffer.writeByte(0x00);
         }
 
         return this._buffer;
+    }
+
+    serializeIserialize(s: ISerialize): BytesBuffer {
+        return s.serialize<BytesBuffer, this>(this);
     }
 
     startSerializeTuple(): BytesBuffer {
@@ -216,12 +219,10 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
         return this._buffer;
     }
 
-    // @ts-ignore
     serializeArrayLike<A extends ArrayLike<valueof<A>>>(value: A): BytesBuffer {
         this.serializeCompactInt<u32>(value.length);
         const len = value.length;
         for (let i = 0; i < len; i++) {
-            // @ts-ignore
             this.serialize<valueof<A>>(value[i]);
         }
         return this._buffer;
@@ -231,10 +232,8 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     serialize<T>(value: T): BytesBuffer {
         if (isReference<T>()) {
             if (idof<T>() == idof<i128>()) {
-                // @ts-ignore
                 return this.serializeI128(value);
             } else if (idof<T>() == idof<u128>()) {
-                // @ts-ignore
                 return this.serializeU128(value);
             }
         }

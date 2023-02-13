@@ -1,4 +1,6 @@
-import { i128, u128 } from "as-bignum";
+// @ts-nocheck
+
+import { i128, u128 } from "../index";
 import { ISerialize, IDeserialize } from "as-serde";
 
 export class TestData<T1, T2> {
@@ -46,7 +48,7 @@ export class Numbers {
 
 @serialize()
 @deserialize()
-export class Bools {
+export class Bools implements ISerialize, IDeserialize {
     b1: bool = false;
     b2: bool = true;
 }
@@ -91,7 +93,7 @@ export class Sets {
         public s2: Set<u8> = new Set(),
         public s3: Set<i32> = new Set(),
         public s4: Set<i32> = new Set(),
-        public s5: Set<string> = new Set()
+        public s5: Set<string> = new Set(),
     ) {}
 
     static test1(): Sets {
@@ -114,7 +116,7 @@ export class Maps {
         public m2: Map<u8, i32> = new Map(),
         public m3: Map<i32, string> = new Map(),
         public m4: Map<string, string> = new Map(),
-        public m5: Map<u8, Map<u8, u8>> = new Map()
+        public m5: Map<u8, Map<u8, u8>> = new Map(),
     ) {}
 
     static test1(): Maps {
@@ -142,7 +144,7 @@ export class Nulls {
         public n3: Set<Nulls | null> | null = null,
         // self-ref
         public n4: Map<Nulls, string | null> | null = null,
-        public n5: Array<u8> | null = null
+        public n5: Array<u8> | null = null,
     ) {}
 
     static test1(): Nulls {

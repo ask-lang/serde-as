@@ -5,9 +5,9 @@ import {
     DiagnosticCode,
     FieldDeclaration,
     CommonFlags,
-} from "assemblyscript";
-import { toString, isMethodNamed } from "visitor-as/dist/utils";
-
+} from "assemblyscript/dist/assemblyscript.js";
+import { toString, isMethodNamed } from "visitor-as/dist/utils.js";
+import _ from "lodash";
 import {
     METHOD_END_SER_FIELD,
     METHOD_SER,
@@ -18,11 +18,14 @@ import {
     METHOD_SER_NONNULL_LAST_FIELD,
     METHOD_SER_SIG,
     METHOD_START_SER_FIELD,
-} from "../consts";
-import { uniqBy } from "lodash";
-import { extractDecorator, getNameNullable } from "../utils";
-import { extractConfigFromDecorator, SerializeDeclaration } from "../ast";
-import { SerdeKind } from "../consts";
+    SerdeKind,
+} from "../consts.js";
+import { extractDecorator, getNameNullable } from "../utils.js";
+import { extractConfigFromDecorator, SerializeDeclaration } from "../ast.js";
+import debug from "debug";
+import { ASTBuilder } from "assemblyscript/dist/assemblyscript.js";
+
+const log = debug("SerializeVisitor");
 
 export class SerializeVisitor extends TransformVisitor {
     private fields: FieldDeclaration[] = [];
@@ -34,7 +37,7 @@ export class SerializeVisitor extends TransformVisitor {
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
-        if (node.is(CommonFlags.STATIC)) {
+        if (node.is(CommonFlags.Static)) {
             return node;
         }
         this.fields.push(node);
@@ -49,17 +52,13 @@ export class SerializeVisitor extends TransformVisitor {
         }
         this.hasBase = node.extendsType ? true : false;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const decorator = extractDecorator(
-            this.emitter,
-            node,
-            SerdeKind.Serialize
-        )!;
+        const decorator = extractDecorator(this.emitter, node, SerdeKind.Serialize)!;
         const cfg = extractConfigFromDecorator(this.emitter, decorator);
         this.decl = SerializeDeclaration.extractFrom(node, cfg);
 
         super.visitClassDeclaration(node);
         // for fields declared in constructor
-        this.fields = uniqBy(this.fields, (f) => f);
+        this.fields = _.uniqBy(this.fields, (f) => f);
         const lastField = this.fields[this.fields.length - 1];
         const fields = this.fields.slice(0, -1);
         const stmts = fields
@@ -85,6 +84,7 @@ ${METHOD_SER_SIG} {
 
         const methodNode = SimpleParser.parseClassMember(methodDecl, node);
         node.members.push(methodNode);
+        log(ASTBuilder.build(node));
         return node;
     }
 
@@ -95,14 +95,12 @@ ${METHOD_SER_SIG} {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
                 node.range,
-                `serde-as: field '${name}' need a type declaration`
+                `serde-as: field '${name}' need a type declaration`,
             );
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            const method = node.type.isNullable
-                ? METHOD_SER_FIELD
-                : METHOD_SER_NONNULL_FIELD;
+            const method = node.type.isNullable ? METHOD_SER_FIELD : METHOD_SER_NONNULL_FIELD;
             return `${METHOD_SER_ARG_NAME}.${method}<${ty}>(${nameStr}, this.${name});`;
         }
     }
@@ -114,7 +112,7 @@ ${METHOD_SER_SIG} {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
                 node.range,
-                `serde-as: field '${name}' need a type declaration`
+                `serde-as: field '${name}' need a type declaration`,
             );
             return null;
         } else {

@@ -1,8 +1,8 @@
-import { Serializer } from "as-serde";
-import * as base64 from "as-base64";
+// @ts-nocheck
+import { Serializer, ISerialize } from "as-serde";
+import * as base64 from "as-base64/assembly";
 import { StringBuffer } from "as-buffers";
 
-// @ts-ignore
 @lazy const NULL = "null";
 @lazy const HAVE_NO_NAME = "field have no name";
 
@@ -24,9 +24,9 @@ export class JSONSerializer extends Serializer<StringBuffer> {
      * @returns
      */
     @inline
-    static serialize<C>(value: C): string {
+    static serialize<T>(value: T): string {
         JSONSerializer.json.clear();
-        return JSONSerializer.json.serialize<C>(value).toString();
+        return JSONSerializer.json.serialize<T>(value).toString();
     }
 
     @unsafe
@@ -143,9 +143,7 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         this._buffer.write("{");
         let keys = value.keys();
         for (let i = 0; i < len - 1; i++) {
-            // @ts-ignore
             if (isDefined(keys[i].toString)) {
-                // @ts-ignore
                 this.serializeString(keys[i].toString());
             } else {
                 this._buffer.write('"');
@@ -156,9 +154,7 @@ export class JSONSerializer extends Serializer<StringBuffer> {
             this.serialize<V>(value.get(keys[i]));
             this._buffer.write(",");
         }
-        // @ts-ignore
         if (isDefined(keys[len - 1].toString)) {
-            // @ts-ignore
             this.serializeString(keys[len - 1].toString());
         } else {
             this._buffer.write('"');
@@ -175,10 +171,10 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     serializeClass<C>(value: C): StringBuffer {
         this._buffer.write("{");
         if (!isNullable<C>()) {
-            // @ts-ignore
+            
             value.serialize<StringBuffer, this>(this);
         } else if (value !== null) {
-            // @ts-ignore
+            
             value.serialize<StringBuffer, this>(this);
         }
         if (this._buffer.slice(this._buffer.length - 1) != "{") {
@@ -186,6 +182,11 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         }
         this._buffer.write("}");
         return this._buffer;
+    }
+
+    serializeIserialize(s: ISerialize): StringBuffer {
+        return unreachable();
+        // return s.serialize<StringBuffer, this>(this)
     }
 
     startSerializeTuple(): StringBuffer {
@@ -247,12 +248,12 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     @inline
-    // @ts-ignore
+    
     serializeStaticArray<A extends Array<valueof<A>>>(value: A): StringBuffer {
         if (
-            // @ts-ignore
+            
             sizeof<valueof<A>>() == 1 &&
-            // @ts-ignore
+            
             !isSigned<valueof<A>>()
         ) {
             this.writeBase64(Uint8Array.wrap(changetype<ArrayBuffer>(value)));
@@ -262,7 +263,7 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         }
     }
 
-    // @ts-ignore
+    
     serializeArrayLike<A extends ArrayLike<valueof<A>>>(
         value: A
     ): StringBuffer {
@@ -271,9 +272,9 @@ export class JSONSerializer extends Serializer<StringBuffer> {
             return this._buffer;
         } else if (
             value instanceof Array &&
-            // @ts-ignore
+            
             sizeof<valueof<A>>() == 1 &&
-            // @ts-ignore
+            
             !isSigned<valueof<A>>()
         ) {
             this.writeBase64(
@@ -290,7 +291,7 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         this._buffer.write('"');
     }
 
-    // @ts-ignore
+    
     private _serializeArrayLike<A extends ArrayLike<valueof<A>>>(
         value: A
     ): StringBuffer {
@@ -302,11 +303,11 @@ export class JSONSerializer extends Serializer<StringBuffer> {
 
         this._buffer.write("[");
         for (let i = 0; i < len - 1; i++) {
-            // @ts-ignore
+            
             this.serialize<valueof<A>>(value[i]);
             this._buffer.write(",");
         }
-        // @ts-ignore
+        
         this.serialize<valueof<A>>(value[len - 1]);
         this._buffer.write("]");
 

@@ -1,16 +1,16 @@
-import { Deserializer } from "as-serde";
+// @ts-nocheck
+import { Deserializer, IDeserialize } from "as-serde";
 import { BytesBuffer } from "as-buffers";
+import { i128, u128 } from "as-bignum/assembly";
 import { Compact } from ".";
 import { FLOAT_UNSPPORTED, instantiateRaw } from "./misc";
-import { i128, u128 } from "as-bignum";
 
 export class ScaleDeserializer extends Deserializer {
-
     /**
      * Deserialize a buffer to a value of type T.
      * It may not consumed all buffer data.
-     * @param buffer 
-     * @returns 
+     * @param buffer
+     * @returns
      */
     @inline
     static deserialize<T>(buffer: BytesBuffer): T {
@@ -33,29 +33,24 @@ export class ScaleDeserializer extends Deserializer {
 
     deserializeString(): string {
         return String.UTF8.decode(
-            changetype<ArrayBuffer>(
-                this.deserializeStaticArray<StaticArray<u8>>()
-            )
+            changetype<ArrayBuffer>(this.deserializeStaticArray<StaticArray<u8>>()),
         );
     }
 
     deserializeNullable<T>(): T {
         const b = this.deserializeBool();
         if (b === 0) {
-            // @ts-ignore
             return null;
         } else {
             return this.deserialize<nonnull<T>>();
         }
     }
 
-    // @ts-ignore
     deserializeArrayLike<A extends ArrayLike<valueof<A>>>(): A {
         const compact = this.deserializeCompactInt<u32>();
         const len = compact.unwrap();
         const arr = instantiate<A>(compact.unwrap());
         for (let i: u32 = 0; i < len; i++) {
-            // @ts-ignore
             arr[i] = this.deserialize<valueof<A>>();
         }
         return arr;
@@ -86,7 +81,13 @@ export class ScaleDeserializer extends Deserializer {
     @inline
     deserializeClass<T>(): T {
         const clz: T = instantiateRaw<T>();
-        // @ts-ignore
+
+        return clz.deserialize<this>(this);
+    }
+
+    deserializeIDeserialize<T extends IDeserialize>(): T {
+        const clz: T = instantiateRaw<T>();
+
         return clz.deserialize<this>(this);
     }
 
@@ -103,11 +104,10 @@ export class ScaleDeserializer extends Deserializer {
         return this.deserialize<nonnull<T>>();
     }
 
-    deserializeField<T>(_name: string): T {
+    deserializeField<T>(_name: string | null): T {
         if (isNullable<T>()) {
             const b = this.deserializeBool();
             if (b == false) {
-                // @ts-ignore
                 return null;
             } else {
                 return this.deserialize<nonnull<T>>();
@@ -181,10 +181,8 @@ export class ScaleDeserializer extends Deserializer {
     deserialize<T>(): T {
         if (isReference<T>()) {
             if (idof<T>() == idof<i128>()) {
-                // @ts-ignore
                 return this.deserializeI128();
             } else if (idof<T>() == idof<u128>()) {
-                // @ts-ignore
                 return this.deserializeU128();
             }
         }

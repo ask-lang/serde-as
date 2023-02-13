@@ -10,11 +10,11 @@ import {
     Source,
     SourceKind,
     TypeNode,
-} from "assemblyscript";
-import { getName } from "visitor-as/dist/utils";
+} from "assemblyscript/dist/assemblyscript.js";
+import { utils } from "visitor-as";
 
 export function getNameNullable(type: TypeNode): string {
-    let ty = getName(type);
+    let ty = utils.getName(type);
     if (type.isNullable && !ty.endsWith("null")) {
         ty = `${ty} | null`;
     }
@@ -22,14 +22,11 @@ export function getNameNullable(type: TypeNode): string {
 }
 
 export function isUserEntry(node: Node): boolean {
-    return node.range.source.sourceKind == SourceKind.USER_ENTRY;
+    return node.range.source.sourceKind == SourceKind.UserEntry;
 }
 
 export function isEntry(node: Node): boolean {
-    return (
-        isUserEntry(node) ||
-        node.range.source.sourceKind == SourceKind.LIBRARY_ENTRY
-    );
+    return isUserEntry(node) || node.range.source.sourceKind == SourceKind.LibraryEntry;
 }
 
 export function updateSource(program: Program, newSource: Source): void {
@@ -48,7 +45,7 @@ export function updateSource(program: Program, newSource: Source): void {
  * @returns return true if emitter have ERROR message
  */
 export function hasErrorMessage(emitter: DiagnosticEmitter): boolean {
-    return hasMessage(emitter, DiagnosticCategory.ERROR);
+    return hasMessage(emitter, DiagnosticCategory.Error);
 }
 
 /**
@@ -57,13 +54,10 @@ export function hasErrorMessage(emitter: DiagnosticEmitter): boolean {
  * @returns return true if emitter have WARNING message
  */
 export function hasWarningMessage(emitter: DiagnosticEmitter): boolean {
-    return hasMessage(emitter, DiagnosticCategory.WARNING);
+    return hasMessage(emitter, DiagnosticCategory.Warning);
 }
 
-function hasMessage(
-    emitter: DiagnosticEmitter,
-    category: DiagnosticCategory
-): boolean {
+function hasMessage(emitter: DiagnosticEmitter, category: DiagnosticCategory): boolean {
     const diagnostics = emitter.diagnostics ? emitter.diagnostics : [];
     for (const msg of diagnostics) {
         if (msg.category === category) {
@@ -80,7 +74,7 @@ function hasMessage(
  */
 export function addInlineDecorator(
     range: Range,
-    decl: { decorators: DecoratorNode[] | null }
+    decl: { decorators: DecoratorNode[] | null },
 ): void {
     addDecorator(decl, genInlineDecorator(range));
 }
@@ -92,7 +86,7 @@ export function addInlineDecorator(
  */
 export function addDecorator(
     decl: { decorators: DecoratorNode[] | null },
-    decorator: DecoratorNode
+    decorator: DecoratorNode,
 ): void {
     if (decl.decorators == null) {
         decl.decorators = [];
@@ -101,11 +95,7 @@ export function addDecorator(
 }
 
 export function genInlineDecorator(range: Range): DecoratorNode {
-    return Node.createDecorator(
-        Node.createIdentifierExpression("inline", range),
-        null,
-        range
-    );
+    return Node.createDecorator(Node.createIdentifierExpression("inline", range), null, range);
 }
 
 /**
@@ -116,7 +106,7 @@ export function genInlineDecorator(range: Range): DecoratorNode {
  */
 export function filterDecorators(
     decorators: DecoratorNode[] | null,
-    pred: (node: DecoratorNode) => bool
+    pred: (node: DecoratorNode) => bool,
 ): DecoratorNode[] {
     const decs: DecoratorNode[] = [];
     if (decorators === null) return decs;
@@ -133,11 +123,11 @@ export function filterDecorators(
 export function extractDecorator(
     emitter: DiagnosticEmitter,
     node: DeclarationStatement,
-    kind: { toString: () => string }
+    kind: { toString: () => string },
 ): DecoratorNode | null {
     const decs = filterDecorators(
         node.decorators,
-        (node) => node.name.range.toString() === "@" + kind
+        (node) => node.name.range.toString() === "@" + kind,
     );
 
     // cannot have duplicated decorator
@@ -146,7 +136,7 @@ export function extractDecorator(
             DiagnosticCode.Duplicate_decorator,
             node.range,
             decs[0].range,
-            kind.toString()
+            kind.toString(),
         );
     }
 
