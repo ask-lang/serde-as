@@ -4,6 +4,7 @@ import { CoreSerializer } from "./serializer";
 export * from "./serializer";
 export * from "./deserializer";
 export * from "./util";
+export * from "./ir";
 
 export interface ISerialize {
     serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R;
