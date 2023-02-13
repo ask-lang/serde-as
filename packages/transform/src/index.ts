@@ -22,20 +22,15 @@ class SerdeTransform extends TransformVisitor {
         log(utils.hasDecorator(node, SerdeKind.Serialize));
         log(node.name.text);
         if (utils.hasDecorator(node, SerdeKind.Serialize)) {
-            log("new code:");
             this.hasSerde = true;
             const visitor = new SerializeVisitor(this.parser);
             node = visitor.visitClassDeclaration(node);
-            let newCode = ASTBuilder.build(node);
-            log("new code:", newCode);
         }
 
         if (utils.hasDecorator(node, SerdeKind.Deserialize)) {
             this.hasSerde = true;
             const visitor = new DeserializeVisitor(this.parser);
             node = visitor.visitClassDeclaration(node);
-            let newCode = ASTBuilder.build(node);
-            log("new code:", newCode);
         }
 
         return node;
@@ -47,7 +42,6 @@ class SerdeTransform extends TransformVisitor {
 
         const newSources = new Map<string, Source>();
         for (let source of parser.sources) {
-            log("source:", source.normalizedPath);
             // don't alter the orignal code
             source = utils.cloneNode(source);
             this.hasSerde = false;
