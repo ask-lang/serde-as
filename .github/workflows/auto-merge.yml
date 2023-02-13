@@ -1,0 +1,14 @@
+name: Auto-merge dependabot updates
+on:
+  schedule:
+    - cron: "0 8/10 FRI * *"
+jobs:
+  test:
+    name: Auto-merge dependabot updates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: akheron/dependabot-cron-action@v1
+        with:
+          token: ${{ secrets.MY_TOKEN }}
+          auto-merge: minor
+          merge-method: squash
