@@ -122,27 +122,23 @@ export interface SerdeConfig {
     readonly omitName: boolean;
 }
 
+function getBoolConfigValue(map: Map<string, string>, key: string) : boolean {
+    const val = map.get(key);
+    if (val) {
+        if (val === "true") {
+            return true;
+        } else if (val === "false" ) {
+            return false;
+        }
+    }
+    // TODO: warning
+    return false;
+}
+
 function serdeConfigFrom(cfg: DecoratorConfig): SerdeConfig {
-    let skipSuper = false;
-    const cfgSkipSuper = cfg.get(CFG_SKIP_SUPER);
-    if (cfgSkipSuper) {
-        if (cfgSkipSuper === "true") {
-            skipSuper = true;
-        } else {
-            // TODO: warning
-        }
-    }
-
-    let omitName = false;
-    const cfgOmitName = cfg.get(CFG_OMIT_NAME);
-    if (cfgOmitName) {
-        if (cfgOmitName === "true") {
-            omitName = true;
-        } else {
-            // TODO: warning
-        }
-    }
-
+    const skipSuper = getBoolConfigValue(cfg, CFG_SKIP_SUPER);
+    const omitName = getBoolConfigValue(cfg, CFG_OMIT_NAME);
+   
     return {
         skipSuper,
         omitName,
