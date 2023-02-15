@@ -1,5 +1,6 @@
 {
   "name": "serde-as",
+  "version": "0.2.0",
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "license": "MIT",
   "type": "module",
@@ -30,7 +31,8 @@
     "test": "yarn workspaces run test",
     "test:ts": "yarn workspace as-serde-transform run test",
     "test:as": "asp --verbose",
-    "changelog": "conventional-changelog -i CHANGELOG.md -s",
+    "update-changelog": "conventional-changelog -i CHANGELOG.md -s",
+    "changelog": "conventional-changelog",
     "prepublishOnly": "yarn build"
   },
   "devDependencies": {
@@ -42,6 +44,7 @@
     "prettier": "^2.6",
     "mocha": "^10.0",
     "ts-node": "^10",
+    "conventional-changelog": "^3.0",
     "typescript": "^4.9"
   },
   "publishConfig": {
