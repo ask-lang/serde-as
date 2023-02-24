@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@as-pect/cli": "^8.0",
-    "@types/node": "^18.13",
+    "@types/node": "^18.14",
     "@typescript-eslint/eslint-plugin": "^5.52",
     "@typescript-eslint/parser": "^5.52",
     "eslint": "8.34.0",
