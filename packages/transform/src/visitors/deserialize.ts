@@ -18,7 +18,7 @@ import {
     METHOD_DES_SIG,
     METHOD_END_DES_FIELD,
     METHOD_START_DES_FIELD,
-    SerdeKind,
+    ClassSerdeKind,
 } from "../consts.js";
 import { extractDecorator, getNameNullable } from "../utils.js";
 import { DeserializeDeclaration, extractConfigFromDecorator } from "../ast.js";
@@ -46,7 +46,7 @@ export class DeserializeVisitor extends TransformVisitor {
         }
         this.hasBase = node.extendsType ? true : false;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const decorator = extractDecorator(this.emitter, node, SerdeKind.Deserialize)!;
+        const decorator = extractDecorator(this.emitter, node, ClassSerdeKind.Deserialize)!;
         const cfg = extractConfigFromDecorator(this.emitter, decorator);
         this.decl = DeserializeDeclaration.extractFrom(node, cfg);
 

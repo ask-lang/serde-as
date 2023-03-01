@@ -8,7 +8,7 @@ import {
 } from "assemblyscript/dist/assemblyscript.js";
 import { utils } from "visitor-as";
 import debug from "debug";
-import { SerdeKind } from "./consts.js";
+import { ClassSerdeKind } from "./consts.js";
 import { DeserializeVisitor, SerializeVisitor } from "./visitors/index.js";
 import { isEntry, updateSource } from "./utils.js";
 
@@ -19,13 +19,13 @@ class SerdeTransform extends TransformVisitor {
     private parser!: Parser;
 
     visitClassDeclaration(node: ClassDeclaration, _isDefault?: boolean): ClassDeclaration {
-        if (utils.hasDecorator(node, SerdeKind.Serialize)) {
+        if (utils.hasDecorator(node, ClassSerdeKind.Serialize)) {
             this.hasSerde = true;
             const visitor = new SerializeVisitor(this.parser);
             node = visitor.visitClassDeclaration(node);
         }
 
-        if (utils.hasDecorator(node, SerdeKind.Deserialize)) {
+        if (utils.hasDecorator(node, ClassSerdeKind.Deserialize)) {
             this.hasSerde = true;
             const visitor = new DeserializeVisitor(this.parser);
             node = visitor.visitClassDeclaration(node);

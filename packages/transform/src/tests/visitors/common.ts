@@ -7,7 +7,7 @@ import {
 } from "assemblyscript/dist/assemblyscript.js";
 import { hasErrorMessage, hasWarningMessage } from "../../utils.js";
 import * as assert from "assert";
-import { SerdeKind } from "../../consts.js";
+import { ClassSerdeKind } from "../../consts.js";
 import { NodeKind } from "types:assemblyscript/src/ast";
 
 export function checkVisitor(
@@ -16,7 +16,7 @@ export function checkVisitor(
     expected: string,
     warn: boolean,
     error: boolean,
-    serdeKind: SerdeKind,
+    serdeKind: ClassSerdeKind,
 ): void {
     const parser = new Parser();
     parser.parseFile(code, "index.ts", true);

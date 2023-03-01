@@ -20,21 +20,42 @@ export const METHOD_DES_NONNULL_LAST_FIELD = "deserializeNonNullLastField";
 export const METHOD_DES_ARG_NAME = "deserializer";
 export const METHOD_DES_SIG = `deserialize<__S extends CoreDeserializer>(deserializer: __S): this`;
 
+// TODO: AssemblyScript do not support namespace for decorator now.
 export const NAMESPACE = "serde";
 
-export enum SerdeKind {
+/**
+ * The decorator for class.
+ */
+export enum ClassSerdeKind {
+    // TODO: TBD
+    // Repsents `Serialize` and `Deserialize`
+    Serde = "serde",
+    // Add serialize method to class.
     Serialize = "serialize",
+    // Add deserialize method to class.
     Deserialize = "deserialize",
-    // TODO: add more decorators
+
+    // TODO: TBD
+    RenameAll = "renameAll",
+}
+
+// TODO: TBD
+/**
+ * The decorator for class members.
+ */
+export enum MemberSerdeKind {
+    // Repsents `SkipSerializing` and `SkipDeserializing`
     Skip = "skip",
     SkipSerializing = "skipSerializing",
     SkipDeserializing = "skipDeserializing",
+    // Repsents `GetSerializing` and `GetSerializing`
     Get = "get",
     GetSerializing = "getSerializing",
     GetDeserializing = "getDeserializing",
+    // Repsents `SetSerializing` and `SetSerializing`
     Set = "set",
     SetSerializing = "setSerializing",
     SetDeserializing = "setDeserializing",
-    RenameAll = "renameAll",
+
     Rename = "rename",
 }

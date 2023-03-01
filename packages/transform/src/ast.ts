@@ -9,11 +9,11 @@ import {
     ObjectLiteralExpression,
 } from "assemblyscript/dist/assemblyscript.js";
 import { utils } from "visitor-as";
-import { SerdeKind } from "./consts.js";
+import { ClassSerdeKind } from "./consts.js";
 
 export interface SerdeNode {
     /** serde Kind of this node. */
-    readonly serdeKind: SerdeKind;
+    readonly serdeKind: ClassSerdeKind;
 }
 
 const CFG_OMIT_NAME = "omitName";
@@ -143,7 +143,7 @@ function serdeConfigFrom(cfg: DecoratorConfig): SerdeConfig {
 }
 
 export class SerializeDeclaration implements SerdeNode {
-    serdeKind: SerdeKind = SerdeKind.Serialize;
+    serdeKind: ClassSerdeKind = ClassSerdeKind.Serialize;
 
     constructor(
         public readonly classDeclaration: ClassDeclaration,
@@ -163,7 +163,7 @@ export class SerializeDeclaration implements SerdeNode {
 }
 
 export class DeserializeDeclaration implements SerdeNode {
-    serdeKind: SerdeKind = SerdeKind.Deserialize;
+    serdeKind: ClassSerdeKind = ClassSerdeKind.Deserialize;
 
     constructor(
         public readonly classDeclaration: ClassDeclaration,
