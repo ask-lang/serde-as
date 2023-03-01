@@ -20,12 +20,12 @@
     "url": "git+https://github.com:ask-lang/serde-as"
   },
   "devDependencies": {
-    "as-serde-transform": "^0.2.0"
+    "as-serde-transform": "^0.3.0"
   },
   "dependencies": {
     "as-bignum": "^0.2",
-    "as-buffers": "^0.1.3",
-    "as-serde": "^0.2.0"
+    "as-buffers": "^0.3.0",
+    "as-serde": "^0.3.0"
   },
   "scripts": {
     "build": "echo no build",
