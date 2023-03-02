@@ -15,5 +15,3 @@ See the main [document](./packages/as-serde/README.md).
 This repo contains many sub packages. See the documentation of each package for details.
 
 The [`as-buffers`](./packages/as-buffers/README.md) is a relatively independent library, which is used to implement serde internally, but it is useful and generic to handle bytes.
-
-See the [`template-asconfig.json`](./template-asconfig.json) to import `serde` package correctly.
