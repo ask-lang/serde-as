@@ -21,7 +21,7 @@ import {
     ClassSerdeKind,
 } from "../consts.js";
 import { extractDecorator, getNameNullable } from "../utils.js";
-import { extractConfigFromDecorator, SerializeDeclaration } from "../ast.js";
+import { extractConfigFromDecorator, SerializeNode } from "../ast.js";
 import debug from "debug";
 import { ASTBuilder } from "assemblyscript/dist/assemblyscript.js";
 
@@ -30,10 +30,16 @@ const log = debug("SerializeVisitor");
 export class SerializeVisitor extends TransformVisitor {
     private fields: FieldDeclaration[] = [];
     private hasBase: bool = false;
-    private decl!: SerializeDeclaration;
+    private ser!: SerializeNode;
+    // Use the externalSer to replace `ser` if it exist.
+    private readonly externalSer: SerializeNode | null;
 
-    constructor(public readonly emitter: DiagnosticEmitter) {
+    constructor(
+        public readonly emitter: DiagnosticEmitter,
+        externalSer: SerializeNode | null = null,
+    ) {
         super();
+        this.externalSer = externalSer;
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
@@ -46,16 +52,16 @@ export class SerializeVisitor extends TransformVisitor {
 
     visitClassDeclaration(node: ClassDeclaration): ClassDeclaration {
         // console.log(hasDecorator(node, /^@[\s]*serde\.[\s]*serialize/));
-
         if (node.members.some(isMethodNamed(METHOD_SER))) {
             return node;
         }
         this.hasBase = node.extendsType ? true : false;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const decorator = extractDecorator(this.emitter, node, ClassSerdeKind.Serialize)!;
-        const cfg = extractConfigFromDecorator(this.emitter, decorator);
-        this.decl = SerializeDeclaration.extractFrom(node, cfg);
-
+        if (this.externalSer) {
+            this.ser = this.externalSer;
+        } else {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.ser = SerializeNode.extractFromDecoratorNode(this.emitter, node)!;
+        }
         super.visitClassDeclaration(node);
         // for fields declared in constructor
         this.fields = _.uniqBy(this.fields, (f) => f);
@@ -65,7 +71,7 @@ export class SerializeVisitor extends TransformVisitor {
             .map((f) => this.genStmtForField(f))
             .filter((elem) => elem != null) as string[];
 
-        if (this.hasBase && !this.decl.serdeConfig.skipSuper) {
+        if (this.hasBase && !this.ser.config.skipSuper) {
             stmts.unshift(`super.serialize<__R, __S>(serializer);`);
         }
 
@@ -90,7 +96,7 @@ ${METHOD_SER_SIG} {
 
     protected genStmtForField(node: FieldDeclaration): string | null {
         const name = toString(node.name);
-        const nameStr = this.decl.serdeConfig.omitName ? "null" : `"${name}"`;
+        const nameStr = this.ser.config.omitName ? "null" : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
@@ -107,7 +113,7 @@ ${METHOD_SER_SIG} {
 
     protected genStmtForLastField(node: FieldDeclaration): string | null {
         const name = toString(node.name);
-        const nameStr = this.decl.serdeConfig.omitName ? "null" : `"${name}"`;
+        const nameStr = this.ser.config.omitName ? "null" : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,

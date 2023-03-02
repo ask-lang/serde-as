@@ -21,15 +21,21 @@ import {
     ClassSerdeKind,
 } from "../consts.js";
 import { extractDecorator, getNameNullable } from "../utils.js";
-import { DeserializeDeclaration, extractConfigFromDecorator } from "../ast.js";
+import { DeserializeNode, extractConfigFromDecorator } from "../ast.js";
 
 export class DeserializeVisitor extends TransformVisitor {
     private fields: FieldDeclaration[] = [];
     private hasBase: bool = false;
-    private decl!: DeserializeDeclaration;
+    private de!: DeserializeNode;
+    // Use the externalDe to replace `de` if it exist.
+    private readonly externalDe: DeserializeNode | null;
 
-    constructor(public readonly emitter: DiagnosticEmitter) {
+    constructor(
+        public readonly emitter: DiagnosticEmitter,
+        externalDe: DeserializeNode | null = null,
+    ) {
         super();
+        this.externalDe = externalDe;
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
@@ -45,11 +51,12 @@ export class DeserializeVisitor extends TransformVisitor {
             return node;
         }
         this.hasBase = node.extendsType ? true : false;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const decorator = extractDecorator(this.emitter, node, ClassSerdeKind.Deserialize)!;
-        const cfg = extractConfigFromDecorator(this.emitter, decorator);
-        this.decl = DeserializeDeclaration.extractFrom(node, cfg);
-
+        if (this.externalDe) {
+            this.de = this.externalDe;
+        } else {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.de = DeserializeNode.extractFromDecoratorNode(this.emitter, node)!;
+        }
         super.visitClassDeclaration(node);
         // for fields declared in constructor
         this.fields = _.uniqBy(this.fields, (f) => f);
@@ -59,7 +66,7 @@ export class DeserializeVisitor extends TransformVisitor {
             .map((f) => this.genStmtForField(f))
             .filter((elem) => elem != null) as string[];
 
-        if (this.hasBase && !this.decl.serdeConfig.skipSuper) {
+        if (this.hasBase && !this.de.config.skipSuper) {
             stmts.unshift(`super.deserialize<__S>(deserializer);`);
         }
 
@@ -84,7 +91,7 @@ ${METHOD_DES_SIG} {
 
     protected genStmtForField(node: FieldDeclaration): string | null {
         const name = toString(node.name);
-        const nameStr = this.decl.serdeConfig.omitName ? "null" : `"${name}"`;
+        const nameStr = this.de.config.omitName ? "null" : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
@@ -101,7 +108,7 @@ ${METHOD_DES_SIG} {
 
     protected genStmtForLastField(node: FieldDeclaration): string | null {
         const name = toString(node.name);
-        const nameStr = this.decl.serdeConfig.omitName ? "null" : `"${name}"`;
+        const nameStr = this.de.config.omitName ? "null" : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,

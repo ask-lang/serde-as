@@ -7,11 +7,13 @@ import {
     LiteralKind,
     NodeKind,
     ObjectLiteralExpression,
+    DeclarationStatement,
 } from "assemblyscript/dist/assemblyscript.js";
 import { utils } from "visitor-as";
 import { ClassSerdeKind } from "./consts.js";
+import { extractDecorator } from "./utils.js";
 
-export interface SerdeNode {
+export interface SerdeAST {
     /** serde Kind of this node. */
     readonly serdeKind: ClassSerdeKind;
 }
@@ -119,6 +121,12 @@ export interface SerdeConfig {
     readonly omitName: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface SerializeConfig extends SerdeConfig {}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface DeserializeConfig extends SerdeConfig {}
+
 function getBoolConfigValue(map: Map<string, string>, key: string): boolean {
     const val = map.get(key);
     if (val) {
@@ -142,13 +150,10 @@ function serdeConfigFrom(cfg: DecoratorConfig): SerdeConfig {
     };
 }
 
-export class SerializeDeclaration implements SerdeNode {
-    serdeKind: ClassSerdeKind = ClassSerdeKind.Serialize;
+export class SerdeNode implements SerdeAST {
+    serdeKind: ClassSerdeKind = ClassSerdeKind.Serde;
 
-    constructor(
-        public readonly classDeclaration: ClassDeclaration,
-        public readonly serdeConfig: SerdeConfig,
-    ) {}
+    constructor(public readonly config: SerdeConfig) {}
 
     /**
      * Collect message method infos from config.
@@ -156,19 +161,36 @@ export class SerializeDeclaration implements SerdeNode {
      * @param cfg
      * @returns
      */
-    static extractFrom(node: ClassDeclaration, cfg: DecoratorConfig): SerializeDeclaration {
+    static extractFrom(cfg: DecoratorConfig): SerdeNode {
         const serdeConfig = serdeConfigFrom(cfg);
-        return new SerializeDeclaration(utils.cloneNode(node), serdeConfig);
+        return new SerdeNode(serdeConfig);
+    }
+
+    /**
+     * Return the SerializeDeclaration if has decorator `@serialize`, else panic.
+     * @param emitter
+     * @param node
+     * @returns
+     */
+    static extractFromDecoratorNode(
+        emitter: DiagnosticEmitter,
+        node: DeclarationStatement,
+    ): SerdeNode | null {
+        if (!utils.hasDecorator(node, ClassSerdeKind.Serde)) {
+            return null;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const decorator = extractDecorator(emitter, node, ClassSerdeKind.Serde)!;
+        const cfg = extractConfigFromDecorator(emitter, decorator);
+
+        return SerdeNode.extractFrom(cfg);
     }
 }
 
-export class DeserializeDeclaration implements SerdeNode {
-    serdeKind: ClassSerdeKind = ClassSerdeKind.Deserialize;
+export class SerializeNode implements SerdeAST {
+    serdeKind: ClassSerdeKind = ClassSerdeKind.Serialize;
 
-    constructor(
-        public readonly classDeclaration: ClassDeclaration,
-        public readonly serdeConfig: SerdeConfig,
-    ) {}
+    constructor(public readonly config: SerializeConfig) {}
 
     /**
      * Collect message method infos from config.
@@ -176,8 +198,65 @@ export class DeserializeDeclaration implements SerdeNode {
      * @param cfg
      * @returns
      */
-    static extractFrom(node: ClassDeclaration, cfg: DecoratorConfig): DeserializeDeclaration {
+    static extractFrom(cfg: DecoratorConfig): SerializeNode {
         const serdeConfig = serdeConfigFrom(cfg);
-        return new DeserializeDeclaration(utils.cloneNode(node), serdeConfig);
+        return new SerializeNode(serdeConfig);
+    }
+
+    /**
+     * Return the SerializeDeclaration if has decorator `@serialize`, else panic.
+     * @param emitter
+     * @param node
+     * @returns
+     */
+    static extractFromDecoratorNode(
+        emitter: DiagnosticEmitter,
+        node: DeclarationStatement,
+    ): SerializeNode | null {
+        if (!utils.hasDecorator(node, ClassSerdeKind.Serialize)) {
+            return null;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const decorator = extractDecorator(emitter, node, ClassSerdeKind.Serialize)!;
+        const cfg = extractConfigFromDecorator(emitter, decorator);
+
+        return SerializeNode.extractFrom(cfg);
+    }
+}
+
+export class DeserializeNode implements SerdeAST {
+    serdeKind: ClassSerdeKind = ClassSerdeKind.Deserialize;
+
+    constructor(public readonly config: SerdeConfig) {}
+
+    /**
+     * Collect message method infos from config.
+     * @param node
+     * @param cfg
+     * @returns
+     */
+    static extractFrom(cfg: DecoratorConfig): DeserializeNode {
+        const serdeConfig = serdeConfigFrom(cfg);
+        return new DeserializeNode(serdeConfig);
+    }
+
+    /**
+     * Return the SerializeDeclaration if has decorator `@serialize`, else panic.
+     * @param emitter
+     * @param node
+     * @returns
+     */
+    static extractFromDecoratorNode(
+        emitter: DiagnosticEmitter,
+        node: DeclarationStatement,
+    ): DeserializeNode | null {
+        if (!utils.hasDecorator(node, ClassSerdeKind.Deserialize)) {
+            return null;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const decorator = extractDecorator(emitter, node, ClassSerdeKind.Deserialize)!;
+        const cfg = extractConfigFromDecorator(emitter, decorator);
+
+        return DeserializeNode.extractFrom(cfg);
     }
 }
