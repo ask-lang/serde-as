@@ -10,8 +10,8 @@
 
 `Serde-as` is a framework for serializing and deserializing AssemblyScript data structures efficiently and simply.
 
-See the main [document](./packages/as-serde/README.md)
+See the main [document](./packages/as-serde/README.md).
 
 This repo contains many sub packages. See the documentation of each package for details.
 
-The [`as-buffers`](./packages/as-buffers/README.md) is a relatively independent library, which is used to implement serde, but it can also be used in other places.
+The [`as-buffers`](./packages/as-buffers/README.md) is a relatively independent library, which is used to implement serde internally, but it is useful and generic to handle bytes.
