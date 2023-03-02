@@ -1,7 +1,7 @@
 {
   "targets": {
     "coverage": {
-      "lib": ["../../node_modules/@as-covers/assembly/index.ts"],
+      "lib": ["./node_modules/@as-covers/assembly/index.ts"],
       "transform": ["as-serde-transform", "@as-covers/transform", "@as-pect/transform"]
     },
     "noCoverage": {
@@ -9,16 +9,15 @@
     }
   },
   "options": {
-    "exportMemory": true,
     "outFile": "output.wasm",
     "textFile": "output.wat",
-    "bindings": "raw",
-    "exportStart": "_start",
-    "exportRuntime": true,
-    "use": ["RTRACE=1"],
-    "transform": ["as-serde-transform"],
+    "use": ["abort="],
+    "runtime": "stub",
     "debug": true,
-    "exportTable": true
+    "noExportMemory": true,
+    "exportStart": null,
+    "exportRuntime": false,
+    "exportTable": false
   },
   "entries": ["../../node_modules/@as-pect/assembly/assembly/index.ts"]
 }
