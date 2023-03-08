@@ -20,6 +20,10 @@ export const METHOD_DES_NONNULL_LAST_FIELD = "deserializeNonNullLastField";
 export const METHOD_DES_ARG_NAME = "deserializer";
 export const METHOD_DES_SIG = `deserialize<__S extends CoreDeserializer>(deserializer: __S): this`;
 
+// Decorator key name.
+export const CFG_OMIT_NAME = "omitName";
+export const CFG_SKIP_SUPER = "skipSuper";
+
 // TODO: AssemblyScript do not support namespace for decorator now.
 export const NAMESPACE = "serde";
 

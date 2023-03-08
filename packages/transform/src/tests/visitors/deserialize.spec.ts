@@ -11,7 +11,7 @@ function checkDeserializeVisitor(
     warn = false,
     error = false,
 ): void {
-    const visitor = new DeserializeVisitor(newProgram(newOptions()));
+    const visitor = new DeserializeVisitor(newProgram(newOptions()), null);
     checkVisitor(visitor, code, expected, warn, error, ClassSerdeKind.Deserialize);
 }
 
@@ -46,8 +46,8 @@ class Foo {
         const code = `
 @deserialize({ omitName: true })
 class Foo {
-s: string = "test";
-b: bool = false;
+  s: string = "test";
+  b: bool = false;
 }
 `.trim();
         const expected = `

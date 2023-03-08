@@ -18,24 +18,25 @@ import {
     METHOD_DES_SIG,
     METHOD_END_DES_FIELD,
     METHOD_START_DES_FIELD,
-    ClassSerdeKind,
 } from "../consts.js";
-import { extractDecorator, getNameNullable } from "../utils.js";
-import { DeserializeNode, extractConfigFromDecorator } from "../ast.js";
+import { getNameNullable } from "../utils.js";
+import { SerdeConfig, DeserializeNode } from "../ast.js";
 
 export class DeserializeVisitor extends TransformVisitor {
     private fields: FieldDeclaration[] = [];
     private hasBase: bool = false;
     private de!: DeserializeNode;
     // Use the externalDe to replace `de` if it exist.
-    private readonly externalDe: DeserializeNode | null;
+    readonly externalDe: DeserializeNode | null = null;
 
     constructor(
         public readonly emitter: DiagnosticEmitter,
-        externalDe: DeserializeNode | null = null,
+        externalCfg: SerdeConfig | null = null,
     ) {
         super();
-        this.externalDe = externalDe;
+        if (externalCfg != null) {
+            this.externalDe = new DeserializeNode(externalCfg);
+        }
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
@@ -47,6 +48,7 @@ export class DeserializeVisitor extends TransformVisitor {
     }
 
     visitClassDeclaration(node: ClassDeclaration): ClassDeclaration {
+        // user customed
         if (node.members.some(isMethodNamed(METHOD_DES))) {
             return node;
         }
@@ -66,7 +68,7 @@ export class DeserializeVisitor extends TransformVisitor {
             .map((f) => this.genStmtForField(f))
             .filter((elem) => elem != null) as string[];
 
-        if (this.hasBase && !this.de.config.skipSuper) {
+        if (this.hasBase && !this.de.skipSuper) {
             stmts.unshift(`super.deserialize<__S>(deserializer);`);
         }
 
@@ -91,7 +93,7 @@ ${METHOD_DES_SIG} {
 
     protected genStmtForField(node: FieldDeclaration): string | null {
         const name = toString(node.name);
-        const nameStr = this.de.config.omitName ? "null" : `"${name}"`;
+        const nameStr = this.de.omitName ? "null" : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
@@ -108,7 +110,7 @@ ${METHOD_DES_SIG} {
 
     protected genStmtForLastField(node: FieldDeclaration): string | null {
         const name = toString(node.name);
-        const nameStr = this.de.config.omitName ? "null" : `"${name}"`;
+        const nameStr = this.de.omitName ? "null" : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,

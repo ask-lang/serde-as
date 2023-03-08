@@ -10,8 +10,7 @@ import { utils } from "visitor-as";
 import debug from "debug";
 import { ClassSerdeKind } from "./consts.js";
 import { DeserializeVisitor, SerializeVisitor } from "./visitors/index.js";
-import { extractDecorator, isEntry, updateSource } from "./utils.js";
-import { SerializeNode, extractConfigFromDecorator } from "./ast.js";
+import { isEntry, updateSource } from "./utils.js";
 
 const log = debug("SerdeTransform");
 

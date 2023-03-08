@@ -1,5 +1,4 @@
 import {
-    ClassDeclaration,
     DecoratorNode,
     DiagnosticCode,
     DiagnosticEmitter,
@@ -10,22 +9,28 @@ import {
     DeclarationStatement,
 } from "assemblyscript/dist/assemblyscript.js";
 import { utils } from "visitor-as";
-import { ClassSerdeKind } from "./consts.js";
+import { CFG_OMIT_NAME, CFG_SKIP_SUPER, ClassSerdeKind } from "./consts.js";
 import { extractDecorator } from "./utils.js";
 
-export interface SerdeAST {
+/**
+ * The parent of all serde decorator node.
+ */
+export interface ISerde {
     /** serde Kind of this node. */
     readonly serdeKind: ClassSerdeKind;
 }
 
-const CFG_OMIT_NAME = "omitName";
-const CFG_SKIP_SUPER = "skipSuper";
-
-export class DecoratorConfig extends Map<string, string> {
-    static extractFrom(emitter: DiagnosticEmitter, decorator: DecoratorNode): DecoratorConfig {
-        return extractConfigFromDecorator(emitter, decorator);
-    }
+export interface ISerdeConfig {
+    readonly skipSuper: boolean;
+    readonly omitName: boolean;
 }
+
+/**
+ * The key-value pair of config in a decorator.
+ */
+export type DecoratorConfigMap = Map<string, string>;
+
+export type SerdeConfig = ISerdeConfig | DecoratorConfigMap;
 
 /**
  * Extract the config map from decorator params
@@ -35,7 +40,7 @@ export class DecoratorConfig extends Map<string, string> {
 export function extractConfigFromDecorator(
     emitter: DiagnosticEmitter,
     decorator: DecoratorNode,
-): DecoratorConfig {
+): DecoratorConfigMap {
     const obj = extractLiteralObject(emitter, decorator);
     const cfg = extractConfigFromLiteral(emitter, obj);
 
@@ -89,7 +94,7 @@ export function extractLiteralObject(
 export function extractConfigFromLiteral(
     emitter: DiagnosticEmitter,
     node: ObjectLiteralExpression | null,
-): DecoratorConfig {
+): DecoratorConfigMap {
     const map = new Map();
     if (node == null) {
         return map;
@@ -116,17 +121,6 @@ export function extractConfigFromLiteral(
     return map;
 }
 
-export interface SerdeConfig {
-    readonly skipSuper: boolean;
-    readonly omitName: boolean;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface SerializeConfig extends SerdeConfig {}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface DeserializeConfig extends SerdeConfig {}
-
 function getBoolConfigValue(map: Map<string, string>, key: string): boolean {
     const val = map.get(key);
     if (val) {
@@ -140,30 +134,29 @@ function getBoolConfigValue(map: Map<string, string>, key: string): boolean {
     return false;
 }
 
-function serdeConfigFrom(cfg: DecoratorConfig): SerdeConfig {
-    const skipSuper = getBoolConfigValue(cfg, CFG_SKIP_SUPER);
-    const omitName = getBoolConfigValue(cfg, CFG_OMIT_NAME);
-
-    return {
-        skipSuper,
-        omitName,
-    };
+export interface ISerdeConfig {
+    readonly skipSuper: boolean;
+    readonly omitName: boolean;
 }
 
-export class SerdeNode implements SerdeAST {
-    serdeKind: ClassSerdeKind = ClassSerdeKind.Serde;
-
-    constructor(public readonly config: SerdeConfig) {}
+export class SerdeNode implements ISerde, ISerdeConfig {
+    readonly serdeKind: ClassSerdeKind = ClassSerdeKind.Serde;
+    readonly skipSuper: boolean;
+    readonly omitName: boolean;
 
     /**
-     * Collect message method infos from config.
-     * @param node
-     * @param cfg
-     * @returns
+     *
+     * @param map The kv map in a decorator.
      */
-    static extractFrom(cfg: DecoratorConfig): SerdeNode {
-        const serdeConfig = serdeConfigFrom(cfg);
-        return new SerdeNode(serdeConfig);
+    constructor(cfg: SerdeConfig) {
+        if (cfg instanceof Map) {
+            this.skipSuper = getBoolConfigValue(cfg, CFG_SKIP_SUPER);
+            this.omitName = getBoolConfigValue(cfg, CFG_OMIT_NAME);
+
+        } else {
+            this.skipSuper = cfg.skipSuper;
+            this.omitName = cfg.omitName;
+        }
     }
 
     /**
@@ -181,26 +174,21 @@ export class SerdeNode implements SerdeAST {
         }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const decorator = extractDecorator(emitter, node, ClassSerdeKind.Serde)!;
-        const cfg = extractConfigFromDecorator(emitter, decorator);
+        const map = extractConfigFromDecorator(emitter, decorator);
 
-        return SerdeNode.extractFrom(cfg);
+        return new SerdeNode(map);
     }
 }
 
-export class SerializeNode implements SerdeAST {
+export class SerializeNode extends SerdeNode implements ISerde, ISerdeConfig {
     serdeKind: ClassSerdeKind = ClassSerdeKind.Serialize;
 
-    constructor(public readonly config: SerializeConfig) {}
-
     /**
-     * Collect message method infos from config.
-     * @param node
-     * @param cfg
-     * @returns
+     *
+     * @param cfg The kv map in a decorator.
      */
-    static extractFrom(cfg: DecoratorConfig): SerializeNode {
-        const serdeConfig = serdeConfigFrom(cfg);
-        return new SerializeNode(serdeConfig);
+    constructor(cfg: SerdeConfig) {
+        super(cfg);
     }
 
     /**
@@ -218,26 +206,22 @@ export class SerializeNode implements SerdeAST {
         }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const decorator = extractDecorator(emitter, node, ClassSerdeKind.Serialize)!;
-        const cfg = extractConfigFromDecorator(emitter, decorator);
+        const map = extractConfigFromDecorator(emitter, decorator);
 
-        return SerializeNode.extractFrom(cfg);
+        return new SerializeNode(map);
     }
 }
 
-export class DeserializeNode implements SerdeAST {
+export class DeserializeNode extends SerdeNode implements ISerde, ISerdeConfig {
     serdeKind: ClassSerdeKind = ClassSerdeKind.Deserialize;
 
-    constructor(public readonly config: SerdeConfig) {}
-
     /**
-     * Collect message method infos from config.
-     * @param node
-     * @param cfg
-     * @returns
+     *
+     * @param cfg The kv map in a decorator.
      */
-    static extractFrom(cfg: DecoratorConfig): DeserializeNode {
-        const serdeConfig = serdeConfigFrom(cfg);
-        return new DeserializeNode(serdeConfig);
+    constructor(cfg: SerdeConfig) {
+        super(cfg);
+
     }
 
     /**
@@ -255,8 +239,8 @@ export class DeserializeNode implements SerdeAST {
         }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const decorator = extractDecorator(emitter, node, ClassSerdeKind.Deserialize)!;
-        const cfg = extractConfigFromDecorator(emitter, decorator);
+        const map = extractConfigFromDecorator(emitter, decorator);
 
-        return DeserializeNode.extractFrom(cfg);
+        return new DeserializeNode(map);
     }
 }
