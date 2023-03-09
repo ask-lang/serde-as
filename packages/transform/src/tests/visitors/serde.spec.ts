@@ -140,7 +140,7 @@ class Bar extends Foo {
   }
 }
     `.trim();
-        const cfg = {omitName: false, skipSuper: true};
+        const cfg = { omitName: false, skipSuper: true };
         checkSerdeVisitor(code, expected, cfg);
     });
 

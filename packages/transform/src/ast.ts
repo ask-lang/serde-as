@@ -134,11 +134,6 @@ function getBoolConfigValue(map: Map<string, string>, key: string): boolean {
     return false;
 }
 
-export interface ISerdeConfig {
-    readonly skipSuper: boolean;
-    readonly omitName: boolean;
-}
-
 export class SerdeNode implements ISerde, ISerdeConfig {
     readonly serdeKind: ClassSerdeKind = ClassSerdeKind.Serde;
     readonly skipSuper: boolean;
