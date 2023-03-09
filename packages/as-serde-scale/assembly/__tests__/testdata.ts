@@ -7,8 +7,7 @@ export class TestData<T1, T2> {
     constructor(public readonly input: T1, public readonly output: T2) {}
 }
 
-@serialize({ omitName: true })
-@deserialize({ omitName: true })
+@serde({ omitName: true })
 export class Numbers {
     u8: u8 = 0;
     u16: u16 = 0;
@@ -46,21 +45,18 @@ export class Numbers {
     }
 }
 
-@serialize()
-@deserialize()
+@serde()
 export class Bools implements ISerialize, IDeserialize {
     b1: bool = false;
     b2: bool = true;
 }
 
-@serialize()
-@deserialize()
+@serde()
 export class SuperBools extends Bools {
     b3: bool = false;
 }
 
-@serialize()
-@deserialize()
+@serde()
 export class Arrays {
     a1: Array<u8> = [];
     a2: Array<u8> = [1];
@@ -69,8 +65,7 @@ export class Arrays {
     a5: Array<string> = ["233"];
 }
 
-@serialize()
-@deserialize()
+@serde()
 export class OtherArrays {
     a0: ArrayBuffer = new ArrayBuffer(2);
     a1: StaticArray<u8> = [0, 0];
@@ -85,8 +80,7 @@ export class OtherArrays {
     a9: Int64Array = new Int64Array(2);
 }
 
-@serialize()
-@deserialize()
+@serde()
 export class Sets {
     constructor(
         public s1: Set<u8> = new Set(),
@@ -108,8 +102,7 @@ export class Sets {
     }
 }
 
-@serialize()
-@deserialize()
+@serde()
 export class Maps {
     constructor(
         public m1: Map<u8, bool> = new Map(),
@@ -134,8 +127,7 @@ export class Maps {
     }
 }
 
-@serialize()
-@deserialize()
+@serde()
 export class Nulls {
     constructor(
         public n1: string | null = null,
@@ -154,12 +146,10 @@ export class Nulls {
     }
 }
 
-@serialize()
-@deserialize()
+@serde()
 export class Empty implements ISerialize, IDeserialize {
     static foo: bool = false;
 }
 
-@serialize()
-@deserialize()
+@serde()
 export class SuperEmpty extends Empty {}

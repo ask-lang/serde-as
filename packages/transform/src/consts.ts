@@ -31,7 +31,6 @@ export const NAMESPACE = "serde";
  * The decorator for class.
  */
 export enum ClassSerdeKind {
-    // TODO: TBD
     // Repsents `Serialize` and `Deserialize`
     Serde = "serde",
     // Add serialize method to class.
