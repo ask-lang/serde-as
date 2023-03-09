@@ -2,7 +2,7 @@ import { TransformVisitor } from "visitor-as";
 import { ClassDeclaration, DiagnosticEmitter } from "assemblyscript/dist/assemblyscript.js";
 import { SerializeVisitor } from "./serialize.js";
 import { DeserializeVisitor } from "./deserialize.js";
-import { SerdeConfig } from '../ast.js';
+import { SerdeConfig } from "../ast.js";
 
 export class SerdeVisitor extends TransformVisitor {
     constructor(public readonly emitter: DiagnosticEmitter, private readonly cfg: SerdeConfig) {

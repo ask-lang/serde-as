@@ -152,7 +152,6 @@ export class SerdeNode implements ISerde, ISerdeConfig {
         if (cfg instanceof Map) {
             this.skipSuper = getBoolConfigValue(cfg, CFG_SKIP_SUPER);
             this.omitName = getBoolConfigValue(cfg, CFG_OMIT_NAME);
-
         } else {
             this.skipSuper = cfg.skipSuper;
             this.omitName = cfg.omitName;
@@ -221,7 +220,6 @@ export class DeserializeNode extends SerdeNode implements ISerde, ISerdeConfig {
      */
     constructor(cfg: SerdeConfig) {
         super(cfg);
-
     }
 
     /**
