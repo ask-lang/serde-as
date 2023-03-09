@@ -40,14 +40,11 @@ export enum Case {
     Foo = `class Foo {
         s: string = "test";
         b: bool = false;
-      }`,
-
-      BarExtendsFoo = `
-      class Bar extends Foo {
+    }`,
+    BarExtendsFoo = `class Bar extends Foo {
         s: string = "test";
         b: bool = false;
-      }`,
-      EmptyBar = "class Bar {}",
-      EmptyBarExtendsFoo = "class Bar extends Foo {}",
-      
+    }`,
+    EmptyBar = "class Bar {}",
+    EmptyBarExtendsFoo = "class Bar extends Foo {}",
 }
