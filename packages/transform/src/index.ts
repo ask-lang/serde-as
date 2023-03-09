@@ -8,24 +8,35 @@ import {
 } from "assemblyscript/dist/assemblyscript.js";
 import { utils } from "visitor-as";
 import debug from "debug";
-import { SerdeKind } from "./consts.js";
-import { DeserializeVisitor, SerializeVisitor } from "./visitors/index.js";
+import { ClassSerdeKind } from "./consts.js";
+import { SerdeVisitor, DeserializeVisitor, SerializeVisitor } from "./visitors/index.js";
 import { isEntry, updateSource } from "./utils.js";
+import { SerdeNode } from "./ast.js";
 
 const log = debug("SerdeTransform");
 
 class SerdeTransform extends TransformVisitor {
     private hasSerde = false;
+    // set in `afterParse`.
     private parser!: Parser;
 
     visitClassDeclaration(node: ClassDeclaration, _isDefault?: boolean): ClassDeclaration {
-        if (utils.hasDecorator(node, SerdeKind.Serialize)) {
+        // Ignore `Serialize` and `Deserialize` if meet `Serde`.
+        const serdeNode = SerdeNode.extractFromDecoratorNode(this.parser, node);
+        if (serdeNode) {
+            this.hasSerde = true;
+            const visitor = new SerdeVisitor(this.parser, serdeNode);
+            node = visitor.visitClassDeclaration(node);
+            return node;
+        }
+
+        if (utils.hasDecorator(node, ClassSerdeKind.Serialize)) {
             this.hasSerde = true;
             const visitor = new SerializeVisitor(this.parser);
             node = visitor.visitClassDeclaration(node);
         }
 
-        if (utils.hasDecorator(node, SerdeKind.Deserialize)) {
+        if (utils.hasDecorator(node, ClassSerdeKind.Deserialize)) {
             this.hasSerde = true;
             const visitor = new DeserializeVisitor(this.parser);
             node = visitor.visitClassDeclaration(node);

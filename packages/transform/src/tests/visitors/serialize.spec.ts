@@ -1,23 +1,20 @@
 import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
 import { SerializeVisitor } from "../../visitors/index.js";
-import { checkVisitor } from "./common.js";
-import { SerdeKind } from "../../consts.js";
+import { Case, checkVisitor } from "./common.js";
+import { ClassSerdeKind } from "../../consts.js";
 
 // Note: in tests we have to use two spaces as ident because of ASTBuilder.
 
 function checkSerializeVisitor(code: string, expected: string, warn = false, error = false): void {
-    const visitor = new SerializeVisitor(newProgram(newOptions()));
-    checkVisitor(visitor, code, expected, warn, error, SerdeKind.Serialize);
+    const visitor = new SerializeVisitor(newProgram(newOptions()), null);
+    checkVisitor(visitor, code, expected, warn, error, ClassSerdeKind.Serialize);
 }
 
 describe("SerializeVisitor", () => {
     it("normal @serialize", () => {
         const code = `
 @serialize
-class Foo {
-  s: string = "test";
-  b: bool = false;
-}
+${Case.Foo}
 `.trim();
         const expected = `
 @serialize
@@ -38,10 +35,7 @@ class Foo {
     it("@serialize with omitName", () => {
         const code = `
 @serialize({ omitName: true })
-class Foo {
-  s: string = "test";
-  b: bool = false;
-}
+${Case.Foo}
 `.trim();
         const expected = `
 @serialize({
@@ -64,10 +58,7 @@ class Foo {
     it("normal @serialize with super", () => {
         const code = `
 @serialize
-class Bar extends Foo {
-  s: string = "test";
-  b: bool = false;
-}
+${Case.BarExtendsFoo}
 `.trim();
         const expected = `
 @serialize
@@ -89,10 +80,7 @@ class Bar extends Foo {
     it("@serialize with skipSuper", () => {
         const code = `
 @serialize({ skipSuper: true })
-class Bar extends Foo {
-  s: string = "test";
-  b: bool = false;
-}
+${Case.BarExtendsFoo}
 `.trim();
         const expected = `
 @serialize({
@@ -115,7 +103,7 @@ class Bar extends Foo {
     it("empty @serialize with super", () => {
         const code = `
 @serialize
-class Bar extends Foo {}
+${Case.EmptyBarExtendsFoo}
 `.trim();
         const expected = `
 @serialize
@@ -132,7 +120,7 @@ class Bar extends Foo {
     it("empty @serialize without super", () => {
         const code = `
 @serialize
-class Bar {}
+${Case.EmptyBar}
 `.trim();
         const expected = `
 @serialize

@@ -1,7 +1,7 @@
 import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
 import { DeserializeVisitor } from "../../visitors/index.js";
-import { checkVisitor } from "./common.js";
-import { SerdeKind } from "../../consts.js";
+import { Case, checkVisitor } from "./common.js";
+import { ClassSerdeKind } from "../../consts.js";
 
 // Note: in tests we have to use two spaces as ident because of ASTBuilder.
 
@@ -11,18 +11,15 @@ function checkDeserializeVisitor(
     warn = false,
     error = false,
 ): void {
-    const visitor = new DeserializeVisitor(newProgram(newOptions()));
-    checkVisitor(visitor, code, expected, warn, error, SerdeKind.Deserialize);
+    const visitor = new DeserializeVisitor(newProgram(newOptions()), null);
+    checkVisitor(visitor, code, expected, warn, error, ClassSerdeKind.Deserialize);
 }
 
 describe("DeserializeVisitor", () => {
     it("normal @deserialize", () => {
         const code = `
 @deserialize
-class Foo {
-  s: string = "test";
-  b: bool = false;
-}
+${Case.Foo}
 `.trim();
         const expected = `
 @deserialize
@@ -45,10 +42,7 @@ class Foo {
     it("@deserialize with omitName", () => {
         const code = `
 @deserialize({ omitName: true })
-class Foo {
-s: string = "test";
-b: bool = false;
-}
+${Case.Foo}
 `.trim();
         const expected = `
 @deserialize({
@@ -73,10 +67,7 @@ class Foo {
     it("normal @deserialize with super", () => {
         const code = `
 @deserialize
-class Bar extends Foo {
-  s: string = "test";
-  b: bool = false;
-}
+${Case.BarExtendsFoo}
 `.trim();
         const expected = `
 @deserialize
@@ -96,12 +87,34 @@ class Bar extends Foo {
 
         checkDeserializeVisitor(code, expected);
     });
+    it("@deserialize with skipSuper", () => {
+        const code = `
+@deserialize({ skipSuper: true })
+${Case.BarExtendsFoo}
+`.trim();
+        const expected = `
+@deserialize({
+  skipSuper: true
+})
+class Bar extends Foo {
+  s: string = "test";
+  b: bool = false;
+  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+    deserializer.startDeserializeField();
+    this.s = deserializer.deserializeNonNullField<string>("s");
+    this.b = deserializer.deserializeNonNullLastField<bool>("b");
+    deserializer.endDeserializeField();
+    return this;
+  }
+}
+`.trim();
+        checkDeserializeVisitor(code, expected);
+    });
 
     it("normal empty @deserialize with super", () => {
         const code = `
 @deserialize
-class Bar extends Foo {
-}
+${Case.EmptyBarExtendsFoo}
 `.trim();
         const expected = `
 @deserialize
@@ -121,7 +134,7 @@ class Bar extends Foo {
     it("empty @deserialize without super", () => {
         const code = `
 @deserialize
-class Bar {}
+${Case.EmptyBar}
 `.trim();
 
         const expected = `
@@ -141,10 +154,7 @@ class Bar {
     it("@deserialize with skipSuper", () => {
         const code = `
 @deserialize({ skipSuper: true })
-class Bar extends Foo {
-  s: string = "test";
-  b: bool = false;
-}
+${Case.BarExtendsFoo}
 `.trim();
         const expected = `
 @deserialize({
