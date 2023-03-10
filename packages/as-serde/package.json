@@ -20,9 +20,12 @@
     "url": "git+https://github.com:ask-lang/serde-as"
   },
   "peerDependencies": {
+    "as-variant": "^0.4.0",
+    "as-base64": "^0.2.0",
     "as-serde-transform": "^0.3.0"
   },
   "dependencies": {
+    "as-variant": "^0.4.0",
     "as-base64": "^0.2.0",
     "as-serde-transform": "^0.3.0"
   },
