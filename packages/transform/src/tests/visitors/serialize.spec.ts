@@ -19,8 +19,8 @@ ${Case.Foo}
         const expected = `
 @serialize
 class Foo {
-  s: string = "test";
-  b: bool = false;
+  s: string | null = "test";
+  b: bool | null = false;
   serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     serializer.serializeNonNullField<string>("s", this.s);
