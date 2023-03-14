@@ -5,14 +5,24 @@ import { ISerialize } from "as-serde";
  */
 export abstract class CoreSerializer<R> {
     /**
-     * startSerializeField is called by a class `serialize` method at the beginning.
+     * startSerializeField is called by a normal class `serialize` method at the beginning.
      */
     abstract startSerializeField(): R;
 
     /**
-     * endSerializeField is called by a class `serialize` method at the ending.
+     * endSerializeField is called by a normal class `serialize` method at the ending.
      */
     abstract endSerializeField(): R;
+
+    /**
+     * startSerializeEnum is called by a enum class `serialize` method at the beginning.
+     */
+    abstract startSerializeEnum(): R;
+
+    /**
+     * endSerializeEnum is called by a enum class `serialize` method at the ending.
+     */
+    abstract endSerializeEnum(): R;
 
     /**
      * serializeField is called by a class `serialize` method for nullable type.

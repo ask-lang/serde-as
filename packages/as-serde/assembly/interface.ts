@@ -1,4 +1,5 @@
 import { Variant } from 'as-variant/assembly';
+import { CoreSerializer } from './serializer';
 
 export interface IEnumU8 {
     discriminant(): u8;
@@ -63,12 +64,18 @@ class Enum2<T2> {
         res.__val.set(new Gen<T>(p1, p2));
         return res;
     }
+
+    serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+        serializer.startSerializeEnum();
+        
+        return serializer.endSerializeEnum();
+    }
 }
 
-let e1 = Enum2.Bar<string>(false);
-let e2 = Enum2.Baz2<string>();
-let e3 = Enum2.Gen2<bool, bool>(false, instantiateRaw());
+// let e1 = Enum2.Bar<string>(false);
+// let e2 = Enum2.Baz2<string>();
+// let e3 = Enum2.Gen2<bool, bool>(false, instantiateRaw());
 
-function instantiateRaw(): Gen<bool> {
-    throw new Error('Function not implemented.');
-}
+// function instantiateRaw(): Gen<bool> {
+//     throw new Error('Function not implemented.');
+// }
