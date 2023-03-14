@@ -1,10 +1,30 @@
 // @ts-nocheck
 
 import { i128, u128 } from "../index";
-import { ISerialize, IDeserialize } from "as-serde";
+import { ISerialize, IDeserialize, Serializer, Deserializer } from 'as-serde';
 
 export class TestData<T1, T2> {
     constructor(public readonly input: T1, public readonly output: T2) {}
+}
+
+export class Custom implements ISerialize, IDeserialize {
+    v1: Empty = new Empty();
+    serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
+        serializer.startSerializeField();
+        serializer.serializeBool(true);
+        serializer.serializeClass(this.v1);
+        return serializer.endSerializeField();
+    }
+
+    deserialize<__S extends Deserializer>(deserializer: __S): Custom {
+        deserializer.startDeserializeField();
+        const b = deserializer.deserializeBool();
+        assert(b);
+        this.v1 = deserializer.deserializeClass<Empty>();
+        deserializer.endDeserializeField();
+
+        return this;
+    }
 }
 
 @serde({ omitName: true })
