@@ -13,8 +13,6 @@ import {
     METHOD_DES_ARG_NAME,
     METHOD_DES_FIELD,
     METHOD_DES_LAST_FIELD,
-    METHOD_DES_NONNULL_FIELD,
-    METHOD_DES_NONNULL_LAST_FIELD,
     METHOD_DES_SIG,
     METHOD_END_DES_FIELD,
     METHOD_START_DES_FIELD,
@@ -103,8 +101,7 @@ ${METHOD_DES_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            const method = node.type.isNullable ? METHOD_DES_FIELD : METHOD_DES_NONNULL_FIELD;
-            return `this.${name} = ${METHOD_DES_ARG_NAME}.${method}<${ty}>(${nameStr});`;
+            return `this.${name} = ${METHOD_DES_ARG_NAME}.${METHOD_DES_FIELD}<${ty}>(${nameStr});`;
         }
     }
 
@@ -120,12 +117,9 @@ ${METHOD_DES_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            const method = node.type.isNullable
-                ? METHOD_DES_LAST_FIELD
-                : METHOD_DES_NONNULL_LAST_FIELD;
-            return [`this.${name} = ${METHOD_DES_ARG_NAME}.${method}<${ty}>(${nameStr});`].join(
-                "\n",
-            );
+            return [
+                `this.${name} = ${METHOD_DES_ARG_NAME}.${METHOD_DES_LAST_FIELD}<${ty}>(${nameStr});`,
+            ].join("\n");
         }
     }
 }

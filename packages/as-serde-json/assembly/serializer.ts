@@ -198,9 +198,6 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     serializeTupleElem<T>(value: T): StringBuffer {
         throw new Error("Method not implemented.");
     }
-    serializeNonNullTupleElem<T>(value: NonNullable<T>): StringBuffer {
-        throw new Error("Method not implemented.");
-    }
 
     @inline
     private _serializeField<T>(name: string, value: T): void {
@@ -227,14 +224,6 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         this._serializeField(name as string, value);
         this._buffer.write(",");
         return this._buffer;
-    }
-
-    @inline
-    serializeNonNullField<T>(
-        name: string | null,
-        value: nonnull<T>
-    ): StringBuffer {
-        return this.serializeField(name, value);
     }
 
     @inline

@@ -176,11 +176,6 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
         return this._buffer;
     }
 
-    serializeNonNullTupleElem<T>(value: NonNullable<T>): BytesBuffer {
-        this.serialize<NonNullable<T>>(value);
-        return this._buffer;
-    }
-
     @inline
     private _serializeField<T>(value: T): void {
         this.serialize<T>(value as T);
@@ -198,12 +193,6 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
 
     @inline
     serializeField<T>(name: string | null, value: T): BytesBuffer {
-        this._serializeField(value);
-        return this._buffer;
-    }
-
-    @inline
-    serializeNonNullField<T>(name: string | null, value: T): BytesBuffer {
         this._serializeField(value);
         return this._buffer;
     }
