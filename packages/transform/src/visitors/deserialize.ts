@@ -117,9 +117,9 @@ ${METHOD_DES_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            return [`this.${name} = ${METHOD_DES_ARG_NAME}.${METHOD_DES_LAST_FIELD}<${ty}>(${nameStr});`].join(
-                "\n",
-            );
+            return [
+                `this.${name} = ${METHOD_DES_ARG_NAME}.${METHOD_DES_LAST_FIELD}<${ty}>(${nameStr});`,
+            ].join("\n");
         }
     }
 }

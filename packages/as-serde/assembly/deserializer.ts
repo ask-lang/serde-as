@@ -1,6 +1,9 @@
 // @ts-nocheck
 import { IDeserialize } from "./index";
 
+/**
+ * All methods of `CoreDeserializer` will be used in as-serde-transfrom
+ */
 export abstract class CoreDeserializer {
     /**
      * startDeserializeField is called by a class `deserialize` method at the beginning.
@@ -26,26 +29,13 @@ export abstract class CoreDeserializer {
     abstract deserializeField<T>(name: string | null): T;
 
     /**
-     * deserializeNonNullField is called by a class `deserialize` method for non-null type.
-     * @param name field name
-     * @returns field value
-     */
-    abstract deserializeNonNullField<T>(name: string | null): nonnull<T>;
-
-    /**
-     * deserializeNonNullField is called by a class `deserialize` method at the end for nullable type.
+     * deserializeLastField is called by a class `deserialize` method at the end for nullable type.
      * @param name field name
      * @returns field value
      */
     abstract deserializeLastField<T>(name: string | null): T;
-    /**
-     * deserializeNonNullField is called by a class `deserialize` method at the end for non-null type.
-     * @param name field name
-     * @returns field value
-     */
-    abstract deserializeNonNullLastField<T>(name: string | null): nonnull<T>;
 
-    // TODO: maybe we can remove `deserializeLastField` and `deserializeNonNullLastField`
+    // TODO: maybe we can remove `deserializeLastField`
 }
 
 export abstract class Deserializer extends CoreDeserializer {
@@ -125,18 +115,9 @@ export abstract class Deserializer extends CoreDeserializer {
     abstract endDeserializeTuple(): void;
 
     abstract deserializeTupleElem<T>(): T;
-    abstract deserializeNonNullTupleElem<T>(): nonnull<T>;
-
-    deserializeNonNullField<T>(name: string | null): nonnull<T> {
-        return this.deserializeField<nonnull<T>>(name);
-    }
 
     deserializeLastField<T>(name: string | null): T {
         return this.deserializeField<T>(name);
-    }
-
-    deserializeNonNullLastField<T>(name: string | null): nonnull<T> {
-        return this.deserializeField<nonnull<T>>(name);
     }
 
     @inline

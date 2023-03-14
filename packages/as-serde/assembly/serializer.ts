@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { ISerialize } from "as-serde";
 /**
- * All methods of CoreSerializer will be used in as-serde-transfrom
+ * All methods of` CoreSerializer` will be used in as-serde-transfrom
  */
 export abstract class CoreSerializer<R> {
     /**

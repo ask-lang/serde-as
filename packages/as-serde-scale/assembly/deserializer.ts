@@ -100,10 +100,6 @@ export class ScaleDeserializer extends Deserializer {
         return this.deserialize<T>();
     }
 
-    deserializeNonNullTupleElem<T>(): nonnull<T> {
-        return this.deserialize<nonnull<T>>();
-    }
-
     deserializeField<T>(_name: string | null): T {
         if (isNullable<T>()) {
             const b = this.deserializeBool();
