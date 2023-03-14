@@ -30,7 +30,7 @@
     "fmt-check": "prettier -w './**/*.ts' --config ./.prettierrc.c`js --check",
     "test": "yarn workspaces run test",
     "test:ts": "yarn workspace as-serde-transform run test",
-    "test:as": "asp --verbose",
+    "test:as": "yarn workspace as-buffers run test && yarn workspace as-serde run test && yarn workspace as-serde-scale run test && yarn workspace as-serde-json run test",
     "update-changelog": "conventional-changelog -i CHANGELOG.md -s",
     "changelog": "conventional-changelog",
     "prepublishOnly": "yarn build"

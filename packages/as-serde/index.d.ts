@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
- * The decorated class will automatically implement the serialize method.
+ * The decorated class will automatically implement the `serialize` and `deserialize` method.
+ */
+declare function serde(cfg?: SerdeConfig): any;
+
+/**
+ * The decorated class will automatically implement the `serialize` method.
  */
 declare function serialize(cfg?: SerdeConfig): any;
 
 /**
- * The decorated class will automatically implement the deserialize method.
+ * The decorated class will automatically implement the `deserialize` method.
  */
 declare function deserialize(cfg?: SerdeConfig): any;
 
