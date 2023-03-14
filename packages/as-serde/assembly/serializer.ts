@@ -22,27 +22,13 @@ export abstract class CoreSerializer<R> {
     abstract serializeField<T>(name: string | null, value: T): R;
 
     /**
-     * serializeNonNullField is called by a class `serialize` method for non-null type.
-     * @param name field name
-     * @param value field value
-     */
-    abstract serializeNonNullField<T>(name: string | null, value: nonnull<T>): R;
-
-    /**
      * serializeLastField is called by a class `serialize` method at the end for nullable type.
      * @param name field name
      * @param value field value
      */
     abstract serializeLastField<T>(name: string | null, value: T): R;
 
-    /**
-     * serializeNonNullLastField is called by a class `serialize` method at the end for non-null type.
-     * @param name field name
-     * @param value field value
-     */
-    abstract serializeNonNullLastField<T>(name: string | null, value: nonnull<T>): R;
-
-    // TODO: maybe we can remove `serializeLastField` and `serializeNonNullLastField`
+    // TODO: maybe we can remove `serializeLastField`
 }
 
 /**
@@ -88,16 +74,10 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
     abstract startSerializeTuple(): R;
     abstract endSerializeTuple(): R;
     abstract serializeTupleElem<T>(value: T): R;
-    abstract serializeNonNullTupleElem<T>(value: nonnull<T>): R;
 
     @inline
     serializeLastField<T>(name: string | null, value: T): R {
         return this.serializeField<T>(name, value);
-    }
-
-    @inline
-    serializeNonNullLastField<T>(name: string | null, value: nonnull<T>): R {
-        return this.serializeNonNullField<T>(name, value);
     }
 
     /**

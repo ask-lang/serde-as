@@ -230,14 +230,6 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     @inline
-    serializeNonNullField<T>(
-        name: string | null,
-        value: nonnull<T>
-    ): StringBuffer {
-        return this.serializeField(name, value);
-    }
-
-    @inline
     serializeNullable<T>(t: T): StringBuffer {
         if (t == null) {
             this._buffer.write(NULL);

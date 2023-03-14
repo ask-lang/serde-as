@@ -321,7 +321,7 @@ describe("ScaleSerializer", () => {
     it("Nulls", () => {
         let tests: Array<TestData<Nulls, StaticArray<u8>>> = [
             new TestData(new Nulls(), [0, 0, 0, 0, 0]),
-            new TestData(Nulls.test1(), [0, 0, 0, 0, 0x01, 0x04, 0x02]),
+            new TestData(Nulls.test1(), [0, 0, 0, 0x01, 0x00, 0x01, 0x04, 0x02]),
         ];
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];

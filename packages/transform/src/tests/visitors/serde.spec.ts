@@ -31,14 +31,14 @@ class Foo {
   b: bool = false;
   serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeNonNullField<string>("s", this.s);
-    serializer.serializeNonNullLastField<bool>("b", this.b);
+    serializer.serializeField<string>("s", this.s);
+    serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
   deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
-    this.s = deserializer.deserializeNonNullField<string>("s");
-    this.b = deserializer.deserializeNonNullLastField<bool>("b");
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
     deserializer.endDeserializeField();
     return this;
   }
@@ -65,14 +65,14 @@ class Foo {
   b: bool = false;
   serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeNonNullField<string>(null, this.s);
-    serializer.serializeNonNullLastField<bool>(null, this.b);
+    serializer.serializeField<string>(null, this.s);
+    serializer.serializeLastField<bool>(null, this.b);
     return serializer.endSerializeField();
   }
   deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
-    this.s = deserializer.deserializeNonNullField<string>(null);
-    this.b = deserializer.deserializeNonNullLastField<bool>(null);
+    this.s = deserializer.deserializeField<string>(null);
+    this.b = deserializer.deserializeLastField<bool>(null);
     deserializer.endDeserializeField();
     return this;
   }
@@ -95,15 +95,15 @@ class Bar extends Foo {
   serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     super.serialize<__R, __S>(serializer);
-    serializer.serializeNonNullField<string>("s", this.s);
-    serializer.serializeNonNullLastField<bool>("b", this.b);
+    serializer.serializeField<string>("s", this.s);
+    serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
   deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
     super.deserialize<__S>(deserializer);
-    this.s = deserializer.deserializeNonNullField<string>("s");
-    this.b = deserializer.deserializeNonNullLastField<bool>("b");
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
     deserializer.endDeserializeField();
     return this;
   }
@@ -127,14 +127,14 @@ class Bar extends Foo {
   b: bool = false;
   serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeNonNullField<string>("s", this.s);
-    serializer.serializeNonNullLastField<bool>("b", this.b);
+    serializer.serializeField<string>("s", this.s);
+    serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
   deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
-    this.s = deserializer.deserializeNonNullField<string>("s");
-    this.b = deserializer.deserializeNonNullLastField<bool>("b");
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
     deserializer.endDeserializeField();
     return this;
   }

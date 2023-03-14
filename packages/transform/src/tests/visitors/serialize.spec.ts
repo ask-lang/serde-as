@@ -19,12 +19,12 @@ ${Case.Foo}
         const expected = `
 @serialize
 class Foo {
-  s: string | null = "test";
-  b: bool | null = false;
+  s: string = "test";
+  b: bool = false;
   serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeNonNullField<string>("s", this.s);
-    serializer.serializeNonNullLastField<bool>("b", this.b);
+    serializer.serializeField<string>("s", this.s);
+    serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
 }
@@ -46,8 +46,8 @@ class Foo {
   b: bool = false;
   serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeNonNullField<string>(null, this.s);
-    serializer.serializeNonNullLastField<bool>(null, this.b);
+    serializer.serializeField<string>(null, this.s);
+    serializer.serializeLastField<bool>(null, this.b);
     return serializer.endSerializeField();
   }
 }
@@ -68,8 +68,8 @@ class Bar extends Foo {
   serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     super.serialize<__R, __S>(serializer);
-    serializer.serializeNonNullField<string>("s", this.s);
-    serializer.serializeNonNullLastField<bool>("b", this.b);
+    serializer.serializeField<string>("s", this.s);
+    serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
 }
@@ -91,8 +91,8 @@ class Bar extends Foo {
   b: bool = false;
   serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeNonNullField<string>("s", this.s);
-    serializer.serializeNonNullLastField<bool>("b", this.b);
+    serializer.serializeField<string>("s", this.s);
+    serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
 }

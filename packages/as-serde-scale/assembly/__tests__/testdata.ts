@@ -141,6 +141,7 @@ export class Nulls {
 
     static test1(): Nulls {
         let res = new Nulls();
+        res.n4 = new Map();
         res.n5 = [0x02];
         return res;
     }

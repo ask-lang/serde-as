@@ -15,7 +15,6 @@ import { utils } from "visitor-as";
 
 export function getNameNullable(type: TypeNode): string {
     let ty = utils.getName(type);
-    console.log("Ty:", ty);
     if (type.isNullable && !ty.endsWith("null")) {
         ty = `${ty} | null`;
     }

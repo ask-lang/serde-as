@@ -14,8 +14,6 @@ import {
     METHOD_SER_ARG_NAME,
     METHOD_SER_FIELD,
     METHOD_SER_LAST_FIELD,
-    METHOD_SER_NONNULL_FIELD,
-    METHOD_SER_NONNULL_LAST_FIELD,
     METHOD_SER_SIG,
     METHOD_START_SER_FIELD,
 } from "../consts.js";
@@ -108,8 +106,7 @@ ${METHOD_SER_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            const method = node.type.isNullable ? METHOD_SER_FIELD : METHOD_SER_NONNULL_FIELD;
-            return `${METHOD_SER_ARG_NAME}.${method}<${ty}>(${nameStr}, this.${name});`;
+            return `${METHOD_SER_ARG_NAME}.${METHOD_SER_FIELD}<${ty}>(${nameStr}, this.${name});`;
         }
     }
 
@@ -125,10 +122,7 @@ ${METHOD_SER_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            const method = node.type.isNullable
-                ? METHOD_SER_LAST_FIELD
-                : METHOD_SER_NONNULL_LAST_FIELD;
-            return `${METHOD_SER_ARG_NAME}.${method}<${ty}>(${nameStr}, this.${name});`;
+            return `${METHOD_SER_ARG_NAME}.${METHOD_SER_LAST_FIELD}<${ty}>(${nameStr}, this.${name});`;
         }
     }
 }
