@@ -4,7 +4,7 @@ import { IDeserialize } from "./index";
 /**
  * All methods of `CoreDeserializer` will be used in as-serde-transfrom
  */
-export abstract class CoreDeserializer {
+abstract class CoreDeserializer {
     /**
      * startDeserializeField is called by a class `deserialize` method at the beginning.
      * This method does nothing by default
@@ -33,9 +33,28 @@ export abstract class CoreDeserializer {
      * @param name field name
      * @returns field value
      */
-    abstract deserializeLastField<T>(name: string | null): T;
+    deserializeLastField<T>(name: string | null): T {
+        return this.deserializeField<T>(name);
+    }
 
     // TODO: maybe we can remove `deserializeLastField`
+
+    /**
+     * Start to deserialize a statically sized sequence without looking at the serialized data.
+     * This call must be followed by zero or more calls to `deserializeTupleElem`,
+     * then a call to `endDeserializeTuple`
+     * @param len
+     */
+    abstract startDeserializeTuple(len: u32): void;
+    /**
+     * End to serialize a statically sized sequence.
+     */
+    abstract endDeserializeTuple(): void;
+    /**
+     * This method should be used in after `startSerializeTuple` and before `endSerializeTuple`.
+     * @param value
+     */
+    abstract deserializeTupleElem<T>(): T;
 }
 
 export abstract class Deserializer extends CoreDeserializer {
@@ -115,15 +134,6 @@ export abstract class Deserializer extends CoreDeserializer {
 
     abstract deserializeIDeserialize<T extends IDeserialize>(): T;
 
-    abstract startDeserializeTuple(len: u32): void;
-    abstract endDeserializeTuple(): void;
-
-    abstract deserializeTupleElem<T>(): T;
-
-    deserializeLastField<T>(name: string | null): T {
-        return this.deserializeField<T>(name);
-    }
-
     @inline
     deserializeArray<A extends Array<valueof<A>>>(): A {
         return this.deserializeArrayLike<A>();
@@ -175,7 +185,6 @@ export abstract class Deserializer extends CoreDeserializer {
 
     @inline
     deserialize<T>(): T {
-        let value: T;
         if (isNullable<T>()) {
             return this.deserializeNullable<T>();
         } else if (isBoolean<T>()) {

@@ -226,14 +226,6 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         return this._buffer;
     }
 
-    // @inline
-    // serializeLastField<T>(name: string | null, value: T): StringBuffer {
-    //     // TODO: should we omit null value?
-    //     assert(name != null, HAVE_NO_NAME);
-    //     this._serializeField(name as string, value);
-    //     return this._buffer;
-    // }
-
     @inline
     serializeNullable<T>(t: T): StringBuffer {
         if (t == null) {
