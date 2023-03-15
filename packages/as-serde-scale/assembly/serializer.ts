@@ -25,6 +25,10 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
         return ScaleSerializer.scale.serialize<C>(value).toStaticArray();
     }
 
+    /**
+     * 
+     * @returns Return the underline buffer.
+     */
     @unsafe
     @inline
     buffer(): BytesBuffer {
@@ -177,11 +181,6 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     @inline
-    private _serializeField<T>(value: T): void {
-        this.serialize<T>(value as T);
-    }
-
-    @inline
     startSerializeField(): BytesBuffer {
         return this._buffer;
     }
@@ -192,8 +191,8 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     @inline
-    serializeField<T>(name: string | null, value: T): BytesBuffer {
-        this._serializeField(value);
+    serializeField<T>(_name: string | null, value: T): BytesBuffer {
+        this.serialize<T>(value as T);
         return this._buffer;
     }
 

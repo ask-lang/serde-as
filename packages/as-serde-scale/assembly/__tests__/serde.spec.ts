@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { BytesBuffer, ScaleDeserializer, ScaleSerializer, ISerialize } from "..";
-import { Empty, SuperEmpty } from "./testdata";
+import { Empty, SuperEmpty, Custom } from './testdata';
 import {
     Arrays,
     Bools,
@@ -15,6 +15,19 @@ import {
 } from "./testdata";
 
 describe("ScaleSerializer", () => {
+    it("Custom", () => {
+        let tests: Array<TestData<ISerialize, StaticArray<u8>>> = [
+            new TestData(new Custom() as ISerialize, [0x01]),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<Custom>(BytesBuffer.wrap(test.output));
+            expect(desData).toStrictEqual(test.input as Custom);
+            expect(test.input instanceof ISerialize).toBeTruthy();
+        }
+    });
     it("Empty Inteface", () => {
         let tests: Array<TestData<ISerialize, StaticArray<u8>>> = [
             new TestData(new Empty() as ISerialize, []),

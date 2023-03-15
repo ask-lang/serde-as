@@ -81,7 +81,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
     }
 
     /**
-     * Serialize a value whose type could be `| null`.
+     * Serialize a value of nullable type.
      * @param value value could be nullable
      */
     abstract serializeNullable<V>(value: V): R;
@@ -199,7 +199,6 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
         } else if (isString<T>()) {
             return this.serializeString(value);
         }
-        // try custom method first
         else if (isArray<T>()) {
             return this.serializeArray<T>(value);
         } else if (idof<T>() == idof<ArrayBuffer>()) {

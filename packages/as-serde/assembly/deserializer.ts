@@ -106,6 +106,10 @@ export abstract class Deserializer extends CoreDeserializer {
 
     abstract deserializeArrayLike<A extends ArrayLike<valueof<A>>>(): A;
 
+    /**
+     * Deserialize a value of nullable type.
+     * @param value value could be nullable
+     */
     abstract deserializeNullable<T>(): T;
     abstract deserializeClass<T>(): T;
 
@@ -181,10 +185,7 @@ export abstract class Deserializer extends CoreDeserializer {
         } else if (isString<T>()) {
             return this.deserializeString();
         }
-        // try custom method first
-        else if (isDefined(value.deserialize)) {
-            return this.deserializeClass<T>();
-        } else if (isArray<T>()) {
+        else if (isArray<T>()) {
             return this.deserializeArray<T>();
         } else if (idof<T>() == idof<ArrayBuffer>()) {
             return this.deserializeArrayBuffer();
