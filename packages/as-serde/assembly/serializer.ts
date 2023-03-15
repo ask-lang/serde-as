@@ -15,18 +15,19 @@ abstract class CoreSerializer<R> {
     abstract endSerializeField(): R;
 
     /**
-     * serializeField is called by a class `serialize` method for nullable type.
+     * serializeField is called by a class `serialize` method for field of class.
      * @param name field name
      * @param value field value
      */
-    abstract serializeField<T>(name: string | null, value: T): R;
+    abstract serializeField<T>(name: string, value: T): R;
 
     /**
-     * serializeLastField is called by a class `serialize` method at the end for nullable type.
+     * serializeLastField is called by a class `serialize` method for the last field of class.
      * @param name field name
      * @param value field value
      */
-    serializeLastField<T>(name: string | null, value: T): R {
+    @inline
+    serializeLastField<T>(name: string, value: T): R {
         return this.serializeField<T>(name, value);
     }
 

@@ -218,9 +218,7 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     @inline
-    serializeField<T>(name: string | null, value: T): StringBuffer {
-        // TODO: should we omit null value?
-        assert(name != null, HAVE_NO_NAME);
+    serializeField<T>(name: string, value: T): StringBuffer {
         this._serializeField(name as string, value);
         this._buffer.write(",");
         return this._buffer;

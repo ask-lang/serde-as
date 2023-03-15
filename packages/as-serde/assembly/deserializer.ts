@@ -22,18 +22,18 @@ abstract class CoreDeserializer {
     endDeserializeField(): void {}
 
     /**
-     * deserializeField is called by a class `deserialize` method for nullable type.
+     * deserializeField is called by a class `deserialize` method for field of class.
      * @param name field name
      * @returns field value
      */
-    abstract deserializeField<T>(name: string | null): T;
+    abstract deserializeField<T>(name: string): T;
 
     /**
-     * deserializeLastField is called by a class `deserialize` method at the end for nullable type.
+     * deserializeLastField is called by a class `deserialize` method for the last field of class.
      * @param name field name
      * @returns field value
      */
-    deserializeLastField<T>(name: string | null): T {
+    deserializeLastField<T>(name: string): T {
         return this.deserializeField<T>(name);
     }
 

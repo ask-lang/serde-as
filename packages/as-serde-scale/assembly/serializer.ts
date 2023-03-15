@@ -192,7 +192,7 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     @inline
-    serializeField<T>(_name: string | null, value: T): BytesBuffer {
+    serializeField<T>(_name: string, value: T): BytesBuffer {
         this.serialize<T>(value as T);
         return this._buffer;
     }

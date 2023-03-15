@@ -98,7 +98,7 @@ export class ScaleDeserializer extends Deserializer {
         return this.deserialize<T>();
     }
 
-    deserializeField<T>(_name: string | null): T {
+    deserializeField<T>(_name: string): T {
         if (isNullable<T>()) {
             const b = this.deserializeBool();
             if (b == false) {

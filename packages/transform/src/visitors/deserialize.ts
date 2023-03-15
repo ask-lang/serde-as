@@ -91,7 +91,7 @@ ${METHOD_DES_SIG} {
 
     protected genStmtForField(node: FieldDeclaration): string | null {
         const name = toString(node.name);
-        const nameStr = this.de.omitName ? "null" : `"${name}"`;
+        const nameStr = this.de.omitName ? `""` : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
@@ -107,7 +107,7 @@ ${METHOD_DES_SIG} {
 
     protected genStmtForLastField(node: FieldDeclaration): string | null {
         const name = toString(node.name);
-        const nameStr = this.de.omitName ? "null" : `"${name}"`;
+        const nameStr = this.de.omitName ? `""` : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
                 DiagnosticCode.User_defined_0,
