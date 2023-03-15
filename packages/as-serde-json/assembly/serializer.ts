@@ -4,7 +4,6 @@ import * as base64 from "as-base64/assembly";
 import { StringBuffer } from "as-buffers";
 
 @lazy const NULL = "null";
-@lazy const HAVE_NO_NAME = "field have no name";
 
 /**
  * JSONSerializer can serialize a value to a json text.
