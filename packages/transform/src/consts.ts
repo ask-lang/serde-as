@@ -1,20 +1,20 @@
-export const SER_TYPE = "CoreSerializer";
+export const SER_TYPE = "Serializer";
 export const METHOD_SER = "serialize";
 export const METHOD_START_SER_FIELD = "startSerializeField";
 export const METHOD_END_SER_FIELD = "endSerializeField";
 export const METHOD_SER_FIELD = "serializeField";
 export const METHOD_SER_LAST_FIELD = "serializeLastField";
 export const METHOD_SER_ARG_NAME = "serializer";
-export const METHOD_SER_SIG = `serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R`;
+export const METHOD_SER_SIG = `serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R`;
 
-export const DES_TYPE = "CoreDeserializer";
+export const DES_TYPE = "Deserializer";
 export const METHOD_DES = "deserialize";
 export const METHOD_START_DES_FIELD = "startDeserializeField";
 export const METHOD_END_DES_FIELD = "endDeserializeField";
 export const METHOD_DES_FIELD = "deserializeField";
 export const METHOD_DES_LAST_FIELD = "deserializeLastField";
 export const METHOD_DES_ARG_NAME = "deserializer";
-export const METHOD_DES_SIG = `deserialize<__S extends CoreDeserializer>(deserializer: __S): this`;
+export const METHOD_DES_SIG = `deserialize<__S extends Deserializer>(deserializer: __S): this`;
 
 // Decorator key name.
 export const CFG_OMIT_NAME = "omitName";

@@ -3,7 +3,7 @@ import { ISerialize } from "as-serde";
 /**
  * All methods of` CoreSerializer` will be used in as-serde-transfrom
  */
-export abstract class CoreSerializer<R> {
+abstract class CoreSerializer<R> {
     /**
      * startSerializeField is called by a class `serialize` method at the beginning.
      */
@@ -15,20 +15,41 @@ export abstract class CoreSerializer<R> {
     abstract endSerializeField(): R;
 
     /**
-     * serializeField is called by a class `serialize` method for nullable type.
+     * serializeField is called by a class `serialize` method for field of class.
      * @param name field name
      * @param value field value
      */
-    abstract serializeField<T>(name: string | null, value: T): R;
+    abstract serializeField<T>(name: string, value: T): R;
 
     /**
-     * serializeLastField is called by a class `serialize` method at the end for nullable type.
+     * serializeLastField is called by a class `serialize` method for the last field of class.
      * @param name field name
      * @param value field value
      */
-    abstract serializeLastField<T>(name: string | null, value: T): R;
+    @inline
+    serializeLastField<T>(name: string, value: T): R {
+        return this.serializeField<T>(name, value);
+    }
 
     // TODO: maybe we can remove `serializeLastField`
+
+    /**
+     * Start to serialize a statically sized sequence whose length will be
+     * known at deserialization time without looking at the serialized data.
+     * This call must be followed by zero or more calls to `serializeTupleElem`,
+     * then a call to `endSerializeTuple`
+     * @param len
+     */
+    abstract startSerializeTuple(len: u32): R;
+    /**
+     * End to serialize a statically sized sequence.
+     */
+    abstract endSerializeTuple(): R;
+    /**
+     * This method should be used in after `startSerializeTuple` and before `endSerializeTuple`.
+     * @param value
+     */
+    abstract serializeTupleElem<T>(value: T): R;
 }
 
 /**
@@ -70,15 +91,6 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
     abstract serializeClass<C extends ISerialize>(value: C): R;
 
     abstract serializeIserialize(value: ISerialize): R;
-
-    abstract startSerializeTuple(): R;
-    abstract endSerializeTuple(): R;
-    abstract serializeTupleElem<T>(value: T): R;
-
-    @inline
-    serializeLastField<T>(name: string | null, value: T): R {
-        return this.serializeField<T>(name, value);
-    }
 
     /**
      * Serialize a value of nullable type.
@@ -198,8 +210,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
             return this.serializeNumber<T>(value);
         } else if (isString<T>()) {
             return this.serializeString(value);
-        }
-        else if (isArray<T>()) {
+        } else if (isArray<T>()) {
             return this.serializeArray<T>(value);
         } else if (idof<T>() == idof<ArrayBuffer>()) {
             return this.serializeArrayBuffer(value);

@@ -29,13 +29,13 @@ ${Case.Foo}
 class Foo {
   s: string = "test";
   b: bool = false;
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     serializer.serializeField<string>("s", this.s);
     serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
     this.s = deserializer.deserializeField<string>("s");
     this.b = deserializer.deserializeLastField<bool>("b");
@@ -63,16 +63,16 @@ ${Case.Foo}
 class Foo {
   s: string = "test";
   b: bool = false;
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeField<string>(null, this.s);
-    serializer.serializeLastField<bool>(null, this.b);
+    serializer.serializeField<string>("", this.s);
+    serializer.serializeLastField<bool>("", this.b);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
-    this.s = deserializer.deserializeField<string>(null);
-    this.b = deserializer.deserializeLastField<bool>(null);
+    this.s = deserializer.deserializeField<string>("");
+    this.b = deserializer.deserializeLastField<bool>("");
     deserializer.endDeserializeField();
     return this;
   }
@@ -92,14 +92,14 @@ ${Case.BarExtendsFoo}
 class Bar extends Foo {
   s: string = "test";
   b: bool = false;
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     super.serialize<__R, __S>(serializer);
     serializer.serializeField<string>("s", this.s);
     serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
     super.deserialize<__S>(deserializer);
     this.s = deserializer.deserializeField<string>("s");
@@ -125,13 +125,13 @@ ${Case.BarExtendsFoo}
 class Bar extends Foo {
   s: string = "test";
   b: bool = false;
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     serializer.serializeField<string>("s", this.s);
     serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
     this.s = deserializer.deserializeField<string>("s");
     this.b = deserializer.deserializeLastField<bool>("b");
@@ -152,12 +152,12 @@ ${Case.EmptyBarExtendsFoo}
         const expected = `
 @serde
 class Bar extends Foo {
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     super.serialize<__R, __S>(serializer);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
     super.deserialize<__S>(deserializer);
     deserializer.endDeserializeField();
@@ -176,11 +176,11 @@ ${Case.EmptyBar}
         const expected = `
 @serde
 class Bar {
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
     deserializer.endDeserializeField();
     return this;

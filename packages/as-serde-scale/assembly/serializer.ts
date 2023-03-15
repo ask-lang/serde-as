@@ -14,7 +14,8 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     /**
-     * Serialize a value to a Array.
+     * Serialize a value to a StaticArray.
+     *
      * It reuse a global ScaleSerializer.
      * @param value value to be serialized
      * @returns
@@ -26,7 +27,7 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     /**
-     * 
+     *
      * @returns Return the underline buffer.
      */
     @unsafe
@@ -167,7 +168,7 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
         return s.serialize<BytesBuffer, this>(this);
     }
 
-    startSerializeTuple(): BytesBuffer {
+    startSerializeTuple(len: u32): BytesBuffer {
         return this._buffer;
     }
 
@@ -191,7 +192,7 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     @inline
-    serializeField<T>(_name: string | null, value: T): BytesBuffer {
+    serializeField<T>(_name: string, value: T): BytesBuffer {
         this.serialize<T>(value as T);
         return this._buffer;
     }
