@@ -18,7 +18,8 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     /**
-     * Serialize a value to a Array.
+     * Serialize a value to a json string.
+     * 
      * It reuse a global JSONSerializer.
      * @param value value to be serialized
      * @returns
@@ -168,16 +169,16 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     @inline
-    serializeClass<C>(value: C): StringBuffer {
+    serializeClass<T extends ISerialize>(value: T): StringBuffer {
         this._buffer.write("{");
-        if (!isNullable<C>()) {
-            
+        if (!isNullable<T>()) {
             value.serialize<StringBuffer, this>(this);
         } else if (value !== null) {
-            
             value.serialize<StringBuffer, this>(this);
         }
+
         if (this._buffer.slice(this._buffer.length - 1) != "{") {
+            // remove tail comma
             this._buffer.length = this._buffer.length - 1;
         }
         this._buffer.write("}");
@@ -185,8 +186,7 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     serializeIserialize(s: ISerialize): StringBuffer {
-        return unreachable();
-        // return s.serialize<StringBuffer, this>(this)
+        return s.serialize<StringBuffer, this>(this);
     }
 
     startSerializeTuple(): StringBuffer {
@@ -226,6 +226,14 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         return this._buffer;
     }
 
+    // @inline
+    // serializeLastField<T>(name: string | null, value: T): StringBuffer {
+    //     // TODO: should we omit null value?
+    //     assert(name != null, HAVE_NO_NAME);
+    //     this._serializeField(name as string, value);
+    //     return this._buffer;
+    // }
+
     @inline
     serializeNullable<T>(t: T): StringBuffer {
         if (t == null) {
@@ -237,12 +245,9 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     @inline
-    
     serializeStaticArray<A extends Array<valueof<A>>>(value: A): StringBuffer {
         if (
-            
             sizeof<valueof<A>>() == 1 &&
-            
             !isSigned<valueof<A>>()
         ) {
             this.writeBase64(Uint8Array.wrap(changetype<ArrayBuffer>(value)));
@@ -252,7 +257,6 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         }
     }
 
-    
     serializeArrayLike<A extends ArrayLike<valueof<A>>>(
         value: A
     ): StringBuffer {
@@ -261,9 +265,7 @@ export class JSONSerializer extends Serializer<StringBuffer> {
             return this._buffer;
         } else if (
             value instanceof Array &&
-            
             sizeof<valueof<A>>() == 1 &&
-            
             !isSigned<valueof<A>>()
         ) {
             this.writeBase64(
@@ -280,7 +282,6 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         this._buffer.write('"');
     }
 
-    
     private _serializeArrayLike<A extends ArrayLike<valueof<A>>>(
         value: A
     ): StringBuffer {
@@ -292,7 +293,6 @@ export class JSONSerializer extends Serializer<StringBuffer> {
 
         this._buffer.write("[");
         for (let i = 0; i < len - 1; i++) {
-            
             this.serialize<valueof<A>>(value[i]);
             this._buffer.write(",");
         }

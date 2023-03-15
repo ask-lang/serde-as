@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { BytesBuffer, ScaleDeserializer, ScaleSerializer, ISerialize } from "..";
-import { Empty, SuperEmpty, Custom } from './testdata';
+import { Empty, SuperEmpty, Custom } from "./testdata";
 import {
     Arrays,
     Bools,

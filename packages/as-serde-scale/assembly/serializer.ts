@@ -14,7 +14,8 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     /**
-     * Serialize a value to a Array.
+     * Serialize a value to a StaticArray.
+     * 
      * It reuse a global ScaleSerializer.
      * @param value value to be serialized
      * @returns

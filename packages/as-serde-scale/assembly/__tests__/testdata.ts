@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { i128, u128 } from "../index";
-import { ISerialize, IDeserialize, Serializer, Deserializer } from 'as-serde';
+import { ISerialize, IDeserialize, Serializer, Deserializer } from "as-serde";
 
 export class TestData<T1, T2> {
     constructor(public readonly input: T1, public readonly output: T2) {}

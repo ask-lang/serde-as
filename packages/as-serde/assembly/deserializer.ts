@@ -184,8 +184,7 @@ export abstract class Deserializer extends CoreDeserializer {
             return this.deserializeNumber<T>();
         } else if (isString<T>()) {
             return this.deserializeString();
-        }
-        else if (isArray<T>()) {
+        } else if (isArray<T>()) {
             return this.deserializeArray<T>();
         } else if (idof<T>() == idof<ArrayBuffer>()) {
             return this.deserializeArrayBuffer();

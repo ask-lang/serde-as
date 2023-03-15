@@ -79,7 +79,7 @@ export class ScaleDeserializer extends Deserializer {
     }
 
     @inline
-    deserializeClass<T>(): T {
+    deserializeClass<T extends IDeserialize>(): T {
         const clz: T = instantiateRaw<T>();
         return clz.deserialize<this>(this);
     }

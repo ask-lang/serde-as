@@ -198,8 +198,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
             return this.serializeNumber<T>(value);
         } else if (isString<T>()) {
             return this.serializeString(value);
-        }
-        else if (isArray<T>()) {
+        } else if (isArray<T>()) {
             return this.serializeArray<T>(value);
         } else if (idof<T>() == idof<ArrayBuffer>()) {
             return this.serializeArrayBuffer(value);
