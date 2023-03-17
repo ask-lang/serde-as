@@ -14,13 +14,14 @@ export const METHOD_DES_LAST_FIELD = "deserializeLastField";
 export const METHOD_DES_ARG_NAME = "deserializer";
 export const METHOD_DES_SIG = `${METHOD_DES}<__S extends Deserializer>(${METHOD_DES_ARG_NAME}: __S): this`;
 
-// Crates a `deserializeLastField`.
+// Crates a `deserializeField` or `deserializeLastField`.
 export function deserializeField(ty: string, nameStr: string, isLast: boolean): string {
     return `${METHOD_DES_ARG_NAME}.${
         isLast ? METHOD_DES_LAST_FIELD : METHOD_DES_FIELD
     }<${ty}>(${nameStr})`;
 }
 
+// Crates a `serializeField` or `serializeLastField`.
 export function serializeField(
     ty: string,
     nameStr: string,

@@ -81,7 +81,9 @@ export class SerializeVisitor extends TransformVisitor {
                 stmts.push(lastFieldStmt);
             }
         }
+        // start
         stmts.unshift(`${METHOD_SER_ARG_NAME}.${METHOD_START_SER_FIELD}();`);
+        // end
         stmts.push(`return ${METHOD_SER_ARG_NAME}.${METHOD_END_SER_FIELD}();`);
         const methodDecl = `
 ${METHOD_SER_SIG} {

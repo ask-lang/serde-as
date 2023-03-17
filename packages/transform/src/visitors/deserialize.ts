@@ -76,7 +76,9 @@ export class DeserializeVisitor extends TransformVisitor {
                 stmts.push(lastFieldStmt);
             }
         }
+        // start
         stmts.unshift(`${METHOD_DES_ARG_NAME}.${METHOD_START_DES_FIELD}();`);
+        // end
         stmts.push(`${METHOD_DES_ARG_NAME}.${METHOD_END_DES_FIELD}();`);
         stmts.push(`return this;`);
         const methodDecl = `
