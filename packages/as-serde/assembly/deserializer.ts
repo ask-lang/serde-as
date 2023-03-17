@@ -12,7 +12,6 @@ abstract class CoreDeserializer {
     @inline
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     startDeserializeField(): void {}
-
     /**
      * endDeserializeField is called by a class `deserialize` method at the ending.
      * This method does nothing by default
@@ -20,14 +19,12 @@ abstract class CoreDeserializer {
     @inline
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     endDeserializeField(): void {}
-
     /**
      * deserializeField is called by a class `deserialize` method for field of class.
      * @param name field name
      * @returns field value
      */
     abstract deserializeField<T>(name: string): T;
-
     /**
      * deserializeLastField is called by a class `deserialize` method for the last field of class.
      * @param name field name
@@ -36,8 +33,6 @@ abstract class CoreDeserializer {
     deserializeLastField<T>(name: string): T {
         return this.deserializeField<T>(name);
     }
-
-    // TODO: maybe we can remove `deserializeLastField`
 
     /**
      * Start to deserialize a statically sized sequence without looking at the serialized data.
@@ -55,6 +50,14 @@ abstract class CoreDeserializer {
      * @param value
      */
     abstract deserializeTupleElem<T>(): T;
+    /**
+     * deserializeLastTupleElem is called by a class `deserialize` method for the last field of tuple class.
+     * @param name field name
+     * @returns field value
+     */
+    deserializeLastTupleElem<T>(name: string): T {
+        return this.deserializeTupleElem<T>(name);
+    }
 }
 
 export abstract class Deserializer extends CoreDeserializer {

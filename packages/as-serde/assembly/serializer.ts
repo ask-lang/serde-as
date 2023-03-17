@@ -8,19 +8,16 @@ abstract class CoreSerializer<R> {
      * startSerializeField is called by a class `serialize` method at the beginning.
      */
     abstract startSerializeField(): R;
-
     /**
      * endSerializeField is called by a class `serialize` method at the ending.
      */
     abstract endSerializeField(): R;
-
     /**
      * serializeField is called by a class `serialize` method for field of class.
      * @param name field name
      * @param value field value
      */
     abstract serializeField<T>(name: string, value: T): R;
-
     /**
      * serializeLastField is called by a class `serialize` method for the last field of class.
      * @param name field name
@@ -30,8 +27,6 @@ abstract class CoreSerializer<R> {
     serializeLastField<T>(name: string, value: T): R {
         return this.serializeField<T>(name, value);
     }
-
-    // TODO: maybe we can remove `serializeLastField`
 
     /**
      * Start to serialize a statically sized sequence whose length will be
@@ -50,6 +45,14 @@ abstract class CoreSerializer<R> {
      * @param value
      */
     abstract serializeTupleElem<T>(value: T): R;
+    /**
+     * serializeTupleLastElem is called by a class `serialize` method for the last field of tuple class.
+     * @param value
+     */
+    @inline
+    serializeTupleLastElem<T>(name: string, value: T): R {
+        return this.serializeTupleElem<T>(name, value);
+    }
 }
 
 /**

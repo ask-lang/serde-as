@@ -14,6 +14,7 @@ import {
     METHOD_SER_ARG_NAME,
     METHOD_SER_SIG,
     METHOD_START_SER_FIELD,
+    TARGET,
     serializeField,
     superSerialize,
 } from "../consts.js";
@@ -101,8 +102,9 @@ ${METHOD_SER_SIG} {
         const nameStr = this.ser.omitName ? `""` : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
-                DiagnosticCode.User_defined_0,
+                DiagnosticCode.Transform_0_1,
                 node.range,
+                TARGET,
                 `serde-as: field '${name}' need a type declaration`,
             );
             return null;
@@ -117,8 +119,9 @@ ${METHOD_SER_SIG} {
         const nameStr = this.ser.omitName ? `""` : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
-                DiagnosticCode.User_defined_0,
+                DiagnosticCode.Transform_0_1,
                 node.range,
+                TARGET,
                 `serde-as: field '${name}' need a type declaration`,
             );
             return null;

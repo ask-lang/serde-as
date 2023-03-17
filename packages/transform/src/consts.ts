@@ -1,8 +1,18 @@
+// TODO: AssemblyScript do not support namespace for decorator now.
+export const NAMESPACE = "serde";
+export const TARGET = "serde-as";
+
 export const METHOD_SER = "serialize";
 export const METHOD_START_SER_FIELD = "startSerializeField";
 export const METHOD_END_SER_FIELD = "endSerializeField";
 export const METHOD_SER_FIELD = "serializeField";
 export const METHOD_SER_LAST_FIELD = "serializeLastField";
+
+export const METHOD_START_SER_TUPLE = "startSerializeTuple";
+export const METHOD_END_SER_TUPLE = "endSerializeTuple";
+export const METHOD_SER_TUPLE_ELEM = "serializeTupleElem";
+export const METHOD_SER_LAST_TUPLE_ELEM = "serializeTupleLastElem";
+
 export const METHOD_SER_ARG_NAME = "serializer";
 export const METHOD_SER_SIG = `${METHOD_SER}<__R, __S extends Serializer<__R>>(${METHOD_SER_ARG_NAME}: __S): __R`;
 
@@ -11,6 +21,12 @@ export const METHOD_START_DES_FIELD = "startDeserializeField";
 export const METHOD_END_DES_FIELD = "endDeserializeField";
 export const METHOD_DES_FIELD = "deserializeField";
 export const METHOD_DES_LAST_FIELD = "deserializeLastField";
+
+export const METHOD_START_DES_TUPLE = "startDeserializeTuple";
+export const METHOD_END_DES_TUPLE = "endDeserializeTuple";
+export const METHOD_DES_TUPLE_ELEM = "deserializeTupleElem";
+export const METHOD_DES_LAST_TUPLE_ELEM = "deserializeTupleLastElem";
+
 export const METHOD_DES_ARG_NAME = "deserializer";
 export const METHOD_DES_SIG = `${METHOD_DES}<__S extends Deserializer>(${METHOD_DES_ARG_NAME}: __S): this`;
 
@@ -44,9 +60,8 @@ export function superDeserialize(): string {
 // Decorator key name.
 export const CFG_OMIT_NAME = "omitName";
 export const CFG_SKIP_SUPER = "skipSuper";
-
-// TODO: AssemblyScript do not support namespace for decorator now.
-export const NAMESPACE = "serde";
+// TODO:
+export const CFG_RENAME_ALL = "renameAll";
 
 /**
  * The decorator for class.
@@ -58,9 +73,9 @@ export enum ClassSerdeKind {
     Serialize = "serialize",
     // Add deserialize method to class.
     Deserialize = "deserialize",
-
-    // TODO: TBD
-    RenameAll = "renameAll",
+    // Repsents `Serialize` and `Deserialize`.
+    // And also decorate a class to be a tuple type.
+    SerdeTuple = "serdeTuple",
 }
 
 // TODO: TBD

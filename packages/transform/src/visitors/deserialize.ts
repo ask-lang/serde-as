@@ -14,6 +14,7 @@ import {
     METHOD_DES_SIG,
     METHOD_END_DES_FIELD,
     METHOD_START_DES_FIELD,
+    TARGET,
     deserializeField,
     superDeserialize,
 } from "../consts.js";
@@ -96,8 +97,9 @@ ${METHOD_DES_SIG} {
         const nameStr = this.de.omitName ? `""` : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
-                DiagnosticCode.User_defined_0,
+                DiagnosticCode.Transform_0_1,
                 node.range,
+                TARGET,
                 `serde-as: field '${name}' need a type declaration`,
             );
             return null;
@@ -112,8 +114,9 @@ ${METHOD_DES_SIG} {
         const nameStr = this.de.omitName ? `""` : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
-                DiagnosticCode.User_defined_0,
+                DiagnosticCode.Transform_0_1,
                 node.range,
+                TARGET,
                 `serde-as: field '${name}' need a type declaration`,
             );
             return null;
