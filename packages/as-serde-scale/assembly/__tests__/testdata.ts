@@ -12,7 +12,7 @@ export class Custom implements ISerialize, IDeserialize {
     serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
         serializer.startSerializeField();
         serializer.serializeBool(true);
-        serializer.serializeClass(this.v1);
+        serializer.serializeClass<Empty>(this.v1);
         return serializer.endSerializeField();
     }
 

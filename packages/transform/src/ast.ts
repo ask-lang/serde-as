@@ -9,7 +9,7 @@ import {
     DeclarationStatement,
 } from "assemblyscript/dist/assemblyscript.js";
 import { utils } from "visitor-as";
-import { CFG_OMIT_NAME, CFG_SKIP_SUPER, ClassSerdeKind } from "./consts.js";
+import { CFG_OMIT_NAME, CFG_SKIP_SUPER, ClassSerdeKind, TARGET } from "./consts.js";
 import { extractDecorator } from "./utils.js";
 
 /**
@@ -63,19 +63,21 @@ export function extractLiteralObject(
         if (arg.kind !== NodeKind.Literal) {
             // TODO: define error type
             emitter.errorRelated(
-                DiagnosticCode.User_defined_0,
+                DiagnosticCode.Transform_0_1,
                 decorator.range,
                 arg.range,
-                "Ask-lang: Arguments must be object literal",
+                TARGET,
+                "Arguments must be object literal",
             );
         }
         const literalArg = arg as LiteralExpression;
         if (!literalArg.isLiteralKind(LiteralKind.Object)) {
             emitter.errorRelated(
-                DiagnosticCode.User_defined_0,
+                DiagnosticCode.Transform_0_1,
                 decorator.range,
                 arg.range,
-                "Ask-lang: Arguments must be object literal",
+                TARGET,
+                "Arguments must be object literal",
             );
         }
         literals.push(literalArg as ObjectLiteralExpression);
@@ -112,9 +114,10 @@ export function extractConfigFromLiteral(
             map.set(key, value.range.toString());
         } else {
             emitter.error(
-                DiagnosticCode.User_defined_0,
+                DiagnosticCode.Transform_0_1,
                 node.range,
-                "Ask-lang: Unspported decorator param syntax",
+                TARGET,
+                "Unspported decorator param syntax",
             );
         }
     }

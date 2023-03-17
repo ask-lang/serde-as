@@ -168,13 +168,9 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     @inline
-    serializeClass<T extends ISerialize>(value: T): StringBuffer {
+    serializeClass<T extends ISerialize>(value: nonnull<T>): StringBuffer {
         this._buffer.write("{");
-        if (!isNullable<T>()) {
-            value.serialize<StringBuffer, this>(this);
-        } else if (value !== null) {
-            value.serialize<StringBuffer, this>(this);
-        }
+        value.serialize<StringBuffer, this>(this);
 
         if (this._buffer.slice(this._buffer.length - 1) != "{") {
             // remove tail comma
@@ -186,24 +182,6 @@ export class JSONSerializer extends Serializer<StringBuffer> {
 
     serializeIserialize(s: ISerialize): StringBuffer {
         return s.serialize<StringBuffer, this>(this);
-    }
-
-    startSerializeTuple(): StringBuffer {
-        throw new Error("Method not implemented.");
-    }
-    endSerializeTuple(): StringBuffer {
-        throw new Error("Method not implemented.");
-    }
-    serializeTupleElem<T>(value: T): StringBuffer {
-        throw new Error("Method not implemented.");
-    }
-
-    @inline
-    private _serializeField<T>(name: string, value: T): void {
-        this._buffer.write('"');
-        this._buffer.write(name);
-        this._buffer.write('":');
-        this.serialize<T>(value as T);
     }
 
     @inline
@@ -221,6 +199,23 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         this._serializeField(name as string, value);
         this._buffer.write(",");
         return this._buffer;
+    }
+
+    private _serializeField<T>(name: string, value: T): void {
+        this._buffer.write('"');
+        this._buffer.write(name);
+        this._buffer.write('":');
+        this.serialize<T>(value);
+    }
+
+    startSerializeTuple(): StringBuffer {
+        return this._buffer;
+    }
+    endSerializeTuple(): StringBuffer {
+        return this._buffer;
+    }
+    serializeTupleElem<T>(value: T): StringBuffer {
+        throw new Error("Method not implemented.");
     }
 
     @inline

@@ -5,20 +5,25 @@ import {
     DiagnosticCode,
     FieldDeclaration,
     CommonFlags,
+    ASTBuilder,
 } from "assemblyscript/dist/assemblyscript.js";
 import { toString, isMethodNamed } from "visitor-as/dist/utils.js";
 import _ from "lodash";
+import debug from "debug";
 import {
     METHOD_DES,
     METHOD_DES_ARG_NAME,
-    METHOD_DES_FIELD,
-    METHOD_DES_LAST_FIELD,
     METHOD_DES_SIG,
     METHOD_END_DES_FIELD,
     METHOD_START_DES_FIELD,
+    TARGET,
+    deserializeField,
+    superDeserialize,
 } from "../consts.js";
 import { getNameNullable } from "../utils.js";
 import { SerdeConfig, DeserializeNode } from "../ast.js";
+
+const log = debug("DeserializeVisitor");
 
 export class DeserializeVisitor extends TransformVisitor {
     private fields: FieldDeclaration[] = [];
@@ -67,7 +72,7 @@ export class DeserializeVisitor extends TransformVisitor {
             .filter((elem) => elem != null) as string[];
 
         if (this.hasBase && !this.de.skipSuper) {
-            stmts.unshift(`super.deserialize<__S>(deserializer);`);
+            stmts.unshift(`${superDeserialize()};`);
         }
 
         if (lastField) {
@@ -76,8 +81,10 @@ export class DeserializeVisitor extends TransformVisitor {
                 stmts.push(lastFieldStmt);
             }
         }
-        stmts.unshift(`deserializer.${METHOD_START_DES_FIELD}();`);
-        stmts.push(`deserializer.${METHOD_END_DES_FIELD}();`);
+        // start
+        stmts.unshift(`${METHOD_DES_ARG_NAME}.${METHOD_START_DES_FIELD}();`);
+        // end
+        stmts.push(`${METHOD_DES_ARG_NAME}.${METHOD_END_DES_FIELD}();`);
         stmts.push(`return this;`);
         const methodDecl = `
 ${METHOD_DES_SIG} { 
@@ -86,6 +93,7 @@ ${METHOD_DES_SIG} {
 
         const methodNode = SimpleParser.parseClassMember(methodDecl, node);
         node.members.push(methodNode);
+        log(ASTBuilder.build(node));
         return node;
     }
 
@@ -94,14 +102,15 @@ ${METHOD_DES_SIG} {
         const nameStr = this.de.omitName ? `""` : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
-                DiagnosticCode.User_defined_0,
+                DiagnosticCode.Transform_0_1,
                 node.range,
+                TARGET,
                 `serde-as: field '${name}' need a type declaration`,
             );
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            return `this.${name} = ${METHOD_DES_ARG_NAME}.${METHOD_DES_FIELD}<${ty}>(${nameStr});`;
+            return [`this.${name} = ${deserializeField(ty, nameStr, false)};`].join("\n");
         }
     }
 
@@ -110,16 +119,15 @@ ${METHOD_DES_SIG} {
         const nameStr = this.de.omitName ? `""` : `"${name}"`;
         if (!node.type) {
             this.emitter.error(
-                DiagnosticCode.User_defined_0,
+                DiagnosticCode.Transform_0_1,
                 node.range,
+                TARGET,
                 `serde-as: field '${name}' need a type declaration`,
             );
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            return [
-                `this.${name} = ${METHOD_DES_ARG_NAME}.${METHOD_DES_LAST_FIELD}<${ty}>(${nameStr});`,
-            ].join("\n");
+            return [`this.${name} = ${deserializeField(ty, nameStr, true)};`].join("\n");
         }
     }
 }
