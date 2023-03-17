@@ -12,10 +12,10 @@ import {
     METHOD_END_SER_FIELD,
     METHOD_SER,
     METHOD_SER_ARG_NAME,
-    METHOD_SER_FIELD,
-    METHOD_SER_LAST_FIELD,
     METHOD_SER_SIG,
     METHOD_START_SER_FIELD,
+    serializeField,
+    superSerialize,
 } from "../consts.js";
 import { getNameNullable } from "../utils.js";
 import { SerdeConfig, SerializeNode } from "../ast.js";
@@ -72,7 +72,7 @@ export class SerializeVisitor extends TransformVisitor {
             .filter((elem) => elem != null) as string[];
 
         if (this.hasBase && !this.ser.skipSuper) {
-            stmts.unshift(`super.serialize<__R, __S>(serializer);`);
+            stmts.unshift(`${superSerialize()};`);
         }
 
         if (lastField) {
@@ -81,8 +81,8 @@ export class SerializeVisitor extends TransformVisitor {
                 stmts.push(lastFieldStmt);
             }
         }
-        stmts.unshift(`serializer.${METHOD_START_SER_FIELD}();`);
-        stmts.push(`return serializer.${METHOD_END_SER_FIELD}();`);
+        stmts.unshift(`${METHOD_SER_ARG_NAME}.${METHOD_START_SER_FIELD}();`);
+        stmts.push(`return ${METHOD_SER_ARG_NAME}.${METHOD_END_SER_FIELD}();`);
         const methodDecl = `
 ${METHOD_SER_SIG} {
     ${stmts.join("\n")} 
@@ -106,7 +106,7 @@ ${METHOD_SER_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            return `${METHOD_SER_ARG_NAME}.${METHOD_SER_FIELD}<${ty}>(${nameStr}, this.${name});`;
+            return serializeField(ty, nameStr, name, false) + ";";
         }
     }
 
@@ -122,7 +122,7 @@ ${METHOD_SER_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            return `${METHOD_SER_ARG_NAME}.${METHOD_SER_LAST_FIELD}<${ty}>(${nameStr}, this.${name});`;
+            return serializeField(ty, nameStr, name, true) + ";";
         }
     }
 }

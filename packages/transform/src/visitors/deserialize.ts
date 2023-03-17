@@ -11,11 +11,11 @@ import _ from "lodash";
 import {
     METHOD_DES,
     METHOD_DES_ARG_NAME,
-    METHOD_DES_FIELD,
-    METHOD_DES_LAST_FIELD,
     METHOD_DES_SIG,
     METHOD_END_DES_FIELD,
     METHOD_START_DES_FIELD,
+    deserializeField,
+    superDeserialize,
 } from "../consts.js";
 import { getNameNullable } from "../utils.js";
 import { SerdeConfig, DeserializeNode } from "../ast.js";
@@ -67,7 +67,7 @@ export class DeserializeVisitor extends TransformVisitor {
             .filter((elem) => elem != null) as string[];
 
         if (this.hasBase && !this.de.skipSuper) {
-            stmts.unshift(`super.deserialize<__S>(deserializer);`);
+            stmts.unshift(`${superDeserialize()};`);
         }
 
         if (lastField) {
@@ -76,8 +76,8 @@ export class DeserializeVisitor extends TransformVisitor {
                 stmts.push(lastFieldStmt);
             }
         }
-        stmts.unshift(`deserializer.${METHOD_START_DES_FIELD}();`);
-        stmts.push(`deserializer.${METHOD_END_DES_FIELD}();`);
+        stmts.unshift(`${METHOD_DES_ARG_NAME}.${METHOD_START_DES_FIELD}();`);
+        stmts.push(`${METHOD_DES_ARG_NAME}.${METHOD_END_DES_FIELD}();`);
         stmts.push(`return this;`);
         const methodDecl = `
 ${METHOD_DES_SIG} { 
@@ -101,7 +101,7 @@ ${METHOD_DES_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            return `this.${name} = ${METHOD_DES_ARG_NAME}.${METHOD_DES_FIELD}<${ty}>(${nameStr});`;
+            return [`this.${name} = ${deserializeField(ty, nameStr, false)};`].join("\n");
         }
     }
 
@@ -117,9 +117,7 @@ ${METHOD_DES_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            return [
-                `this.${name} = ${METHOD_DES_ARG_NAME}.${METHOD_DES_LAST_FIELD}<${ty}>(${nameStr});`,
-            ].join("\n");
+            return [`this.${name} = ${deserializeField(ty, nameStr, true)};`].join("\n");
         }
     }
 }
