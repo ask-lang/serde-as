@@ -155,6 +155,11 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
         return value.serialize<BytesBuffer, this>(this);
     }
 
+    @inline
+    serializeTuple<T extends ISerialize>(value: nonnull<T>): BytesBuffer {
+        return value.serialize<BytesBuffer, this>(this);
+    }
+
     serializeIserialize(s: ISerialize): BytesBuffer {
         return s.serialize<BytesBuffer, this>(this);
     }

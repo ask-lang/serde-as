@@ -71,7 +71,8 @@ export class DeserializeVisitor extends TransformVisitor {
             .map((f) => this.genStmtForField(f))
             .filter((elem) => elem != null) as string[];
 
-        if (this.hasBase && !this.de.skipSuper) {
+        const hasSuper = this.hasBase && !this.de.skipSuper;
+        if (hasSuper) {
             stmts.unshift(`${superDeserialize()};`);
         }
 

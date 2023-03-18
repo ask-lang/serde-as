@@ -1,6 +1,24 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { ISerialize } from "as-serde";
+import { ISerdeTuple, ISerialize, Serializer } from "as-serde";
+
+export class TupleType implements ISerialize, ISerdeTuple {
+    s1: string = "";
+    s2: string | null = '"';
+    s3: string = "\r\n";
+
+    public static readonly SERDE_TUPLE: bool = true;
+    isTuple(): bool {
+        return true;
+    }
+    serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
+        serializer.startSerializeTuple(3);
+        serializer.serializeTupleElem<string>(this.s1);
+        serializer.serializeTupleElem<string | null>(this.s2);
+        serializer.serializeTupleLastElem<string>(this.s3);
+        return serializer.endSerializeTuple();
+    }
+}
 
 @serialize()
 export class Numbers {

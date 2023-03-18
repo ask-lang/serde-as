@@ -172,12 +172,17 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         this._buffer.write("{");
         value.serialize<StringBuffer, this>(this);
 
-        if (this._buffer.slice(this._buffer.length - 1) != "{") {
-            // remove tail comma
+        // remove tail comma
+        if (this._buffer.slice(this._buffer.length - 1) == ",") {
             this._buffer.length = this._buffer.length - 1;
         }
         this._buffer.write("}");
         return this._buffer;
+    }
+
+    @inline
+    serializeTuple<T extends ISerialize>(value: nonnull<T>): StringBuffer {
+        return value.serialize<StringBuffer, this>(this);
     }
 
     serializeIserialize(s: ISerialize): StringBuffer {
@@ -208,14 +213,26 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         this.serialize<T>(value);
     }
 
-    startSerializeTuple(): StringBuffer {
+    startSerializeTuple(_len: u32): StringBuffer {
+        this._buffer.write("[");
         return this._buffer;
     }
     endSerializeTuple(): StringBuffer {
+        if (this._buffer.slice(this._buffer.length - 1) == ",") {
+            this._buffer.length = this._buffer.length - 1;
+        }
+        this._buffer.write("]");
         return this._buffer;
     }
     serializeTupleElem<T>(value: T): StringBuffer {
-        throw new Error("Method not implemented.");
+        this.serialize<T>(value);
+        this._buffer.write(",");
+        return this._buffer;
+    }
+
+    serializeTupleLastElem<T>(value: T): StringBuffer {
+        this.serialize<T>(value);
+        return this._buffer;
     }
 
     @inline

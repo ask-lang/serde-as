@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ISerialize } from "as-serde";
+import { ISerialize, isTuple } from "as-serde";
 /**
  * All methods of` CoreSerializer` will be used in as-serde-transfrom
  */
@@ -50,7 +50,7 @@ abstract class CoreSerializer<R> {
      * @param value
      */
     @inline
-    serializeTupleLastElem<T>(name: string, value: T): R {
+    serializeTupleLastElem<T>(value: T): R {
         return this.serializeTupleElem<T>(name, value);
     }
 }
@@ -98,9 +98,19 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
     abstract serializeNullable<V>(value: V): R;
     /**
      * Serialize a value of nonull class.
-     * @param value value could be nullable
+     * @param value value could not be nullable
      */
     abstract serializeClass<T extends ISerialize>(value: nonnull<T>): R;
+
+    /**
+     * Serialize a value of nonull tuple class.
+     *
+     * # Note
+     *
+     * `extends` class is not supported for Tuple class.
+     * @param value value could not be nullable
+     */
+    abstract serializeTuple<T extends ISerialize>(value: nonnull<T>): R;
 
     abstract serializeIserialize(value: ISerialize): R;
 
@@ -108,7 +118,6 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
      * This is the default method for all other types.
      * @param value array value
      */
-
     abstract serializeArrayLike<A extends ArrayLike<valueof<A>>>(value: A): R;
 
     @inline
@@ -296,8 +305,9 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
             return this.serializeSet<indexof<T>, T>(value);
         } else if (value instanceof Map) {
             return this.serializeMap<indexof<T>, valueof<T>, T>(value);
-        } else {
-            // for compile error
+        } else if (isTuple<T>(value)) {
+            return this.serializeTuple<T>(value as nonnull<T>);
+        }else {
             return this.serializeClass<T>(value as nonnull<T>);
         }
     }

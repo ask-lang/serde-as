@@ -135,7 +135,7 @@ export abstract class Deserializer extends CoreDeserializer {
     abstract deserializeNullable<T>(): T;
     /**
      * Deserialize a value of nonull class.
-     * @param value value could be nullable
+     * @param value value could not be nullable
      */
     abstract deserializeClass<T>(): nonnull<T>;
 
@@ -288,7 +288,6 @@ export abstract class Deserializer extends CoreDeserializer {
         } else if (value instanceof Map) {
             return this.deserializeMap<indexof<T>, valueof<T>, T>();
         } else {
-            // for compile error
             return this.deserializeClass<T>();
         }
     }

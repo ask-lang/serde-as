@@ -72,7 +72,8 @@ export class SerializeVisitor extends TransformVisitor {
             .map((f) => this.genStmtForField(f))
             .filter((elem) => elem != null) as string[];
 
-        if (this.hasBase && !this.ser.skipSuper) {
+        const hasSuper = this.hasBase && !this.ser.skipSuper;
+        if (hasSuper) {
             stmts.unshift(`${superSerialize()};`);
         }
 
