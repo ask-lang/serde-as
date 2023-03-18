@@ -10,7 +10,7 @@ export class TupleType implements ISerialize, ISerdeTuple {
         serializer.startSerializeTuple(3);
         serializer.serializeTupleElem<string>(this.s1);
         serializer.serializeTupleElem<string | null>(this.s2);
-        serializer.serializeTupleLastElem<string>(this.s3);
+        serializer.serializeLastTupleElem<string>(this.s3);
         return serializer.endSerializeTuple();
     }
 }

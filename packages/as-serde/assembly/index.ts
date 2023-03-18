@@ -71,7 +71,7 @@ export abstract class FixedArray<T> implements ISerdeTuple, ISerialize, IDeseria
             serializer.serializeTupleElem<T>(this.inner[i]);
         }
         if (size != 0) {
-            serializer.serializeTupleLastElem<T>(this.inner[size - 1]);
+            serializer.serializeLastTupleElem<T>(this.inner[size - 1]);
         }
         return serializer.endSerializeTuple();
     }

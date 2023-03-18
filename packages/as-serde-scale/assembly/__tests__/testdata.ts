@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { i128, u128 } from "../index";
-import { ISerialize, IDeserialize, Serializer, Deserializer, FixedArray } from "as-serde";
+import {IUnsafeInit, ISerdeTuple, ISerialize, IDeserialize, Serializer, Deserializer, FixedArray } from "as-serde";
 
 export class TestData<T1, T2> {
     constructor(public readonly input: T1, public readonly output: T2) {}
@@ -14,9 +14,53 @@ export class FixedArray8<T> extends FixedArray<T> {
     constructor(inner: StaticArray<T> = new StaticArray<T>(FixedArray8.SIZE)) {
         super(inner);
     }
+    clone(): this {
+        return new FixedArray8<T>(this.inner.slice<StaticArray<T>>());
+    }
 
     deserialize<__S extends Deserializer>(deserializer: __S): this {
         return super.deserialize<__S>(deserializer) as this;
+    }
+}
+
+@final
+export class Matrix8<T> implements ISerdeTuple, IUnsafeInit, IDeserialize, ISerdeTuple {
+    static SIZE: i32 = 8;
+    inner: FixedArray8<FixedArray8<T>> | null = null;
+
+    unsafeInit(): void {
+        this.inner = new FixedArray8();
+        for (let i = 0; i < Matrix8.SIZE; i++) {
+            this[i] = new FixedArray8<T>();
+        }
+    }
+
+    serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
+        serializer.startSerializeTuple(Matrix8.SIZE);
+        for (let i = 0; i < Matrix8.SIZE - 1; i++) {
+            serializer.serializeTupleElem<FixedArray8<T>>(this[i]);
+        }
+        serializer.serializeLastTupleElem<FixedArray8<T>>(this[Matrix8.SIZE - 1]);
+        return serializer.endSerializeTuple();
+    }
+
+    deserialize<__S extends Deserializer>(deserializer: __S): this {
+        deserializer.startDeserializeTuple(Matrix8.SIZE);
+        for (let i = 0; i < Matrix8.SIZE - 1; i++) {
+            this[i] = deserializer.deserializeTupleElem<FixedArray8<T>>();
+        }
+        this[Matrix8.SIZE - 1] = deserializer.deserializeLastTupleElem<FixedArray8<T>>();
+        deserializer.endDeserializeTuple();
+
+        return this;
+    }
+
+    @operator("[]") private __get(index: i32): FixedArray8<T> {
+        return(this.inner as FixedArray8<FixedArray8<T>>)[index];
+    }
+
+    @operator("[]=") private __set(index: i32, value: FixedArray8<T>): void {
+        (this.inner as FixedArray8<FixedArray8<T>>) [index] = value;
     }
 }
 

@@ -230,14 +230,15 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         return this._buffer;
     }
 
-    serializeTupleLastElem<T>(value: T): StringBuffer {
+    serializeLastTupleElem<T>(value: T): StringBuffer {
         this.serialize<T>(value);
         return this._buffer;
     }
 
     @inline
     serializeNullable<T>(t: T): StringBuffer {
-        if (t == null) {
+        // check null
+        if (changetype<usize>(t) == 0) {
             this._buffer.write(NULL);
         } else {
             this.serialize(t as nonnull<T>);

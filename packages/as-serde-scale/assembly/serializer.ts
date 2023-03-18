@@ -196,7 +196,8 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
 
     @inline
     serializeNullable<T>(t: T): BytesBuffer {
-        if (t == null) {
+        // check null
+        if (changetype<usize>(t) == 0) {
             this._buffer.writeByte(0x00);
         } else {
             this._buffer.writeByte(0x01);

@@ -11,7 +11,7 @@ export const METHOD_SER_LAST_FIELD = "serializeLastField";
 export const METHOD_START_SER_TUPLE = "startSerializeTuple";
 export const METHOD_END_SER_TUPLE = "endSerializeTuple";
 export const METHOD_SER_TUPLE_ELEM = "serializeTupleElem";
-export const METHOD_SER_LAST_TUPLE_ELEM = "serializeTupleLastElem";
+export const METHOD_SER_LAST_TUPLE_ELEM = "serializeLastTupleElem";
 
 export const METHOD_SER_ARG_NAME = "serializer";
 export const METHOD_SER_SIG = `${METHOD_SER}<__R, __S extends Serializer<__R>>(${METHOD_SER_ARG_NAME}: __S): __R`;
@@ -25,7 +25,7 @@ export const METHOD_DES_LAST_FIELD = "deserializeLastField";
 export const METHOD_START_DES_TUPLE = "startDeserializeTuple";
 export const METHOD_END_DES_TUPLE = "endDeserializeTuple";
 export const METHOD_DES_TUPLE_ELEM = "deserializeTupleElem";
-export const METHOD_DES_LAST_TUPLE_ELEM = "deserializeTupleLastElem";
+export const METHOD_DES_LAST_TUPLE_ELEM = "deserializeLastTupleElem";
 
 export const METHOD_DES_ARG_NAME = "deserializer";
 export const METHOD_DES_SIG = `${METHOD_DES}<__S extends Deserializer>(${METHOD_DES_ARG_NAME}: __S): this`;

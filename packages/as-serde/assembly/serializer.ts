@@ -46,11 +46,11 @@ abstract class CoreSerializer<R> {
      */
     abstract serializeTupleElem<T>(value: T): R;
     /**
-     * serializeTupleLastElem is called by a class `serialize` method for the last field of tuple class.
+     * serializeLastTupleElem is called by a class `serialize` method for the last field of tuple class.
      * @param value
      */
     @inline
-    serializeTupleLastElem<T>(value: T): R {
+    serializeLastTupleElem<T>(value: T): R {
         return this.serializeTupleElem<T>(value);
     }
 }

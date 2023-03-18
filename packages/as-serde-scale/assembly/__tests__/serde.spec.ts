@@ -8,7 +8,7 @@ import {
     ISerialize,
     ISerdeTuple,
 } from "..";
-import { Empty, SuperEmpty, Custom, FixedArray8 } from "./testdata";
+import { Empty, SuperEmpty, Custom, FixedArray8, Matrix8 } from "./testdata";
 import {
     Arrays,
     Bools,
@@ -22,7 +22,7 @@ import {
 } from "./testdata";
 
 describe("ScaleSerializer", () => {
-    it("FixedArray", () => {
+    it("FixedArray8", () => {
         let case1 = new FixedArray8<u8>();
         case1[0] = 0x01;
         case1[1] = 0x02;
@@ -42,6 +42,45 @@ describe("ScaleSerializer", () => {
             expect(test.input instanceof ISerialize).toBeTruthy();
             expect(test.input instanceof IDeserialize).toBeTruthy();
             expect(test.input instanceof ISerdeTuple).toBeTruthy();
+        }
+    });
+
+    it("Matrix8", () => {
+        let array = new FixedArray8<u8>();
+        array[0] = 0x01;
+        array[1] = 0x02;
+        array[2] = 0x03;
+        array[3] = 0x04;
+
+        let case1 = new Matrix8<u8>();
+        case1.unsafeInit();
+        case1[0] = array.clone();
+        case1[1] = array.clone();
+        case1[2] = array.clone();
+        case1[3] = array.clone();
+        let tests: Array<TestData<Matrix8<u8>, StaticArray<u8>>> = [
+            new TestData(case1, [
+                0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00,
+                0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00,
+                0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00,
+                0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            ]),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            // let desData = ScaleDeserializer.deserialize<Matrix8<u8>>(
+            //     BytesBuffer.wrap(test.output),
+            // );
+            // expect(desData).toStrictEqual(test.input);
+            // expect(test.input instanceof ISerialize).toBeTruthy();
+            // expect(test.input instanceof IDeserialize).toBeTruthy();
+            // expect(test.input instanceof ISerdeTuple).toBeTruthy();
         }
     });
 
