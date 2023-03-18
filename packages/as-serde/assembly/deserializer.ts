@@ -52,11 +52,10 @@ abstract class CoreDeserializer {
     abstract deserializeTupleElem<T>(): T;
     /**
      * deserializeLastTupleElem is called by a class `deserialize` method for the last field of tuple class.
-     * @param name field name
-     * @returns field value
+     * @returns value
      */
-    deserializeLastTupleElem<T>(name: string): T {
-        return this.deserializeTupleElem<T>(name);
+    deserializeLastTupleElem<T>(): T {
+        return this.deserializeTupleElem<T>();
     }
 }
 
