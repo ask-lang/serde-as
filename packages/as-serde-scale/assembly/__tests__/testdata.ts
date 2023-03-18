@@ -1,10 +1,23 @@
 // @ts-nocheck
 
 import { i128, u128 } from "../index";
-import { ISerialize, IDeserialize, Serializer, Deserializer } from "as-serde";
+import { ISerialize, IDeserialize, Serializer, Deserializer, FixedArray } from "as-serde";
 
 export class TestData<T1, T2> {
     constructor(public readonly input: T1, public readonly output: T2) {}
+}
+
+@final
+export class FixedArray8<T> extends FixedArray<T> {
+    static SIZE: i32 = 8;
+
+    constructor(inner: StaticArray<T> = new StaticArray<T>(FixedArray8.SIZE)) {
+        super(inner);
+    }
+
+    deserialize<__S extends Deserializer>(deserializer: __S): this {
+        return super.deserialize<__S>(deserializer) as this;
+    }
 }
 
 export class Custom implements ISerialize, IDeserialize {

@@ -4,7 +4,7 @@ import { ISerdeTuple, ISerialize, Serializer } from "as-serde";
 
 export class TupleType implements ISerialize, ISerdeTuple {
     s1: string = "1";
-    s2: string | null = '2';
+    s2: string | null = "2";
     s3: string = "3";
     serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
         serializer.startSerializeTuple(3);

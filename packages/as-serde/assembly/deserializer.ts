@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { IDeserialize } from "./index";
+import { isTuple, IDeserialize } from "./index";
 
 /**
  * All methods of `CoreDeserializer` will be used in as-serde-transfrom
@@ -131,12 +131,22 @@ export abstract class Deserializer extends CoreDeserializer {
      * Deserialize a value of nullable type.
      * @param value value could be nullable
      */
-    abstract deserializeNullable<T>(): T;
+    abstract deserializeNullable<T extends ISerialize>(): T;
     /**
      * Deserialize a value of nonull class.
      * @param value value could not be nullable
      */
-    abstract deserializeClass<T>(): nonnull<T>;
+    abstract deserializeClass<T extends ISerialize>(): nonnull<T>;
+
+    /**
+     * Deserialize a value of nonull tuple class.
+     *
+     * # Note
+     *
+     * `extends` class is not supported for tuple class.
+     * @param value value could not be nullable
+     */
+    abstract deserializeTuple<T extends ISerialize>(): nonnull<T>;
 
     abstract deserializeIDeserialize<T extends IDeserialize>(): T;
 
@@ -242,15 +252,13 @@ export abstract class Deserializer extends CoreDeserializer {
         } else if (isArrayLike<T>()) {
             return this.deserializeArrayLike<T>();
         } else {
-            // return this.deserializeIDeserialize<T>();
             return this._deserializeDyn<T>();
         }
     }
 
     @inline
     protected _deserializeDyn<T>(): T {
-        let value: T = changetype<T>(__new(offsetof<T>(), idof<T>()));
-        // TODO: idof
+        let value: T = changetype<T>(0);
         // for sub-class
         if (value instanceof StaticArray) {
             return this.deserializeStaticArray<T>();
@@ -286,6 +294,8 @@ export abstract class Deserializer extends CoreDeserializer {
             return this.deserializeSet<indexof<T>, T>();
         } else if (value instanceof Map) {
             return this.deserializeMap<indexof<T>, valueof<T>, T>();
+        } else if (isTuple<T>(value)) {
+            return this.deserializeTuple<T>();
         } else {
             return this.deserializeClass<T>();
         }

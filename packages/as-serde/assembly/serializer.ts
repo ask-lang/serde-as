@@ -51,7 +51,7 @@ abstract class CoreSerializer<R> {
      */
     @inline
     serializeTupleLastElem<T>(value: T): R {
-        return this.serializeTupleElem<T>(name, value);
+        return this.serializeTupleElem<T>(value);
     }
 }
 
@@ -95,7 +95,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
      * Serialize a value of nullable type.
      * @param value value could be nullable
      */
-    abstract serializeNullable<V>(value: V): R;
+    abstract serializeNullable<T extends ISerialize>(value: T): R;
     /**
      * Serialize a value of nonull class.
      * @param value value could not be nullable
@@ -107,7 +107,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
      *
      * # Note
      *
-     * `extends` class is not supported for Tuple class.
+     * `extends` class is not supported for tuple class.
      * @param value value could not be nullable
      */
     abstract serializeTuple<T extends ISerialize>(value: nonnull<T>): R;
@@ -307,7 +307,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
             return this.serializeMap<indexof<T>, valueof<T>, T>(value);
         } else if (isTuple<T>(value)) {
             return this.serializeTuple<T>(value as nonnull<T>);
-        }else {
+        } else {
             return this.serializeClass<T>(value as nonnull<T>);
         }
     }
