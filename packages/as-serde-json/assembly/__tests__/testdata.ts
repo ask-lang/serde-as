@@ -76,8 +76,8 @@ export class SkipSuperNumbers extends Numbers {
 @serialize()
 export class Strings {
     s1: string = "";
-    s2: string = '"';
-    s3: string = "\r\n";
+    s2: string = '"/';
+    s3: string = "\b\f\n\r\t";
 }
 
 @serialize()

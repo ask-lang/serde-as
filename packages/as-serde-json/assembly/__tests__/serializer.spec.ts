@@ -142,7 +142,7 @@ describe("JSONSerializer", () => {
 
     it("Strings", () => {
         let res = JSONSerializer.serialize(new Strings());
-        const expected = '{"s1":"","s2":"\\"","s3":"\r\n"}';
+        const expected = `{"s1":"","s2":"\\"\\/","s3":"\\b\\f\\n\\r\\t"}`;
         expect(res).toBe(expected);
     });
 
