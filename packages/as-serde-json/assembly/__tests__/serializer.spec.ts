@@ -24,7 +24,7 @@ import {
 describe("JSONSerializer", () => {
     it("TupleType", () => {
         let res = JSONSerializer.serialize(new TupleType());
-        const expected = '["","\\"","\r\n"]';
+        const expected = '["1","2","3"]';
         expect(res).toBe(expected);
     });
 
