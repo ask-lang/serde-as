@@ -110,29 +110,23 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     @inline
     serializeString(value: string): StringBuffer {
         let buf = new StringBuffer(value.length * 2);
-        for(let i = 0; i < value.length; i++) {
-            const c = value.slice(i, i+1);
-            if(c == '\\') {
+        for (let i = 0; i < value.length; i++) {
+            const c = value.slice(i, i + 1);
+            if (c == '\\') {
                 buf.write('\\\\');
-            } else if(c =='/') {
+            } else if (c == '/') {
                 buf.write('\\/');
-            }
-            else if(c =='"') {
+            } else if (c == '"') {
                 buf.write('\\"');
-            }
-            else if(c =='\b') {
+            } else if (c == '\b') {
                 buf.write('\\b');
-            }
-            else if(c =='\f') {
+            } else if (c == '\f') {
                 buf.write('\\f');
-            }
-            else if(c =='\n') {
+            } else if (c == '\n') {
                 buf.write('\\n');
-            }
-            else if(c =='\r') {
+            } else if (c == '\r') {
                 buf.write('\\r');
-            }
-            else if(c =='\t') {
+            } else if (c == '\t') {
                 buf.write('\\t');
             } else {
                 buf.write(c);
@@ -312,7 +306,7 @@ export class JSONSerializer extends Serializer<StringBuffer> {
             this.serialize<valueof<A>>(value[i]);
             this._buffer.write(",");
         }
-        
+
         this.serialize<valueof<A>>(value[len - 1]);
         this._buffer.write("]");
 
