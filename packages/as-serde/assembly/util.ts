@@ -24,7 +24,13 @@ export function isTuple<T extends ISerdeTuple>(val: T): bool {
 /**
  * A inteface for init a value correctly after `__new`.
  * 
+ * # Note
+ * 
  * It will be useful when the default zero param constructor do not work for a class.
+ * 
+ * But users should try to avoid using this interface, 
+ * because users can always design default constructors to initialize instances, 
+ * this interface is designed to avoid performance loss or code reuse
  */
 export interface IUnsafeInit {
     /**

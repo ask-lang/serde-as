@@ -7,6 +7,7 @@ import {
     ScaleSerializer,
     ISerialize,
     ISerdeTuple,
+    IUnsafeInit
 } from "..";
 import { Empty, SuperEmpty, Custom, FixedArray8, Matrix8 } from "./testdata";
 import {
@@ -77,9 +78,10 @@ describe("ScaleSerializer", () => {
             expect(serData).toStrictEqual(test.output);
             let desData = ScaleDeserializer.deserialize<Matrix8<u8>>(BytesBuffer.wrap(test.output));
             expect(desData).toStrictEqual(test.input);
-            expect(case1 instanceof ISerialize).toBeTruthy();
+            expect(test.input instanceof ISerialize).toBeTruthy();
             expect(test.input instanceof IDeserialize).toBeTruthy();
             expect(test.input instanceof ISerdeTuple).toBeTruthy();
+            expect(test.input instanceof IUnsafeInit).toBeTruthy();
         }
     });
 
