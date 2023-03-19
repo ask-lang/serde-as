@@ -47,7 +47,6 @@ export function instantiateRaw<T>(): T {
     else if (isString<T>()) {
         return "";
     } else if (changetype<T>(0) instanceof IUnsafeInit) {
-        assert(false);
         const res = changetype<T>(__new(offsetof<T>(), idof<T>()));            
         res.unsafeInit();
         return res;
