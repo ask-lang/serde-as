@@ -58,6 +58,7 @@ describe("ScaleSerializer", () => {
         case1[1] = array.clone();
         case1[2] = array.clone();
         case1[3] = array.clone();
+        // prettier-ignore
         let tests: Array<TestData<Matrix8<u8>, StaticArray<u8>>> = [
             new TestData(
                 case1,
