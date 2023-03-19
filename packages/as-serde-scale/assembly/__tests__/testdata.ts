@@ -1,7 +1,15 @@
 // @ts-nocheck
 
 import { i128, u128 } from "../index";
-import {IUnsafeInit, ISerdeTuple, ISerialize, IDeserialize, Serializer, Deserializer, FixedArray } from "as-serde";
+import {
+    IUnsafeInit,
+    ISerdeTuple,
+    ISerialize,
+    IDeserialize,
+    Serializer,
+    Deserializer,
+    FixedArray,
+} from "as-serde";
 
 export class TestData<T1, T2> {
     constructor(public readonly input: T1, public readonly output: T2) {}
@@ -56,11 +64,11 @@ export class Matrix8<T> implements ISerdeTuple, IUnsafeInit, IDeserialize, ISerd
     }
 
     @operator("[]") private __get(index: i32): FixedArray8<T> {
-        return(this.inner as FixedArray8<FixedArray8<T>>)[index];
+        return (this.inner as FixedArray8<FixedArray8<T>>)[index];
     }
 
     @operator("[]=") private __set(index: i32, value: FixedArray8<T>): void {
-        (this.inner as FixedArray8<FixedArray8<T>>) [index] = value;
+        (this.inner as FixedArray8<FixedArray8<T>>)[index] = value;
     }
 }
 
