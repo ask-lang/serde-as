@@ -27,7 +27,7 @@
     "build": "yarn workspace as-serde-transform build",
     "checks": "yarn workspaces run checks",
     "fmt": "prettier -w './**/*.ts' --config ./.prettierrc.cjs",
-    "fmt-check": "prettier -w './**/*.ts' --config ./.prettierrc.c`js --check",
+    "fmt-check": "prettier -w './**/*.ts' --config ./.prettierrc.cjs --check",
     "test": "yarn workspaces run test",
     "test:ts": "yarn workspace as-serde-transform run test",
     "test:as": "yarn workspace as-buffers run test && yarn workspace as-serde run test && yarn workspace as-serde-scale run test && yarn workspace as-serde-json run test",

@@ -189,42 +189,25 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     @inline
-    serializeClass<T extends ISerialize>(value: T): StringBuffer {
+    serializeClass<T extends ISerialize>(value: nonnull<T>): StringBuffer {
         this._buffer.write("{");
-        if (!isNullable<T>()) {
-            value.serialize<StringBuffer, this>(this);
-        } else if (value !== null) {
-            value.serialize<StringBuffer, this>(this);
-        }
+        value.serialize<StringBuffer, this>(this);
 
-        if (this._buffer.slice(this._buffer.length - 1) != "{") {
-            // remove tail comma
+        // remove tail comma
+        if (this._buffer.slice(this._buffer.length - 1) == ",") {
             this._buffer.length = this._buffer.length - 1;
         }
         this._buffer.write("}");
         return this._buffer;
     }
 
+    @inline
+    serializeTuple<T extends ISerialize>(value: nonnull<T>): StringBuffer {
+        return value.serialize<StringBuffer, this>(this);
+    }
+
     serializeIserialize(s: ISerialize): StringBuffer {
         return s.serialize<StringBuffer, this>(this);
-    }
-
-    startSerializeTuple(): StringBuffer {
-        throw new Error("Method not implemented.");
-    }
-    endSerializeTuple(): StringBuffer {
-        throw new Error("Method not implemented.");
-    }
-    serializeTupleElem<T>(value: T): StringBuffer {
-        throw new Error("Method not implemented.");
-    }
-
-    @inline
-    private _serializeField<T>(name: string, value: T): void {
-        this._buffer.write('"');
-        this._buffer.write(name);
-        this._buffer.write('":');
-        this.serialize<T>(value as T);
     }
 
     @inline
@@ -244,9 +227,39 @@ export class JSONSerializer extends Serializer<StringBuffer> {
         return this._buffer;
     }
 
+    private _serializeField<T>(name: string, value: T): void {
+        this._buffer.write('"');
+        this._buffer.write(name);
+        this._buffer.write('":');
+        this.serialize<T>(value);
+    }
+
+    startSerializeTuple(_len: u32): StringBuffer {
+        this._buffer.write("[");
+        return this._buffer;
+    }
+    endSerializeTuple(): StringBuffer {
+        if (this._buffer.slice(this._buffer.length - 1) == ",") {
+            this._buffer.length = this._buffer.length - 1;
+        }
+        this._buffer.write("]");
+        return this._buffer;
+    }
+    serializeTupleElem<T>(value: T): StringBuffer {
+        this.serialize<T>(value);
+        this._buffer.write(",");
+        return this._buffer;
+    }
+
+    serializeLastTupleElem<T>(value: T): StringBuffer {
+        this.serialize<T>(value);
+        return this._buffer;
+    }
+
     @inline
     serializeNullable<T>(t: T): StringBuffer {
-        if (t == null) {
+        // check null
+        if (changetype<usize>(t) == 0) {
             this._buffer.write(NULL);
         } else {
             this.serialize(t as nonnull<T>);

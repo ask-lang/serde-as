@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ISerialize } from "as-serde";
+import { ISerialize, isTuple } from "as-serde";
 /**
  * All methods of` CoreSerializer` will be used in as-serde-transfrom
  */
@@ -8,19 +8,16 @@ abstract class CoreSerializer<R> {
      * startSerializeField is called by a class `serialize` method at the beginning.
      */
     abstract startSerializeField(): R;
-
     /**
      * endSerializeField is called by a class `serialize` method at the ending.
      */
     abstract endSerializeField(): R;
-
     /**
      * serializeField is called by a class `serialize` method for field of class.
      * @param name field name
      * @param value field value
      */
     abstract serializeField<T>(name: string, value: T): R;
-
     /**
      * serializeLastField is called by a class `serialize` method for the last field of class.
      * @param name field name
@@ -30,8 +27,6 @@ abstract class CoreSerializer<R> {
     serializeLastField<T>(name: string, value: T): R {
         return this.serializeField<T>(name, value);
     }
-
-    // TODO: maybe we can remove `serializeLastField`
 
     /**
      * Start to serialize a statically sized sequence whose length will be
@@ -50,6 +45,14 @@ abstract class CoreSerializer<R> {
      * @param value
      */
     abstract serializeTupleElem<T>(value: T): R;
+    /**
+     * serializeLastTupleElem is called by a class `serialize` method for the last field of tuple class.
+     * @param value
+     */
+    @inline
+    serializeLastTupleElem<T>(value: T): R {
+        return this.serializeTupleElem<T>(value);
+    }
 }
 
 /**
@@ -88,21 +91,33 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
     abstract serializeSet<K, T extends Set<K>>(value: T): R;
     abstract serializeMap<K, V, T extends Map<K, V>>(value: T): R;
 
-    abstract serializeClass<C extends ISerialize>(value: C): R;
-
-    abstract serializeIserialize(value: ISerialize): R;
-
     /**
      * Serialize a value of nullable type.
      * @param value value could be nullable
      */
-    abstract serializeNullable<V>(value: V): R;
+    abstract serializeNullable<T extends ISerialize>(value: T): R;
+    /**
+     * Serialize a value of nonull class.
+     * @param value value could not be nullable
+     */
+    abstract serializeClass<T extends ISerialize>(value: nonnull<T>): R;
+
+    /**
+     * Serialize a value of nonull tuple class.
+     *
+     * # Note
+     *
+     * `extends` class is not supported for tuple class.
+     * @param value value could not be nullable
+     */
+    abstract serializeTuple<T extends ISerialize>(value: nonnull<T>): R;
+
+    abstract serializeIserialize(value: ISerialize): R;
 
     /**
      * This is the default method for all other types.
      * @param value array value
      */
-
     abstract serializeArrayLike<A extends ArrayLike<valueof<A>>>(value: A): R;
 
     @inline
@@ -290,9 +305,10 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
             return this.serializeSet<indexof<T>, T>(value);
         } else if (value instanceof Map) {
             return this.serializeMap<indexof<T>, valueof<T>, T>(value);
+        } else if (isTuple<T>(value)) {
+            return this.serializeTuple<T>(value as nonnull<T>);
         } else {
-            // for compile error
-            return this.serializeClass(value);
+            return this.serializeClass<T>(value as nonnull<T>);
         }
     }
 }

@@ -1,6 +1,7 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { JSONSerializer, ISerialize } from "../index";
+import { TupleType } from "./testdata";
 import {
     Arrays,
     Bools,
@@ -21,6 +22,12 @@ import {
 } from "./testdata";
 
 describe("JSONSerializer", () => {
+    it("TupleType", () => {
+        let res = JSONSerializer.serialize(new TupleType());
+        const expected = '["1","2","3"]';
+        expect(res).toBe(expected);
+    });
+
     it("Empty Interface", () => {
         let res = JSONSerializer.serialize(new Empty() as ISerialize);
         const expected = `{}`;
