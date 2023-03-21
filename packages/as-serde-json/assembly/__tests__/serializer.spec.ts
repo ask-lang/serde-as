@@ -141,8 +141,13 @@ describe("JSONSerializer", () => {
     });
 
     it("Strings", () => {
-        let res = JSONSerializer.serialize(new Strings());
-        const expected = '{"s1":"","s2":"\\"","s3":"\r\n"}';
+        let s = new Strings();
+        expect(s.s1).toHaveLength(0);
+        expect(s.s2).toHaveLength(3);
+        expect(s.s3).toHaveLength(5);
+        expect(`"\\"\\/\\\\"`).toHaveLength(8);
+        let res = JSONSerializer.serialize(s);
+        const expected = `{"s1":"","s2":"\\"\\/\\\\","s3":"\\b\\f\\n\\r\\t"}`;
         expect(res).toBe(expected);
     });
 
