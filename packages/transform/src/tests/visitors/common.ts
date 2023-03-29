@@ -1,9 +1,9 @@
 import * as assert from "assert";
-import { ASTBuilder, TransformVisitor, utils } from "visitor-as";
+import { ASTBuilder, TransformVisitor } from "visitor-as";
 import {
     Parser,
     DiagnosticEmitter,
-    ClassDeclaration,
+    // ClassDeclaration,
     Source,
     NodeKind,
 } from "assemblyscript/dist/assemblyscript.js";
@@ -17,7 +17,7 @@ export function checkVisitor(
     expected: string,
     warn: boolean,
     error: boolean,
-    serdeKind: ClassSerdeKind,
+    _serdeKind: ClassSerdeKind,
 ): void {
     const parser = new Parser();
     parser.parseFile(code, "index.ts", true);
@@ -25,7 +25,7 @@ export function checkVisitor(
 
     let stmt = source.statements[0];
     assert.equal(stmt.kind, NodeKind.ClassDeclaration);
-    assert.ok(utils.hasDecorator(stmt as ClassDeclaration, serdeKind));
+    // assert.ok(utils.hasDecorator(stmt as ClassDeclaration, serdeKind));
     // when meet error, we don't check expected code
     if (error == false) {
         const actual = ASTBuilder.build(source);

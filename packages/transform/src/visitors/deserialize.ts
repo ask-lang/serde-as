@@ -27,7 +27,7 @@ const log = debug("DeserializeVisitor");
 
 export class DeserializeVisitor extends TransformVisitor {
     private fields: FieldDeclaration[] = [];
-    private hasBase: bool = false;
+    private hasSuper: bool = false;
     private de!: DeserializeNode;
     // Use the externalDe to replace `de` if it exist.
     readonly externalDe: DeserializeNode | null = null;
@@ -55,14 +55,22 @@ export class DeserializeVisitor extends TransformVisitor {
         if (node.members.some(isMethodNamed(METHOD_DES))) {
             return node;
         }
-        this.hasBase = node.extendsType ? true : false;
+        this.hasSuper = node.extendsType ? true : false;
         if (this.externalDe) {
             this.de = this.externalDe;
         } else {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this.de = DeserializeNode.extractFromDecoratorNode(this.emitter, node)!;
         }
-        super.visitClassDeclaration(node);
+        this.visit(node.members);
+
+        const methodNode = SimpleParser.parseClassMember(this.genMethodDecl(), node);
+        node.members.push(methodNode);
+        log(ASTBuilder.build(node));
+        return node;
+    }
+
+    protected genMethodDecl(): string {
         // for fields declared in constructor
         this.fields = _.uniqBy(this.fields, (f) => f);
         const lastField = this.fields[this.fields.length - 1];
@@ -71,8 +79,8 @@ export class DeserializeVisitor extends TransformVisitor {
             .map((f) => this.genStmtForField(f))
             .filter((elem) => elem != null) as string[];
 
-        const hasSuper = this.hasBase && !this.de.skipSuper;
-        if (hasSuper) {
+        const skipSuper = this.de.skipSuper || !this.hasSuper;
+        if (!skipSuper) {
             stmts.unshift(`${superDeserialize()};`);
         }
 
@@ -91,11 +99,7 @@ export class DeserializeVisitor extends TransformVisitor {
 ${METHOD_DES_SIG} { 
     ${stmts.join("\n")} 
 }`;
-
-        const methodNode = SimpleParser.parseClassMember(methodDecl, node);
-        node.members.push(methodNode);
-        log(ASTBuilder.build(node));
-        return node;
+        return methodDecl;
     }
 
     protected genStmtForField(node: FieldDeclaration): string | null {
@@ -106,7 +110,7 @@ ${METHOD_DES_SIG} {
                 DiagnosticCode.Transform_0_1,
                 node.range,
                 TARGET,
-                `serde-as: field '${name}' need a type declaration`,
+                `field '${name}' need a type declaration`,
             );
             return null;
         } else {
@@ -123,7 +127,7 @@ ${METHOD_DES_SIG} {
                 DiagnosticCode.Transform_0_1,
                 node.range,
                 TARGET,
-                `serde-as: field '${name}' need a type declaration`,
+                `field '${name}' need a type declaration`,
             );
             return null;
         } else {

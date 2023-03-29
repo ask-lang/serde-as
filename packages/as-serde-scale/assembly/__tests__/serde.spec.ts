@@ -7,7 +7,7 @@ import {
     ScaleSerializer,
     ISerialize,
     ISerdeTuple,
-    IUnsafeInit
+    IUnsafeInit,
 } from "..";
 import { Empty, SuperEmpty, Custom, FixedArray8, Matrix8 } from "./testdata";
 import {
