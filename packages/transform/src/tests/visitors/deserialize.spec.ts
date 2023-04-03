@@ -1,187 +1,154 @@
-// import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
-// import { DeserializeVisitor } from "../../visitors/index.js";
-// import { Case, checkVisitor } from "./common.js";
-// import { ClassSerdeKind } from "../../consts.js";
+import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
+import { DeserializeVisitor } from "../../visitors/index.js";
+import { Case, commnCheckVisitor } from "./common.js";
+import { SerdeConfig } from "../../ast.js";
 
-// // Note: in tests we have to use two spaces as ident because of ASTBuilder.
+// Note: in tests we have to use two spaces as ident because of ASTBuilder.
 
-// function checkDeserializeVisitor(
-//     code: string,
-//     expected: string,
-//     warn = false,
-//     error = false,
-// ): void {
-//     const visitor = new DeserializeVisitor(newProgram(newOptions()), null);
-//     checkVisitor(visitor, code, expected, warn, error, ClassSerdeKind.Deserialize);
-// }
+function checkVisitor(
+    code: string,
+    expected: string,
+    cfg: SerdeConfig,
+    warn = false,
+    error = false,
+): void {
+    const visitor = new DeserializeVisitor(newProgram(newOptions()), cfg);
+    commnCheckVisitor(visitor, code, expected, warn, error);
+}
 
-// describe("DeserializeVisitor", () => {
-//     it("normal @deserialize", () => {
-//         const code = `
-// @deserialize
-// ${Case.Foo}
-// `.trim();
-//         const expected = `
-// @deserialize
-// class Foo {
-//   s: string = "test";
-//   b: bool = false;
-//   deserialize<__S extends Deserializer>(deserializer: __S): this {
-//     deserializer.startDeserializeField();
-//     this.s = deserializer.deserializeField<string>("s");
-//     this.b = deserializer.deserializeLastField<bool>("b");
-//     deserializer.endDeserializeField();
-//     return this;
-//   }
-// }
-// `.trim();
+describe("DeserializeVisitor", () => {
+    it("normal @deserialize", () => {
+        const code = Case.Foo;
+        const expected = `
+class Foo {
+  s: string = "test";
+  b: bool = false;
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
+    deserializer.startDeserializeField();
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
+    deserializer.endDeserializeField();
+    return this;
+  }
+}
+`.trim();
 
-//         checkDeserializeVisitor(code, expected);
-//     });
+        const cfg = { omitName: false, skipSuper: false };
+        checkVisitor(code, expected, cfg);
+    });
 
-//     it("@deserialize with omitName", () => {
-//         const code = `
-// @deserialize({ omitName: true })
-// ${Case.Foo}
-// `.trim();
-//         const expected = `
-// @deserialize({
-//   omitName: true
-// })
-// class Foo {
-//   s: string = "test";
-//   b: bool = false;
-//   deserialize<__S extends Deserializer>(deserializer: __S): this {
-//     deserializer.startDeserializeField();
-//     this.s = deserializer.deserializeField<string>("");
-//     this.b = deserializer.deserializeLastField<bool>("");
-//     deserializer.endDeserializeField();
-//     return this;
-//   }
-// }
-// `.trim();
+    it("@deserialize with `omitName`", () => {
+        const code = Case.Foo;
+        const expected = `
+class Foo {
+  s: string = "test";
+  b: bool = false;
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
+    deserializer.startDeserializeField();
+    this.s = deserializer.deserializeField<string>("");
+    this.b = deserializer.deserializeLastField<bool>("");
+    deserializer.endDeserializeField();
+    return this;
+  }
+}
+`.trim();
 
-//         checkDeserializeVisitor(code, expected);
-//     });
+        const cfg = { omitName: true, skipSuper: false };
+        checkVisitor(code, expected, cfg);
+    });
 
-//     it("normal @deserialize with super", () => {
-//         const code = `
-// @deserialize
-// ${Case.BarExtendsFoo}
-// `.trim();
-//         const expected = `
-// @deserialize
-// class Bar extends Foo {
-//   s: string = "test";
-//   b: bool = false;
-//   deserialize<__S extends Deserializer>(deserializer: __S): this {
-//     deserializer.startDeserializeField();
-//     super.deserialize<__S>(deserializer);
-//     this.s = deserializer.deserializeField<string>("s");
-//     this.b = deserializer.deserializeLastField<bool>("b");
-//     deserializer.endDeserializeField();
-//     return this;
-//   }
-// }
-// `.trim();
+    it("normal @deserialize with super", () => {
+        const code = Case.BarExtendsFoo;
+        const expected = `
+class Bar extends Foo {
+  s: string = "test";
+  b: bool = false;
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
+    deserializer.startDeserializeField();
+    super.deserialize<__S>(deserializer);
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
+    deserializer.endDeserializeField();
+    return this;
+  }
+}
+`.trim();
+        const cfg = { omitName: false, skipSuper: false };
+        checkVisitor(code, expected, cfg);
+    });
+    it("@deserialize with `skipSuper`", () => {
+        const code = Case.BarExtendsFoo;
+        const expected = `
+class Bar extends Foo {
+  s: string = "test";
+  b: bool = false;
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
+    deserializer.startDeserializeField();
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
+    deserializer.endDeserializeField();
+    return this;
+  }
+}
+`.trim();
+        const cfg = { omitName: false, skipSuper: true };
+        checkVisitor(code, expected, cfg);
+    });
 
-//         checkDeserializeVisitor(code, expected);
-//     });
-//     it("@deserialize with skipSuper", () => {
-//         const code = `
-// @deserialize({ skipSuper: true })
-// ${Case.BarExtendsFoo}
-// `.trim();
-//         const expected = `
-// @deserialize({
-//   skipSuper: true
-// })
-// class Bar extends Foo {
-//   s: string = "test";
-//   b: bool = false;
-//   deserialize<__S extends Deserializer>(deserializer: __S): this {
-//     deserializer.startDeserializeField();
-//     this.s = deserializer.deserializeField<string>("s");
-//     this.b = deserializer.deserializeLastField<bool>("b");
-//     deserializer.endDeserializeField();
-//     return this;
-//   }
-// }
-// `.trim();
-//         checkDeserializeVisitor(code, expected);
-//     });
+    it("normal empty @deserialize with super", () => {
+        const code = Case.EmptyBarExtendsFoo;
+        const expected = `
+class Bar extends Foo {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
+    deserializer.startDeserializeField();
+    super.deserialize<__S>(deserializer);
+    deserializer.endDeserializeField();
+    return this;
+  }
+}
+`.trim();
 
-//     it("normal empty @deserialize with super", () => {
-//         const code = `
-// @deserialize
-// ${Case.EmptyBarExtendsFoo}
-// `.trim();
-//         const expected = `
-// @deserialize
-// class Bar extends Foo {
-//   deserialize<__S extends Deserializer>(deserializer: __S): this {
-//     deserializer.startDeserializeField();
-//     super.deserialize<__S>(deserializer);
-//     deserializer.endDeserializeField();
-//     return this;
-//   }
-// }
-// `.trim();
+        const cfg = { omitName: false, skipSuper: false };
+        checkVisitor(code, expected, cfg);
+    });
 
-//         checkDeserializeVisitor(code, expected);
-//     });
+    it("empty @deserialize with `skipSuper`", () => {
+        const code = Case.EmptyBar;
+        const expected = `
+class Bar {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
+    deserializer.startDeserializeField();
+    deserializer.endDeserializeField();
+    return this;
+  }
+}
+`.trim();
+        const cfg = { omitName: false, skipSuper: true };
+        checkVisitor(code, expected, cfg);
+    });
 
-//     it("empty @deserialize without super", () => {
-//         const code = `
-// @deserialize
-// ${Case.EmptyBar}
-// `.trim();
+    it("@deserialize with `skipSuper`", () => {
+        const code = Case.BarExtendsFoo;
+        const expected = `
+class Bar extends Foo {
+  s: string = "test";
+  b: bool = false;
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
+    deserializer.startDeserializeField();
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
+    deserializer.endDeserializeField();
+    return this;
+  }
+}
+`.trim();
+        const cfg = { omitName: false, skipSuper: true };
+        checkVisitor(code, expected, cfg);
+    });
 
-//         const expected = `
-// @deserialize
-// class Bar {
-//   deserialize<__S extends Deserializer>(deserializer: __S): this {
-//     deserializer.startDeserializeField();
-//     deserializer.endDeserializeField();
-//     return this;
-//   }
-// }
-// `.trim();
-
-//         checkDeserializeVisitor(code, expected);
-//     });
-
-//     it("@deserialize with skipSuper", () => {
-//         const code = `
-// @deserialize({ skipSuper: true })
-// ${Case.BarExtendsFoo}
-// `.trim();
-//         const expected = `
-// @deserialize({
-//   skipSuper: true
-// })
-// class Bar extends Foo {
-//   s: string = "test";
-//   b: bool = false;
-//   deserialize<__S extends Deserializer>(deserializer: __S): this {
-//     deserializer.startDeserializeField();
-//     this.s = deserializer.deserializeField<string>("s");
-//     this.b = deserializer.deserializeLastField<bool>("b");
-//     deserializer.endDeserializeField();
-//     return this;
-//   }
-// }
-// `.trim();
-//         checkDeserializeVisitor(code, expected);
-//     });
-
-//     it("field missing type", () => {
-//         const code = `
-// @deserialize
-// class Bar {
-//   b = false;
-// }
-// `.trim();
-//         checkDeserializeVisitor(code, "", false, true);
-//     });
-// });
+    it("field missing type", () => {
+        const code = Case.MissingField;
+        const cfg = { omitName: false, skipSuper: false };
+        checkVisitor(code, "", cfg, false, true);
+    });
+});

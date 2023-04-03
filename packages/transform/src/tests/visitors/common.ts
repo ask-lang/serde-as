@@ -1,23 +1,14 @@
 import * as assert from "assert";
 import { ASTBuilder, TransformVisitor } from "visitor-as";
-import {
-    Parser,
-    DiagnosticEmitter,
-    // ClassDeclaration,
-    Source,
-    NodeKind,
-} from "assemblyscript/dist/assemblyscript.js";
-
+import { Parser, DiagnosticEmitter, Source, NodeKind } from "assemblyscript/dist/assemblyscript.js";
 import { hasErrorMessage, hasWarningMessage } from "../../utils.js";
-import { ClassSerdeKind } from "../../consts.js";
 
-export function checkVisitor(
+export function commnCheckVisitor(
     visitor: TransformVisitor & { emitter: DiagnosticEmitter },
     code: string,
     expected: string,
     warn: boolean,
     error: boolean,
-    _serdeKind: ClassSerdeKind,
 ): void {
     const parser = new Parser();
     parser.parseFile(code, "index.ts", true);
@@ -47,4 +38,5 @@ export enum Case {
     }`,
     EmptyBar = "class Bar {}",
     EmptyBarExtendsFoo = "class Bar extends Foo {}",
+    MissingField = "class Bar { b = false; }",
 }

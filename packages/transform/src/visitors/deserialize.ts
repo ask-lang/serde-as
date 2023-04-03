@@ -11,13 +11,13 @@ import { toString, isMethodNamed } from "visitor-as/dist/utils.js";
 import _ from "lodash";
 import debug from "debug";
 import {
+    FieldInfo,
     METHOD_DES,
     METHOD_DES_ARG_NAME,
     METHOD_DES_SIG,
     METHOD_END_DES_FIELD,
     METHOD_START_DES_FIELD,
     TARGET,
-    deserializeField,
     superDeserialize,
 } from "../consts.js";
 import { getNameNullable } from "../utils.js";
@@ -76,7 +76,7 @@ export class DeserializeVisitor extends TransformVisitor {
         const lastField = this.fields[this.fields.length - 1];
         const fields = this.fields.slice(0, -1);
         const stmts = fields
-            .map((f) => this.genStmtForField(f))
+            .map((f) => this.genStmtForField(f, false))
             .filter((elem) => elem != null) as string[];
 
         const skipSuper = this.de.skipSuper || !this.hasSuper;
@@ -85,16 +85,16 @@ export class DeserializeVisitor extends TransformVisitor {
         }
 
         if (lastField) {
-            const lastFieldStmt = this.genStmtForLastField(lastField);
+            const lastFieldStmt = this.genStmtForField(lastField, true);
             if (lastFieldStmt) {
                 stmts.push(lastFieldStmt);
             }
         }
         // start
-        stmts.unshift(`${METHOD_DES_ARG_NAME}.${METHOD_START_DES_FIELD}();`);
+        stmts.unshift(this.genStmtBeforeField(this.fields.length));
         // end
         stmts.push(`${METHOD_DES_ARG_NAME}.${METHOD_END_DES_FIELD}();`);
-        stmts.push(`return this;`);
+        stmts.push(this.genReturnStmt());
         const methodDecl = `
 ${METHOD_DES_SIG} { 
     ${stmts.join("\n")} 
@@ -102,24 +102,19 @@ ${METHOD_DES_SIG} {
         return methodDecl;
     }
 
-    protected genStmtForField(node: FieldDeclaration): string | null {
-        const name = toString(node.name);
-        const nameStr = this.de.omitName ? `""` : `"${name}"`;
-        if (!node.type) {
-            this.emitter.error(
-                DiagnosticCode.Transform_0_1,
-                node.range,
-                TARGET,
-                `field '${name}' need a type declaration`,
-            );
-            return null;
-        } else {
-            const ty = getNameNullable(node.type);
-            return [`this.${name} = ${deserializeField(ty, nameStr, false)};`].join("\n");
-        }
+    protected genStmtBeforeField(_count: number): string {
+        return `${METHOD_DES_ARG_NAME}.${METHOD_START_DES_FIELD}();`;
     }
 
-    protected genStmtForLastField(node: FieldDeclaration): string | null {
+    protected genReturnStmt(): string {
+        return `return this;`;
+    }
+
+    protected genStmtForField(node: FieldDeclaration, isLast: boolean): string | undefined {
+        return this.collectFieldInfo(node, isLast)?.genDeserializeField();
+    }
+
+    protected collectFieldInfo(node: FieldDeclaration, isLast: boolean): FieldInfo | null {
         const name = toString(node.name);
         const nameStr = this.de.omitName ? `""` : `"${name}"`;
         if (!node.type) {
@@ -132,7 +127,7 @@ ${METHOD_DES_SIG} {
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            return [`this.${name} = ${deserializeField(ty, nameStr, true)};`].join("\n");
+            return new FieldInfo(ty, name, nameStr, isLast);
         }
     }
 }

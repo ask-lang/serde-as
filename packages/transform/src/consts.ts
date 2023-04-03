@@ -141,7 +141,7 @@ export class FieldInfo {
      * @returns
      */
     genDeserializeField(): string {
-        return `${METHOD_DES_ARG_NAME}.${this.isLast ? METHOD_DES_LAST_FIELD : METHOD_DES_FIELD}<${
+        return `this.${this.fieldOriginName} = ${METHOD_DES_ARG_NAME}.${this.isLast ? METHOD_DES_LAST_FIELD : METHOD_DES_FIELD}<${
             this.typeName
         }>(${this.fieldName})`;
     }
