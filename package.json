@@ -40,7 +40,7 @@
     "@types/node": "^18.15",
     "@typescript-eslint/eslint-plugin": "^5.57",
     "@typescript-eslint/parser": "^5.57",
-    "eslint": "8.37.0",
+    "eslint": "8.38.0",
     "prettier": "^2.8",
     "mocha": "^10.0",
     "ts-node": "^10",
