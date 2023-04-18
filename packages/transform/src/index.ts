@@ -9,7 +9,12 @@ import {
 import { utils } from "visitor-as";
 import debug from "debug";
 import { ClassSerdeKind } from "./consts.js";
-import { SerdeVisitor, DeserializeVisitor, SerializeVisitor, SerdeTupleVisitor } from "./visitors/index.js";
+import {
+    SerdeVisitor,
+    DeserializeVisitor,
+    SerializeVisitor,
+    SerdeTupleVisitor,
+} from "./visitors/index.js";
 import { isEntry, updateSource } from "./utils.js";
 import { DeserializeNode, SerdeNode, SerializeNode, extractMapFromDecoratorNode } from "./ast.js";
 
@@ -23,7 +28,11 @@ class SerdeTransform extends TransformVisitor {
     visitClassDeclaration(node: ClassDeclaration, _isDefault?: boolean): ClassDeclaration {
         /// Duplicated impls will be reported error by compiler later stage direclty.
         const serdeConfig = extractMapFromDecoratorNode(this.parser, node, ClassSerdeKind.Serde);
-        const serdeTupleConfig = extractMapFromDecoratorNode(this.parser, node, ClassSerdeKind.SerdeTuple);
+        const serdeTupleConfig = extractMapFromDecoratorNode(
+            this.parser,
+            node,
+            ClassSerdeKind.SerdeTuple,
+        );
         const serConfig = extractMapFromDecoratorNode(this.parser, node, ClassSerdeKind.Serialize);
         const deConfig = extractMapFromDecoratorNode(this.parser, node, ClassSerdeKind.Deserialize);
 

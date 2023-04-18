@@ -30,10 +30,7 @@ export class DeserializeVisitor extends TransformVisitor {
     protected hasSuper: bool = false;
     protected readonly de: DeserializeNode;
 
-    constructor(
-        public readonly emitter: DiagnosticEmitter,
-        cfg: SerdeConfig,
-    ) {
+    constructor(public readonly emitter: DiagnosticEmitter, cfg: SerdeConfig) {
         super();
         this.de = new DeserializeNode(cfg);
     }

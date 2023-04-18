@@ -9,7 +9,7 @@ import {
     ISerdeTuple,
     IUnsafeInit,
 } from "..";
-import { Empty, SuperEmpty, Custom, FixedArray8, Matrix8 } from "./testdata";
+import { Empty, SuperEmpty, Custom, FixedArray8, Matrix8, TupleArrays } from "./testdata";
 import {
     Arrays,
     Bools,
@@ -295,6 +295,19 @@ describe("ScaleSerializer", () => {
         {
             let res = ScaleSerializer.serialize(new TypeError(s));
             expect(res).toStrictEqual(expected);
+        }
+    });
+
+    it("TupleArrays", () => {
+        let tests: Array<TestData<TupleArrays, StaticArray<u8>>> = [
+            new TestData(new TupleArrays(), [0, 4, 1, 0, 4, 1, 0, 0, 0, 4, 12, 50, 51, 51]),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<TupleArrays>(BytesBuffer.wrap(test.output));
+            expect(desData).toStrictEqual(test.input);
         }
     });
 

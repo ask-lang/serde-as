@@ -30,10 +30,7 @@ export class SerializeVisitor extends TransformVisitor {
     protected hasSuper: bool = false;
     protected readonly ser: SerializeNode;
 
-    constructor(
-        public readonly emitter: DiagnosticEmitter,
-        cfg: SerdeConfig,
-    ) {
+    constructor(public readonly emitter: DiagnosticEmitter, cfg: SerdeConfig) {
         super();
         this.ser = new SerializeNode(cfg);
     }

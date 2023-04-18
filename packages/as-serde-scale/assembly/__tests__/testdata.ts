@@ -92,7 +92,7 @@ export class Custom implements ISerialize, IDeserialize {
     }
 }
 
-@serde({ omitName: true })
+@serde()
 export class Numbers {
     u8: u8 = 0;
     u16: u16 = 0;
@@ -139,6 +139,15 @@ export class Bools implements ISerialize, IDeserialize {
 @serde()
 export class SuperBools extends Bools {
     b3: bool = false;
+}
+
+@serdeTuple()
+export class TupleArrays implements ISerdeTuple {
+    a1: Array<u8> = [];
+    a2: Array<u8> = [1];
+    a3: Array<u32> = [];
+    a4: Array<u32> = [1];
+    a5: Array<string> = ["233"];
 }
 
 @serde()

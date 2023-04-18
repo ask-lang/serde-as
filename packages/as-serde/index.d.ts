@@ -6,6 +6,15 @@
 declare function serde(cfg?: SerdeConfig): any;
 
 /**
+ * The decorated class will automatically implement the `serialize` and `deserialize` method as tuple class.
+ *
+ * # Note
+ *
+ * User must implment `ISerdeTuple` for the tuple class.
+ */
+declare function serdeTuple(cfg?: SerdeConfig): any;
+
+/**
  * The decorated class will automatically implement the `serialize` method.
  */
 declare function serialize(cfg?: SerdeConfig): any;

@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { JSONSerializer, ISerialize } from "../index";
-import { TupleType } from "./testdata";
+import { TupleArrays, TupleType } from "./testdata";
 import {
     Arrays,
     Bools,
@@ -168,6 +168,12 @@ describe("JSONSerializer", () => {
     it("Bools", () => {
         let res = JSONSerializer.serialize(new Bools());
         const expected = '{"b1":false,"b2":true}';
+        expect(res).toBe(expected);
+    });
+
+    it("TupleArrays", () => {
+        let res = JSONSerializer.serialize(new TupleArrays());
+        const expected = '["","AQ==",[],[1],["233"]]';
         expect(res).toBe(expected);
     });
 
