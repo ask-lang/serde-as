@@ -28,18 +28,14 @@ const log = debug("SerializeVisitor");
 export class SerializeVisitor extends TransformVisitor {
     protected fields: FieldDeclaration[] = [];
     protected hasSuper: bool = false;
-    protected ser!: SerializeNode;
-    // Use the externalSer to replace `ser` if it exist.
-    protected readonly externalSer: SerializeNode | null = null;
+    protected readonly ser: SerializeNode;
 
     constructor(
         public readonly emitter: DiagnosticEmitter,
-        externalCfg: SerdeConfig | null = null,
+        cfg: SerdeConfig,
     ) {
         super();
-        if (externalCfg !== null) {
-            this.externalSer = new SerializeNode(externalCfg);
-        }
+        this.ser = new SerializeNode(cfg);
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
@@ -57,13 +53,6 @@ export class SerializeVisitor extends TransformVisitor {
             return node;
         }
         this.hasSuper = node.extendsType ? true : false;
-        if (this.externalSer) {
-            this.ser = this.externalSer;
-        } else {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.ser = SerializeNode.extractFromDecoratorNode(this.emitter, node)!;
-        }
-
         this.visit(node.members);
 
         const methodNode = SimpleParser.parseClassMember(this.genMethodDecl(node), node);

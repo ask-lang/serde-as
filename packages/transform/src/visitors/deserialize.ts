@@ -28,18 +28,14 @@ const log = debug("DeserializeVisitor");
 export class DeserializeVisitor extends TransformVisitor {
     protected fields: FieldDeclaration[] = [];
     protected hasSuper: bool = false;
-    protected de!: DeserializeNode;
-    // Use the externalDe to replace `de` if it exist.
-    protected readonly externalDe: DeserializeNode | null = null;
+    protected readonly de: DeserializeNode;
 
     constructor(
         public readonly emitter: DiagnosticEmitter,
-        externalCfg: SerdeConfig | null = null,
+        cfg: SerdeConfig,
     ) {
         super();
-        if (externalCfg != null) {
-            this.externalDe = new DeserializeNode(externalCfg);
-        }
+        this.de = new DeserializeNode(cfg);
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
@@ -56,12 +52,6 @@ export class DeserializeVisitor extends TransformVisitor {
             return node;
         }
         this.hasSuper = node.extendsType ? true : false;
-        if (this.externalDe) {
-            this.de = this.externalDe;
-        } else {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.de = DeserializeNode.extractFromDecoratorNode(this.emitter, node)!;
-        }
         this.visit(node.members);
 
         const methodNode = SimpleParser.parseClassMember(this.genMethodDecl(node), node);
