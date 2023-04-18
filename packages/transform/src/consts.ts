@@ -30,63 +30,6 @@ export const METHOD_DES_LAST_TUPLE_ELEM = "deserializeLastTupleElem";
 export const METHOD_DES_ARG_NAME = "deserializer";
 export const METHOD_DES_SIG = `${METHOD_DES}<__S extends Deserializer>(${METHOD_DES_ARG_NAME}: __S): this`;
 
-/**
- * Crates a `deserializeField` or `deserializeLastField`.
- * @param ty
- * @param nameStr
- * @param isLast
- * @returns
- */
-export function deserializeField(ty: string, nameStr: string, isLast: boolean): string {
-    return `${METHOD_DES_ARG_NAME}.${
-        isLast ? METHOD_DES_LAST_FIELD : METHOD_DES_FIELD
-    }<${ty}>(${nameStr})`;
-}
-
-/**
- * Crates a `serializeField` or `serializeLastField`.
- * @param ty
- * @param nameStr
- * @param fieldName
- * @param isLast
- * @returns
- */
-export function serializeField(
-    ty: string,
-    nameStr: string,
-    fieldName: string,
-    isLast: boolean,
-): string {
-    return `${METHOD_SER_ARG_NAME}.${
-        isLast ? METHOD_SER_LAST_FIELD : METHOD_SER_FIELD
-    }<${ty}>(${nameStr}, this.${fieldName})`;
-}
-
-/**
- * Crates a `deserializeTupleElem` or `deserializeLastTupleElem`.
- * @param ty
- * @param isLast
- * @returns
- */
-export function deserializeTupleElem(ty: string, isLast: boolean): string {
-    return `${METHOD_DES_ARG_NAME}.${
-        isLast ? METHOD_DES_LAST_TUPLE_ELEM : METHOD_DES_TUPLE_ELEM
-    }<${ty}>()`;
-}
-
-/**
- * Crates a `serializeTupleElem` or `serializeLastTupleElem`.
- * @param ty
- * @param fieldName
- * @param isLast
- * @returns
- */
-export function serializeTupleElem(ty: string, fieldName: string, isLast: boolean): string {
-    return `${METHOD_SER_ARG_NAME}.${
-        isLast ? METHOD_SER_LAST_TUPLE_ELEM : METHOD_SER_TUPLE_ELEM
-    }<${ty}>(this.${fieldName})`;
-}
-
 export function superSerialize(): string {
     return `super.${METHOD_SER}<__R, __S>(${METHOD_SER_ARG_NAME})`;
 }
@@ -121,7 +64,7 @@ export class FieldInfo {
      * @returns
      */
     genDeserializeTupleElem(): string {
-        return `${METHOD_DES_ARG_NAME}.${
+        return `this.${this.fieldOriginName} = ${METHOD_DES_ARG_NAME}.${
             this.isLast ? METHOD_DES_LAST_TUPLE_ELEM : METHOD_DES_TUPLE_ELEM
         }<${this.typeName}>()`;
     }
@@ -141,9 +84,9 @@ export class FieldInfo {
      * @returns
      */
     genDeserializeField(): string {
-        return `this.${this.fieldOriginName} = ${METHOD_DES_ARG_NAME}.${this.isLast ? METHOD_DES_LAST_FIELD : METHOD_DES_FIELD}<${
-            this.typeName
-        }>(${this.fieldName})`;
+        return `this.${this.fieldOriginName} = ${METHOD_DES_ARG_NAME}.${
+            this.isLast ? METHOD_DES_LAST_FIELD : METHOD_DES_FIELD
+        }<${this.typeName}>(${this.fieldName})`;
     }
 }
 

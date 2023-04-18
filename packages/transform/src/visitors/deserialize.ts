@@ -26,11 +26,11 @@ import { SerdeConfig, DeserializeNode } from "../ast.js";
 const log = debug("DeserializeVisitor");
 
 export class DeserializeVisitor extends TransformVisitor {
-    private fields: FieldDeclaration[] = [];
-    private hasSuper: bool = false;
-    private de!: DeserializeNode;
+    protected fields: FieldDeclaration[] = [];
+    protected hasSuper: bool = false;
+    protected de!: DeserializeNode;
     // Use the externalDe to replace `de` if it exist.
-    readonly externalDe: DeserializeNode | null = null;
+    protected readonly externalDe: DeserializeNode | null = null;
 
     constructor(
         public readonly emitter: DiagnosticEmitter,
@@ -64,13 +64,13 @@ export class DeserializeVisitor extends TransformVisitor {
         }
         this.visit(node.members);
 
-        const methodNode = SimpleParser.parseClassMember(this.genMethodDecl(), node);
+        const methodNode = SimpleParser.parseClassMember(this.genMethodDecl(node), node);
         node.members.push(methodNode);
         log(ASTBuilder.build(node));
         return node;
     }
 
-    protected genMethodDecl(): string {
+    protected genMethodDecl(_node: ClassDeclaration): string {
         // for fields declared in constructor
         this.fields = _.uniqBy(this.fields, (f) => f);
         const lastField = this.fields[this.fields.length - 1];
@@ -93,7 +93,7 @@ export class DeserializeVisitor extends TransformVisitor {
         // start
         stmts.unshift(this.genStmtBeforeField(this.fields.length));
         // end
-        stmts.push(`${METHOD_DES_ARG_NAME}.${METHOD_END_DES_FIELD}();`);
+        stmts.push(this.genStmtBeforeReturn());
         stmts.push(this.genReturnStmt());
         const methodDecl = `
 ${METHOD_DES_SIG} { 
@@ -104,6 +104,10 @@ ${METHOD_DES_SIG} {
 
     protected genStmtBeforeField(_count: number): string {
         return `${METHOD_DES_ARG_NAME}.${METHOD_START_DES_FIELD}();`;
+    }
+
+    protected genStmtBeforeReturn(): string {
+        return `${METHOD_DES_ARG_NAME}.${METHOD_END_DES_FIELD}();`;
     }
 
     protected genReturnStmt(): string {
