@@ -9,9 +9,9 @@ import {
 import { utils } from "visitor-as";
 import debug from "debug";
 import { ClassSerdeKind } from "./consts.js";
-import { SerdeVisitor, DeserializeVisitor, SerializeVisitor } from "./visitors/index.js";
+import { SerdeVisitor, DeserializeVisitor, SerializeVisitor, SerdeTupleVisitor } from "./visitors/index.js";
 import { isEntry, updateSource } from "./utils.js";
-import { SerdeNode } from "./ast.js";
+import { DeserializeNode, SerdeNode, SerializeNode, extractMapFromDecoratorNode } from "./ast.js";
 
 const log = debug("SerdeTransform");
 
@@ -21,24 +21,40 @@ class SerdeTransform extends TransformVisitor {
     private parser!: Parser;
 
     visitClassDeclaration(node: ClassDeclaration, _isDefault?: boolean): ClassDeclaration {
-        // Ignore `Serialize` and `Deserialize` if meet `Serde`.
-        const serdeNode = SerdeNode.extractFromDecoratorNode(this.parser, node);
-        if (serdeNode) {
+        /// Duplicated impls will be reported error by compiler later stage direclty.
+        const serdeConfig = extractMapFromDecoratorNode(this.parser, node, ClassSerdeKind.Serde);
+        const serdeTupleConfig = extractMapFromDecoratorNode(this.parser, node, ClassSerdeKind.SerdeTuple);
+        const serConfig = extractMapFromDecoratorNode(this.parser, node, ClassSerdeKind.Serialize);
+        const deConfig = extractMapFromDecoratorNode(this.parser, node, ClassSerdeKind.Deserialize);
+
+        // if (serdeConfig != null && serdeTupleConfig != null) {
+        //     this.parser.error(DiagnosticCode.Transform_0_1, node.range, TARGET, "Duplicated serde decorator");
+        // }
+        // if (( serdeConfig != null || serdeTupleConfig) && (serConfig != null || deConfig != null )) {
+        //     this.parser.error(DiagnosticCode.Transform_0_1, node.range, TARGET, "Duplicated serde decorator");
+        // }
+
+        if (serdeTupleConfig) {
             this.hasSerde = true;
-            const visitor = new SerdeVisitor(this.parser, serdeNode);
+            const visitor = new SerdeTupleVisitor(this.parser, new SerdeNode(serdeTupleConfig));
             node = visitor.visitClassDeclaration(node);
-            return node;
         }
 
-        if (utils.hasDecorator(node, ClassSerdeKind.Serialize)) {
+        if (serdeConfig) {
             this.hasSerde = true;
-            const visitor = new SerializeVisitor(this.parser);
+            const visitor = new SerdeVisitor(this.parser, new SerdeNode(serdeConfig));
             node = visitor.visitClassDeclaration(node);
         }
 
-        if (utils.hasDecorator(node, ClassSerdeKind.Deserialize)) {
+        if (serConfig) {
             this.hasSerde = true;
-            const visitor = new DeserializeVisitor(this.parser);
+            const visitor = new SerializeVisitor(this.parser, new SerializeNode(serConfig));
+            node = visitor.visitClassDeclaration(node);
+        }
+
+        if (deConfig) {
+            this.hasSerde = true;
+            const visitor = new DeserializeVisitor(this.parser, new DeserializeNode(deConfig));
             node = visitor.visitClassDeclaration(node);
         }
 

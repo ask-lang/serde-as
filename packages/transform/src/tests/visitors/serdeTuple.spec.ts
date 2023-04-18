@@ -1,5 +1,5 @@
 import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
-import { DeserializeTupleVisitor } from "../../visitors/index.js";
+import { SerdeTupleVisitor } from "../../visitors/index.js";
 import { Case, commnCheckVisitor } from "./common.js";
 import { SerdeConfig } from "../../ast.js";
 
@@ -13,16 +13,22 @@ function checkVisitor(
     error = false,
 ): void {
     const program = newProgram(newOptions());
-    const visitor = new DeserializeTupleVisitor(program, cfg);
+    const visitor = new SerdeTupleVisitor(program, cfg);
     commnCheckVisitor(visitor, code, expected, warn, error);
 }
-describe("DeserializeTupleVisitor", () => {
-    it("normal @deserializeTuple", () => {
+describe("SerdeTupleVisitor", () => {
+    it("normal @serdeTuple", () => {
         const code = Case.Foo;
         const expected = `
 class Foo {
   s: string = "test";
   b: bool = false;
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
+    serializer.startSerializeTuple(2);
+    serializer.serializeTupleElem<string>(this.s);
+    serializer.serializeLastTupleElem<bool>(this.b);
+    return serializer.endSerializeTuple();
+  }
   deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeTuple(2);
     this.s = deserializer.deserializeTupleElem<string>();
@@ -36,12 +42,18 @@ class Foo {
         checkVisitor(code, expected, cfg);
     });
 
-    it("@deserializeTuple with `omitName`", () => {
+    it("@serdeTuple with `omitName`", () => {
         const code = Case.Foo;
         const expected = `
 class Foo {
   s: string = "test";
   b: bool = false;
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
+    serializer.startSerializeTuple(2);
+    serializer.serializeTupleElem<string>(this.s);
+    serializer.serializeLastTupleElem<bool>(this.b);
+    return serializer.endSerializeTuple();
+  }
   deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeTuple(2);
     this.s = deserializer.deserializeTupleElem<string>();
@@ -55,7 +67,7 @@ class Foo {
         checkVisitor(code, expected, cfg);
     });
 
-    it("@deserializeTuple do not support `extends`", () => {
+    it("@serdeTuple do not support `extends`", () => {
         const code = Case.BarExtendsFoo;
         {
             const cfg = { omitName: false, skipSuper: false };
