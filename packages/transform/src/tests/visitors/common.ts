@@ -16,7 +16,6 @@ export function commnCheckVisitor(
 
     let stmt = source.statements[0];
     assert.equal(stmt.kind, NodeKind.ClassDeclaration);
-    // assert.ok(utils.hasDecorator(stmt as ClassDeclaration, serdeKind));
     // when meet error, we don't check expected code
     if (error == false) {
         const actual = ASTBuilder.build(source);
@@ -38,5 +37,5 @@ export enum Case {
     }`,
     EmptyBar = "class Bar {}",
     EmptyBarExtendsFoo = "class Bar extends Foo {}",
-    MissingField = "class Bar { b = false; }",
+    MissingFieldType = "class Bar { b = false; }",
 }

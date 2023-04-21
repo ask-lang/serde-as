@@ -147,7 +147,7 @@ class Bar extends Foo {
     });
 
     it("field missing type", () => {
-        const code = Case.MissingField;
+        const code = Case.MissingFieldType;
         const cfg = { omitName: false, skipSuper: false };
         checkVisitor(code, "", cfg, false, true);
     });

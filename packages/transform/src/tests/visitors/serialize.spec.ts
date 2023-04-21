@@ -119,7 +119,7 @@ class Bar {
     });
 
     it("field missing type", () => {
-        const code = Case.MissingField;
+        const code = Case.MissingFieldType;
         const cfg = { omitName: false, skipSuper: true };
         checkVisitor(code, "", cfg, false, true);
     });
