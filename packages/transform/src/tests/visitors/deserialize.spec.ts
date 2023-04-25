@@ -1,28 +1,25 @@
 import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
 import { DeserializeVisitor } from "../../visitors/index.js";
-import { Case, checkVisitor } from "./common.js";
-import { ClassSerdeKind } from "../../consts.js";
+import { Case, commonCheckVisitor } from "./common.js";
+import { SerdeConfig } from "../../ast.js";
 
 // Note: in tests we have to use two spaces as ident because of ASTBuilder.
 
-function checkDeserializeVisitor(
+function checkVisitor(
     code: string,
     expected: string,
+    cfg: SerdeConfig,
     warn = false,
     error = false,
 ): void {
-    const visitor = new DeserializeVisitor(newProgram(newOptions()), null);
-    checkVisitor(visitor, code, expected, warn, error, ClassSerdeKind.Deserialize);
+    const visitor = new DeserializeVisitor(newProgram(newOptions()), cfg);
+    commonCheckVisitor(visitor, code, expected, warn, error);
 }
 
 describe("DeserializeVisitor", () => {
     it("normal @deserialize", () => {
-        const code = `
-@deserialize
-${Case.Foo}
-`.trim();
+        const code = Case.Foo;
         const expected = `
-@deserialize
 class Foo {
   s: string = "test";
   b: bool = false;
@@ -36,18 +33,13 @@ class Foo {
 }
 `.trim();
 
-        checkDeserializeVisitor(code, expected);
+        const cfg = { omitName: false, skipSuper: false };
+        checkVisitor(code, expected, cfg);
     });
 
-    it("@deserialize with omitName", () => {
-        const code = `
-@deserialize({ omitName: true })
-${Case.Foo}
-`.trim();
+    it("@deserialize with `omitName`", () => {
+        const code = Case.Foo;
         const expected = `
-@deserialize({
-  omitName: true
-})
 class Foo {
   s: string = "test";
   b: bool = false;
@@ -61,16 +53,13 @@ class Foo {
 }
 `.trim();
 
-        checkDeserializeVisitor(code, expected);
+        const cfg = { omitName: true, skipSuper: false };
+        checkVisitor(code, expected, cfg);
     });
 
     it("normal @deserialize with super", () => {
-        const code = `
-@deserialize
-${Case.BarExtendsFoo}
-`.trim();
+        const code = Case.BarExtendsFoo;
         const expected = `
-@deserialize
 class Bar extends Foo {
   s: string = "test";
   b: bool = false;
@@ -84,18 +73,12 @@ class Bar extends Foo {
   }
 }
 `.trim();
-
-        checkDeserializeVisitor(code, expected);
+        const cfg = { omitName: false, skipSuper: false };
+        checkVisitor(code, expected, cfg);
     });
-    it("@deserialize with skipSuper", () => {
-        const code = `
-@deserialize({ skipSuper: true })
-${Case.BarExtendsFoo}
-`.trim();
+    it("@deserialize with `skipSuper`", () => {
+        const code = Case.BarExtendsFoo;
         const expected = `
-@deserialize({
-  skipSuper: true
-})
 class Bar extends Foo {
   s: string = "test";
   b: bool = false;
@@ -108,16 +91,13 @@ class Bar extends Foo {
   }
 }
 `.trim();
-        checkDeserializeVisitor(code, expected);
+        const cfg = { omitName: false, skipSuper: true };
+        checkVisitor(code, expected, cfg);
     });
 
     it("normal empty @deserialize with super", () => {
-        const code = `
-@deserialize
-${Case.EmptyBarExtendsFoo}
-`.trim();
+        const code = Case.EmptyBarExtendsFoo;
         const expected = `
-@deserialize
 class Bar extends Foo {
   deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
@@ -128,17 +108,13 @@ class Bar extends Foo {
 }
 `.trim();
 
-        checkDeserializeVisitor(code, expected);
+        const cfg = { omitName: false, skipSuper: false };
+        checkVisitor(code, expected, cfg);
     });
 
-    it("empty @deserialize without super", () => {
-        const code = `
-@deserialize
-${Case.EmptyBar}
-`.trim();
-
+    it("empty @deserialize with `skipSuper`", () => {
+        const code = Case.EmptyBar;
         const expected = `
-@deserialize
 class Bar {
   deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
@@ -147,19 +123,13 @@ class Bar {
   }
 }
 `.trim();
-
-        checkDeserializeVisitor(code, expected);
+        const cfg = { omitName: false, skipSuper: true };
+        checkVisitor(code, expected, cfg);
     });
 
-    it("@deserialize with skipSuper", () => {
-        const code = `
-@deserialize({ skipSuper: true })
-${Case.BarExtendsFoo}
-`.trim();
+    it("@deserialize with `skipSuper`", () => {
+        const code = Case.BarExtendsFoo;
         const expected = `
-@deserialize({
-  skipSuper: true
-})
 class Bar extends Foo {
   s: string = "test";
   b: bool = false;
@@ -172,16 +142,13 @@ class Bar extends Foo {
   }
 }
 `.trim();
-        checkDeserializeVisitor(code, expected);
+        const cfg = { omitName: false, skipSuper: true };
+        checkVisitor(code, expected, cfg);
     });
 
     it("field missing type", () => {
-        const code = `
-@deserialize
-class Bar {
-  b = false;
-}
-`.trim();
-        checkDeserializeVisitor(code, "", false, true);
+        const code = Case.MissingFieldType;
+        const cfg = { omitName: false, skipSuper: false };
+        checkVisitor(code, "", cfg, false, true);
     });
 });

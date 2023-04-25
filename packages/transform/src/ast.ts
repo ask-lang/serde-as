@@ -137,6 +137,21 @@ function getBoolConfigValue(map: Map<string, string>, key: string): boolean {
     return false;
 }
 
+export function extractMapFromDecoratorNode(
+    emitter: DiagnosticEmitter,
+    node: DeclarationStatement,
+    kind: ClassSerdeKind,
+): DecoratorConfigMap | null {
+    if (!utils.hasDecorator(node, kind)) {
+        return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const decorator = extractDecorator(emitter, node, kind)!;
+    const map = extractConfigFromDecorator(emitter, decorator);
+
+    return map;
+}
+
 export class SerdeNode implements ISerde, ISerdeConfig {
     readonly serdeKind: ClassSerdeKind = ClassSerdeKind.Serde;
     readonly skipSuper: boolean;
@@ -166,14 +181,11 @@ export class SerdeNode implements ISerde, ISerdeConfig {
         emitter: DiagnosticEmitter,
         node: DeclarationStatement,
     ): SerdeNode | null {
-        if (!utils.hasDecorator(node, ClassSerdeKind.Serde)) {
-            return null;
+        const map = extractMapFromDecoratorNode(emitter, node, ClassSerdeKind.Serde);
+        if (map) {
+            return new SerdeNode(map);
         }
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const decorator = extractDecorator(emitter, node, ClassSerdeKind.Serde)!;
-        const map = extractConfigFromDecorator(emitter, decorator);
-
-        return new SerdeNode(map);
+        return null;
     }
 }
 

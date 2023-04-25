@@ -30,31 +30,64 @@ export const METHOD_DES_LAST_TUPLE_ELEM = "deserializeLastTupleElem";
 export const METHOD_DES_ARG_NAME = "deserializer";
 export const METHOD_DES_SIG = `${METHOD_DES}<__S extends Deserializer>(${METHOD_DES_ARG_NAME}: __S): this`;
 
-// Crates a `deserializeField` or `deserializeLastField`.
-export function deserializeField(ty: string, nameStr: string, isLast: boolean): string {
-    return `${METHOD_DES_ARG_NAME}.${
-        isLast ? METHOD_DES_LAST_FIELD : METHOD_DES_FIELD
-    }<${ty}>(${nameStr})`;
-}
-
-// Crates a `serializeField` or `serializeLastField`.
-export function serializeField(
-    ty: string,
-    nameStr: string,
-    fieldName: string,
-    isLast: boolean,
-): string {
-    return `${METHOD_SER_ARG_NAME}.${
-        isLast ? METHOD_SER_LAST_FIELD : METHOD_SER_FIELD
-    }<${ty}>(${nameStr}, this.${fieldName})`;
-}
-
 export function superSerialize(): string {
     return `super.${METHOD_SER}<__R, __S>(${METHOD_SER_ARG_NAME})`;
 }
 
 export function superDeserialize(): string {
     return `super.${METHOD_DES}<__S>(${METHOD_DES_ARG_NAME})`;
+}
+
+/**
+ * This class contains a typical info about serde class field.ss
+ */
+export class FieldInfo {
+    constructor(
+        public readonly typeName: string,
+        public readonly fieldOriginName: string,
+        public readonly fieldName: string,
+        public readonly isLast: boolean,
+    ) {}
+
+    /**
+     * Crates a `serializeTupleElem` or `serializeLastTupleElem`.
+     * @returns
+     */
+    genSerializeTupleElem(): string {
+        return `${METHOD_SER_ARG_NAME}.${
+            this.isLast ? METHOD_SER_LAST_TUPLE_ELEM : METHOD_SER_TUPLE_ELEM
+        }<${this.typeName}>(this.${this.fieldOriginName})`;
+    }
+
+    /**
+     * Crates a `deserializeTupleElem` or `deserializeLastTupleElem`.
+     * @returns
+     */
+    genDeserializeTupleElem(): string {
+        return `this.${this.fieldOriginName} = ${METHOD_DES_ARG_NAME}.${
+            this.isLast ? METHOD_DES_LAST_TUPLE_ELEM : METHOD_DES_TUPLE_ELEM
+        }<${this.typeName}>()`;
+    }
+
+    /**
+     * Crates a `serializeField` or `serializeLastField`.
+     * @returns
+     */
+    genSerializeField(): string {
+        return `${METHOD_SER_ARG_NAME}.${this.isLast ? METHOD_SER_LAST_FIELD : METHOD_SER_FIELD}<${
+            this.typeName
+        }>(${this.fieldName}, this.${this.fieldOriginName})`;
+    }
+
+    /**
+     * Crates a `deserializeField` or `deserializeLastField`.
+     * @returns
+     */
+    genDeserializeField(): string {
+        return `this.${this.fieldOriginName} = ${METHOD_DES_ARG_NAME}.${
+            this.isLast ? METHOD_DES_LAST_FIELD : METHOD_DES_FIELD
+        }<${this.typeName}>(${this.fieldName})`;
+    }
 }
 
 // Decorator key name.
@@ -67,15 +100,24 @@ export const CFG_RENAME_ALL = "renameAll";
  * The decorator for class.
  */
 export enum ClassSerdeKind {
-    // Repsents `Serialize` and `Deserialize`
+    /**
+     * Repsents `Serialize` and `Deserialize`.
+     */
     Serde = "serde",
-    // Add serialize method to class.
-    Serialize = "serialize",
-    // Add deserialize method to class.
-    Deserialize = "deserialize",
-    // Repsents `Serialize` and `Deserialize`.
-    // And also decorate a class to be a tuple type.
+    /**
+     * Same with `Serde`, but also decorate a class to be a tuple type.
+     *
+     * It's more friendly for downstream usage that choose a new decorator rather than a decorator config for tuple class.
+     */
     SerdeTuple = "serdeTuple",
+    /*
+     * Add serialize method to class.
+     */
+    Serialize = "serialize",
+    /**
+     * Add deserialize method to class.
+     */
+    Deserialize = "deserialize",
 }
 
 // TODO: TBD
@@ -83,15 +125,21 @@ export enum ClassSerdeKind {
  * The decorator for class members.
  */
 export enum MemberSerdeKind {
-    // Repsents `SkipSerializing` and `SkipDeserializing`
+    /**
+     * Repsents `SkipSerializing` and `SkipDeserializing`.
+     */
     Skip = "skip",
     SkipSerializing = "skipSerializing",
     SkipDeserializing = "skipDeserializing",
-    // Repsents `GetSerializing` and `GetSerializing`
+    /**
+     * Repsents `GetSerializing` and `GetSerializing`.
+     */
     Get = "get",
     GetSerializing = "getSerializing",
     GetDeserializing = "getDeserializing",
-    // Repsents `SetSerializing` and `SetSerializing`
+    /**
+     * Repsents `SetSerializing` and `SetSerializing`
+     */
     Set = "set",
     SetSerializing = "setSerializing",
     SetDeserializing = "setDeserializing",

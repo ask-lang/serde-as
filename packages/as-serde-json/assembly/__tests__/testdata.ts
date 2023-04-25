@@ -108,6 +108,15 @@ export class Bools {
     b2: bool = true;
 }
 
+@serdeTuple()
+export class TupleArrays implements ISerdeTuple {
+    a1: Array<u8> = [];
+    a2: Array<u8> = [1];
+    a3: Array<u32> = [];
+    a4: Array<u32> = [1];
+    a5: Array<string> = ["233"];
+}
+
 @serialize()
 export class Arrays {
     a1: Array<u8> = [];

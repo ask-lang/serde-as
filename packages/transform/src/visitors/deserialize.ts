@@ -11,13 +11,13 @@ import { toString, isMethodNamed } from "visitor-as/dist/utils.js";
 import _ from "lodash";
 import debug from "debug";
 import {
+    FieldInfo,
     METHOD_DES,
     METHOD_DES_ARG_NAME,
     METHOD_DES_SIG,
     METHOD_END_DES_FIELD,
     METHOD_START_DES_FIELD,
     TARGET,
-    deserializeField,
     superDeserialize,
 } from "../consts.js";
 import { getNameNullable } from "../utils.js";
@@ -26,20 +26,13 @@ import { SerdeConfig, DeserializeNode } from "../ast.js";
 const log = debug("DeserializeVisitor");
 
 export class DeserializeVisitor extends TransformVisitor {
-    private fields: FieldDeclaration[] = [];
-    private hasBase: bool = false;
-    private de!: DeserializeNode;
-    // Use the externalDe to replace `de` if it exist.
-    readonly externalDe: DeserializeNode | null = null;
+    protected fields: FieldDeclaration[] = [];
+    protected hasSuper: bool = false;
+    protected readonly de: DeserializeNode;
 
-    constructor(
-        public readonly emitter: DiagnosticEmitter,
-        externalCfg: SerdeConfig | null = null,
-    ) {
+    constructor(public readonly emitter: DiagnosticEmitter, cfg: SerdeConfig) {
         super();
-        if (externalCfg != null) {
-            this.externalDe = new DeserializeNode(externalCfg);
-        }
+        this.de = new DeserializeNode(cfg);
     }
 
     visitFieldDeclaration(node: FieldDeclaration): FieldDeclaration {
@@ -55,67 +48,64 @@ export class DeserializeVisitor extends TransformVisitor {
         if (node.members.some(isMethodNamed(METHOD_DES))) {
             return node;
         }
-        this.hasBase = node.extendsType ? true : false;
-        if (this.externalDe) {
-            this.de = this.externalDe;
-        } else {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.de = DeserializeNode.extractFromDecoratorNode(this.emitter, node)!;
-        }
-        super.visitClassDeclaration(node);
-        // for fields declared in constructor
-        this.fields = _.uniqBy(this.fields, (f) => f);
-        const lastField = this.fields[this.fields.length - 1];
-        const fields = this.fields.slice(0, -1);
-        const stmts = fields
-            .map((f) => this.genStmtForField(f))
-            .filter((elem) => elem != null) as string[];
+        this.hasSuper = node.extendsType ? true : false;
+        this.visit(node.members);
 
-        const hasSuper = this.hasBase && !this.de.skipSuper;
-        if (hasSuper) {
-            stmts.unshift(`${superDeserialize()};`);
-        }
-
-        if (lastField) {
-            const lastFieldStmt = this.genStmtForLastField(lastField);
-            if (lastFieldStmt) {
-                stmts.push(lastFieldStmt);
-            }
-        }
-        // start
-        stmts.unshift(`${METHOD_DES_ARG_NAME}.${METHOD_START_DES_FIELD}();`);
-        // end
-        stmts.push(`${METHOD_DES_ARG_NAME}.${METHOD_END_DES_FIELD}();`);
-        stmts.push(`return this;`);
-        const methodDecl = `
-${METHOD_DES_SIG} { 
-    ${stmts.join("\n")} 
-}`;
-
-        const methodNode = SimpleParser.parseClassMember(methodDecl, node);
+        const methodNode = SimpleParser.parseClassMember(this.genMethodDecl(node), node);
         node.members.push(methodNode);
         log(ASTBuilder.build(node));
         return node;
     }
 
-    protected genStmtForField(node: FieldDeclaration): string | null {
-        const name = toString(node.name);
-        const nameStr = this.de.omitName ? `""` : `"${name}"`;
-        if (!node.type) {
-            this.emitter.error(
-                DiagnosticCode.Transform_0_1,
-                node.range,
-                TARGET,
-                `serde-as: field '${name}' need a type declaration`,
-            );
-            return null;
-        } else {
-            const ty = getNameNullable(node.type);
-            return [`this.${name} = ${deserializeField(ty, nameStr, false)};`].join("\n");
+    protected genMethodDecl(_node: ClassDeclaration): string {
+        // for fields declared in constructor
+        this.fields = _.uniqBy(this.fields, (f) => f);
+        const lastField = this.fields[this.fields.length - 1];
+        const fields = this.fields.slice(0, -1);
+        const stmts = fields
+            .map((f) => this.genStmtForField(f, false))
+            .filter((elem) => elem != null) as string[];
+
+        const skipSuper = this.de.skipSuper || !this.hasSuper;
+        if (!skipSuper) {
+            stmts.unshift(`${superDeserialize()};`);
         }
+
+        if (lastField) {
+            const lastFieldStmt = this.genStmtForField(lastField, true);
+            if (lastFieldStmt) {
+                stmts.push(lastFieldStmt);
+            }
+        }
+        // start
+        stmts.unshift(this.genStmtBeforeField(this.fields.length));
+        // end
+        stmts.push(this.genStmtBeforeReturn());
+        stmts.push(this.genReturnStmt());
+        const methodDecl = `
+${METHOD_DES_SIG} { 
+    ${stmts.join("\n")} 
+}`;
+        return methodDecl;
     }
 
-    protected genStmtForLastField(node: FieldDeclaration): string | null {
+    protected genStmtBeforeField(_count: number): string {
+        return `${METHOD_DES_ARG_NAME}.${METHOD_START_DES_FIELD}();`;
+    }
+
+    protected genStmtBeforeReturn(): string {
+        return `${METHOD_DES_ARG_NAME}.${METHOD_END_DES_FIELD}();`;
+    }
+
+    protected genReturnStmt(): string {
+        return `return this;`;
+    }
+
+    protected genStmtForField(node: FieldDeclaration, isLast: boolean): string | undefined {
+        return this.collectFieldInfo(node, isLast)?.genDeserializeField();
+    }
+
+    protected collectFieldInfo(node: FieldDeclaration, isLast: boolean): FieldInfo | null {
         const name = toString(node.name);
         const nameStr = this.de.omitName ? `""` : `"${name}"`;
         if (!node.type) {
@@ -123,12 +113,12 @@ ${METHOD_DES_SIG} {
                 DiagnosticCode.Transform_0_1,
                 node.range,
                 TARGET,
-                `serde-as: field '${name}' need a type declaration`,
+                `field '${name}' need a type declaration`,
             );
             return null;
         } else {
             const ty = getNameNullable(node.type);
-            return [`this.${name} = ${deserializeField(ty, nameStr, true)};`].join("\n");
+            return new FieldInfo(ty, name, nameStr, isLast);
         }
     }
 }
