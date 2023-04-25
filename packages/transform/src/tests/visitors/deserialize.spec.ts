@@ -1,6 +1,6 @@
 import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
 import { DeserializeVisitor } from "../../visitors/index.js";
-import { Case, commnCheckVisitor } from "./common.js";
+import { Case, commonCheckVisitor } from "./common.js";
 import { SerdeConfig } from "../../ast.js";
 
 // Note: in tests we have to use two spaces as ident because of ASTBuilder.
@@ -13,7 +13,7 @@ function checkVisitor(
     error = false,
 ): void {
     const visitor = new DeserializeVisitor(newProgram(newOptions()), cfg);
-    commnCheckVisitor(visitor, code, expected, warn, error);
+    commonCheckVisitor(visitor, code, expected, warn, error);
 }
 
 describe("DeserializeVisitor", () => {

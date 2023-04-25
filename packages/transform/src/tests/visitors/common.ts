@@ -3,7 +3,7 @@ import { ASTBuilder, TransformVisitor } from "visitor-as";
 import { Parser, DiagnosticEmitter, Source, NodeKind } from "assemblyscript/dist/assemblyscript.js";
 import { hasErrorMessage, hasWarningMessage } from "../../utils.js";
 
-export function commnCheckVisitor(
+export function commonCheckVisitor(
     visitor: TransformVisitor & { emitter: DiagnosticEmitter },
     code: string,
     expected: string,
