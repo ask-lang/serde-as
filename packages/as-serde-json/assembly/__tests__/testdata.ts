@@ -1,6 +1,19 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { ISerialize } from "as-serde";
+import { ISerdeTuple, ISerialize, Serializer } from "as-serde";
+
+export class TupleType implements ISerialize, ISerdeTuple {
+    s1: string = "1";
+    s2: string | null = "2";
+    s3: string = "3";
+    serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
+        serializer.startSerializeTuple(3);
+        serializer.serializeTupleElem<string>(this.s1);
+        serializer.serializeTupleElem<string | null>(this.s2);
+        serializer.serializeLastTupleElem<string>(this.s3);
+        return serializer.endSerializeTuple();
+    }
+}
 
 @serialize()
 export class Numbers {
@@ -76,8 +89,8 @@ export class SkipSuperNumbers extends Numbers {
 @serialize()
 export class Strings {
     s1: string = "";
-    s2: string = '"';
-    s3: string = "\r\n";
+    s2: string = '"/\\';
+    s3: string = "\b\f\n\r\t";
 }
 
 @serialize()
@@ -93,6 +106,15 @@ export class Errors {
 export class Bools {
     b1: bool = false;
     b2: bool = true;
+}
+
+@serdeTuple()
+export class TupleArrays implements ISerdeTuple {
+    a1: Array<u8> = [];
+    a2: Array<u8> = [1];
+    a3: Array<u32> = [];
+    a4: Array<u32> = [1];
+    a5: Array<string> = ["233"];
 }
 
 @serialize()

@@ -1,23 +1,14 @@
 import * as assert from "assert";
-import { ASTBuilder, TransformVisitor, utils } from "visitor-as";
-import {
-    Parser,
-    DiagnosticEmitter,
-    ClassDeclaration,
-    Source,
-    NodeKind,
-} from "assemblyscript/dist/assemblyscript.js";
-
+import { ASTBuilder, TransformVisitor } from "visitor-as";
+import { Parser, DiagnosticEmitter, Source, NodeKind } from "assemblyscript/dist/assemblyscript.js";
 import { hasErrorMessage, hasWarningMessage } from "../../utils.js";
-import { ClassSerdeKind } from "../../consts.js";
 
-export function checkVisitor(
+export function commonCheckVisitor(
     visitor: TransformVisitor & { emitter: DiagnosticEmitter },
     code: string,
     expected: string,
     warn: boolean,
     error: boolean,
-    serdeKind: ClassSerdeKind,
 ): void {
     const parser = new Parser();
     parser.parseFile(code, "index.ts", true);
@@ -25,7 +16,6 @@ export function checkVisitor(
 
     let stmt = source.statements[0];
     assert.equal(stmt.kind, NodeKind.ClassDeclaration);
-    assert.ok(utils.hasDecorator(stmt as ClassDeclaration, serdeKind));
     // when meet error, we don't check expected code
     if (error == false) {
         const actual = ASTBuilder.build(source);
@@ -47,4 +37,5 @@ export enum Case {
     }`,
     EmptyBar = "class Bar {}",
     EmptyBarExtendsFoo = "class Bar extends Foo {}",
+    MissingFieldType = "class Bar { b = false; }",
 }

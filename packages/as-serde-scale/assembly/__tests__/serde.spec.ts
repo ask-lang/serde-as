@@ -1,7 +1,15 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { BytesBuffer, ScaleDeserializer, ScaleSerializer, ISerialize } from "..";
-import { Empty, SuperEmpty } from "./testdata";
+import {
+    IDeserialize,
+    BytesBuffer,
+    ScaleDeserializer,
+    ScaleSerializer,
+    ISerialize,
+    ISerdeTuple,
+    IUnsafeInit,
+} from "..";
+import { Empty, SuperEmpty, Custom, FixedArray8, Matrix8, TupleArrays } from "./testdata";
 import {
     Arrays,
     Bools,
@@ -15,6 +23,82 @@ import {
 } from "./testdata";
 
 describe("ScaleSerializer", () => {
+    it("FixedArray8", () => {
+        let case1 = new FixedArray8<u8>();
+        case1[0] = 0x01;
+        case1[1] = 0x02;
+        case1[2] = 0x03;
+        case1[3] = 0x04;
+        let tests: Array<TestData<FixedArray8<u8>, StaticArray<u8>>> = [
+            new TestData(case1, [0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00]),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<FixedArray8<u8>>(
+                BytesBuffer.wrap(test.output),
+            );
+            expect(desData).toStrictEqual(test.input);
+            expect(test.input instanceof ISerialize).toBeTruthy();
+            expect(test.input instanceof IDeserialize).toBeTruthy();
+            expect(test.input instanceof ISerdeTuple).toBeTruthy();
+        }
+    });
+
+    it("Matrix8", () => {
+        let array = new FixedArray8<u8>();
+        array[0] = 0x01;
+        array[1] = 0x02;
+        array[2] = 0x03;
+        array[3] = 0x04;
+
+        let case1 = new Matrix8<u8>();
+        case1.unsafeInit();
+        case1[0] = array.clone();
+        case1[1] = array.clone();
+        case1[2] = array.clone();
+        case1[3] = array.clone();
+        // prettier-ignore
+        let tests: Array<TestData<Matrix8<u8>, StaticArray<u8>>> = [
+            new TestData(
+                case1,
+                [
+                    0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x00,
+                    0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02,
+                    0x03, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                ],
+            ),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<Matrix8<u8>>(BytesBuffer.wrap(test.output));
+            expect(desData).toStrictEqual(test.input);
+            expect(test.input instanceof ISerialize).toBeTruthy();
+            expect(test.input instanceof IDeserialize).toBeTruthy();
+            expect(test.input instanceof ISerdeTuple).toBeTruthy();
+            expect(test.input instanceof IUnsafeInit).toBeTruthy();
+        }
+    });
+
+    it("Custom", () => {
+        let tests: Array<TestData<ISerialize, StaticArray<u8>>> = [
+            new TestData(new Custom() as ISerialize, [0x01]),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<Custom>(BytesBuffer.wrap(test.output));
+            expect(desData).toStrictEqual(test.input as Custom);
+            expect(test.input instanceof ISerialize).toBeTruthy();
+        }
+    });
+
     it("Empty Inteface", () => {
         let tests: Array<TestData<ISerialize, StaticArray<u8>>> = [
             new TestData(new Empty() as ISerialize, []),
@@ -214,6 +298,19 @@ describe("ScaleSerializer", () => {
         }
     });
 
+    it("TupleArrays", () => {
+        let tests: Array<TestData<TupleArrays, StaticArray<u8>>> = [
+            new TestData(new TupleArrays(), [0, 4, 1, 0, 4, 1, 0, 0, 0, 4, 12, 50, 51, 51]),
+        ];
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            let serData = ScaleSerializer.serialize(test.input);
+            expect(serData).toStrictEqual(test.output);
+            let desData = ScaleDeserializer.deserialize<TupleArrays>(BytesBuffer.wrap(test.output));
+            expect(desData).toStrictEqual(test.input);
+        }
+    });
+
     it("Arrays", () => {
         let tests: Array<TestData<Arrays, StaticArray<u8>>> = [
             new TestData(new Arrays(), [0, 4, 1, 0, 4, 1, 0, 0, 0, 4, 12, 50, 51, 51]),
@@ -321,7 +418,7 @@ describe("ScaleSerializer", () => {
     it("Nulls", () => {
         let tests: Array<TestData<Nulls, StaticArray<u8>>> = [
             new TestData(new Nulls(), [0, 0, 0, 0, 0]),
-            new TestData(Nulls.test1(), [0, 0, 0, 0, 0x01, 0x04, 0x02]),
+            new TestData(Nulls.test1(), [0, 0, 0, 0x01, 0x00, 0x01, 0x04, 0x02]),
         ];
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];

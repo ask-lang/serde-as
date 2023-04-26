@@ -14,7 +14,8 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     /**
-     * Serialize a value to a Array.
+     * Serialize a value to a StaticArray.
+     *
      * It reuse a global ScaleSerializer.
      * @param value value to be serialized
      * @returns
@@ -25,6 +26,10 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
         return ScaleSerializer.scale.serialize<C>(value).toStaticArray();
     }
 
+    /**
+     *
+     * @returns Return the underline buffer.
+     */
     @unsafe
     @inline
     buffer(): BytesBuffer {
@@ -146,44 +151,17 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     @inline
-    serializeClass<C extends ISerialize>(value: C): BytesBuffer {
-        if (!isNullable(value)) {
-            value.serialize<BytesBuffer, this>(this);
-        } else if (value !== null) {
-            this._buffer.writeByte(0x01);
-            value.serialize<BytesBuffer, this>(this);
-        } else {
-            this._buffer.writeByte(0x00);
-        }
+    serializeClass<T extends ISerialize>(value: nonnull<T>): BytesBuffer {
+        return value.serialize<BytesBuffer, this>(this);
+    }
 
-        return this._buffer;
+    @inline
+    serializeTuple<T extends ISerialize>(value: nonnull<T>): BytesBuffer {
+        return value.serialize<BytesBuffer, this>(this);
     }
 
     serializeIserialize(s: ISerialize): BytesBuffer {
         return s.serialize<BytesBuffer, this>(this);
-    }
-
-    startSerializeTuple(): BytesBuffer {
-        return this._buffer;
-    }
-
-    endSerializeTuple(): BytesBuffer {
-        return this._buffer;
-    }
-
-    serializeTupleElem<T>(value: T): BytesBuffer {
-        this.serialize<T>(value);
-        return this._buffer;
-    }
-
-    serializeNonNullTupleElem<T>(value: NonNullable<T>): BytesBuffer {
-        this.serialize<NonNullable<T>>(value);
-        return this._buffer;
-    }
-
-    @inline
-    private _serializeField<T>(value: T): void {
-        this.serialize<T>(value as T);
     }
 
     @inline
@@ -197,20 +175,29 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     @inline
-    serializeField<T>(name: string | null, value: T): BytesBuffer {
-        this._serializeField(value);
+    serializeField<T>(_name: string, value: T): BytesBuffer {
+        return this.serialize<T>(value as T);
+    }
+
+    @inline
+    startSerializeTuple(_len: u32): BytesBuffer {
         return this._buffer;
     }
 
     @inline
-    serializeNonNullField<T>(name: string | null, value: T): BytesBuffer {
-        this._serializeField(value);
+    endSerializeTuple(): BytesBuffer {
         return this._buffer;
+    }
+
+    @inline
+    serializeTupleElem<T>(value: T): BytesBuffer {
+        return this.serialize<T>(value);
     }
 
     @inline
     serializeNullable<T>(t: T): BytesBuffer {
-        if (t == null) {
+        // check null
+        if (changetype<usize>(t) == 0) {
             this._buffer.writeByte(0x00);
         } else {
             this._buffer.writeByte(0x01);

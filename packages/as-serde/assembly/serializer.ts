@@ -1,20 +1,19 @@
 // @ts-nocheck
-import { ISerialize } from "as-serde";
+import { ISerialize, isTuple } from "as-serde";
 /**
- * All methods of CoreSerializer will be used in as-serde-transfrom
+ * All methods of` CoreSerializer` will be used in as-serde-transfrom
  */
-export abstract class CoreSerializer<R> {
+abstract class CoreSerializer<R> {
     /**
      * startSerializeField is called by a normal class `serialize` method at the beginning.
      */
     abstract startSerializeField(): R;
-
     /**
      * endSerializeField is called by a normal class `serialize` method at the ending.
      */
     abstract endSerializeField(): R;
-
     /**
+<<<<<<< HEAD
      * startSerializeEnum is called by a enum class `serialize` method at the beginning.
      */
     abstract startSerializeEnum(): R;
@@ -26,33 +25,48 @@ export abstract class CoreSerializer<R> {
 
     /**
      * serializeField is called by a class `serialize` method for nullable type.
+=======
+     * serializeField is called by a class `serialize` method for field of class.
+>>>>>>> main
      * @param name field name
      * @param value field value
      */
-    abstract serializeField<T>(name: string | null, value: T): R;
+    abstract serializeField<T>(name: string, value: T): R;
+    /**
+     * serializeLastField is called by a class `serialize` method for the last field of class.
+     * @param name field name
+     * @param value field value
+     */
+    @inline
+    serializeLastField<T>(name: string, value: T): R {
+        return this.serializeField<T>(name, value);
+    }
 
     /**
-     * serializeNonNullField is called by a class `serialize` method for non-null type.
-     * @param name field name
-     * @param value field value
+     * Start to serialize a statically sized sequence whose length will be
+     * known at deserialization time without looking at the serialized data.
+     * This call must be followed by zero or more calls to `serializeTupleElem`,
+     * then a call to `endSerializeTuple`
+     * @param len
      */
-    abstract serializeNonNullField<T>(name: string | null, value: nonnull<T>): R;
-
+    abstract startSerializeTuple(len: u32): R;
     /**
-     * serializeLastField is called by a class `serialize` method at the end for nullable type.
-     * @param name field name
-     * @param value field value
+     * End to serialize a statically sized sequence.
      */
-    abstract serializeLastField<T>(name: string | null, value: T): R;
-
+    abstract endSerializeTuple(): R;
     /**
-     * serializeNonNullLastField is called by a class `serialize` method at the end for non-null type.
-     * @param name field name
-     * @param value field value
+     * This method should be used in after `startSerializeTuple` and before `endSerializeTuple`.
+     * @param value
      */
-    abstract serializeNonNullLastField<T>(name: string | null, value: nonnull<T>): R;
-
-    // TODO: maybe we can remove `serializeLastField` and `serializeNonNullLastField`
+    abstract serializeTupleElem<T>(value: T): R;
+    /**
+     * serializeLastTupleElem is called by a class `serialize` method for the last field of tuple class.
+     * @param value
+     */
+    @inline
+    serializeLastTupleElem<T>(value: T): R {
+        return this.serializeTupleElem<T>(value);
+    }
 }
 
 /**
@@ -91,36 +105,33 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
     abstract serializeSet<K, T extends Set<K>>(value: T): R;
     abstract serializeMap<K, V, T extends Map<K, V>>(value: T): R;
 
-    abstract serializeClass<C extends ISerialize>(value: C): R;
-
-    abstract serializeIserialize(value: ISerialize): R;
-
-    abstract startSerializeTuple(): R;
-    abstract endSerializeTuple(): R;
-    abstract serializeTupleElem<T>(value: T): R;
-    abstract serializeNonNullTupleElem<T>(value: nonnull<T>): R;
-
-    @inline
-    serializeLastField<T>(name: string | null, value: T): R {
-        return this.serializeField<T>(name, value);
-    }
-
-    @inline
-    serializeNonNullLastField<T>(name: string | null, value: nonnull<T>): R {
-        return this.serializeNonNullField<T>(name, value);
-    }
-
     /**
-     * Serialize a value whose type could be `| null`.
+     * Serialize a value of nullable type.
      * @param value value could be nullable
      */
-    abstract serializeNullable<V>(value: V): R;
+    abstract serializeNullable<T extends ISerialize>(value: T): R;
+    /**
+     * Serialize a value of nonull class.
+     * @param value value could not be nullable
+     */
+    abstract serializeClass<T extends ISerialize>(value: nonnull<T>): R;
+
+    /**
+     * Serialize a value of nonull tuple class.
+     *
+     * # Note
+     *
+     * `extends` class is not supported for tuple class.
+     * @param value value could not be nullable
+     */
+    abstract serializeTuple<T extends ISerialize>(value: nonnull<T>): R;
+
+    abstract serializeIserialize(value: ISerialize): R;
 
     /**
      * This is the default method for all other types.
      * @param value array value
      */
-
     abstract serializeArrayLike<A extends ArrayLike<valueof<A>>>(value: A): R;
 
     @inline
@@ -228,9 +239,7 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
             return this.serializeNumber<T>(value);
         } else if (isString<T>()) {
             return this.serializeString(value);
-        }
-        // try custom method first
-        else if (isArray<T>()) {
+        } else if (isArray<T>()) {
             return this.serializeArray<T>(value);
         } else if (idof<T>() == idof<ArrayBuffer>()) {
             return this.serializeArrayBuffer(value);
@@ -310,9 +319,10 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
             return this.serializeSet<indexof<T>, T>(value);
         } else if (value instanceof Map) {
             return this.serializeMap<indexof<T>, valueof<T>, T>(value);
+        } else if (isTuple<T>(value)) {
+            return this.serializeTuple<T>(value as nonnull<T>);
         } else {
-            // for compile error
-            return this.serializeClass(value);
+            return this.serializeClass<T>(value as nonnull<T>);
         }
     }
 }

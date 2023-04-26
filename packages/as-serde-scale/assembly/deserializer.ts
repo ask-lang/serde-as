@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { Deserializer, IDeserialize } from "as-serde";
+import { Deserializer, IDeserialize, instantiateRaw } from "as-serde";
 import { BytesBuffer } from "as-buffers";
 import { i128, u128 } from "as-bignum/assembly";
 import { Compact } from ".";
-import { FLOAT_UNSPPORTED, instantiateRaw } from "./misc";
+import { FLOAT_UNSPPORTED } from "./misc";
 
 export class ScaleDeserializer extends Deserializer {
     /**
@@ -79,15 +79,19 @@ export class ScaleDeserializer extends Deserializer {
     }
 
     @inline
-    deserializeClass<T>(): T {
+    deserializeClass<T extends IDeserialize>(): nonnull<T> {
         const clz: T = instantiateRaw<T>();
+        return clz.deserialize<this>(this);
+    }
 
+    @inline
+    deserializeTuple<T extends IDeserialize>(): nonnull<T> {
+        const clz: T = instantiateRaw<T>();
         return clz.deserialize<this>(this);
     }
 
     deserializeIDeserialize<T extends IDeserialize>(): T {
         const clz: T = instantiateRaw<T>();
-
         return clz.deserialize<this>(this);
     }
 
@@ -100,11 +104,7 @@ export class ScaleDeserializer extends Deserializer {
         return this.deserialize<T>();
     }
 
-    deserializeNonNullTupleElem<T>(): nonnull<T> {
-        return this.deserialize<nonnull<T>>();
-    }
-
-    deserializeField<T>(_name: string | null): T {
+    deserializeField<T>(_name: string): T {
         if (isNullable<T>()) {
             const b = this.deserializeBool();
             if (b == false) {

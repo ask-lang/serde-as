@@ -1,6 +1,7 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { JSONSerializer, ISerialize } from "../index";
+import { TupleArrays, TupleType } from "./testdata";
 import {
     Arrays,
     Bools,
@@ -21,6 +22,12 @@ import {
 } from "./testdata";
 
 describe("JSONSerializer", () => {
+    it("TupleType", () => {
+        let res = JSONSerializer.serialize(new TupleType());
+        const expected = '["1","2","3"]';
+        expect(res).toBe(expected);
+    });
+
     it("Empty Interface", () => {
         let res = JSONSerializer.serialize(new Empty() as ISerialize);
         const expected = `{}`;
@@ -141,8 +148,13 @@ describe("JSONSerializer", () => {
     });
 
     it("Strings", () => {
-        let res = JSONSerializer.serialize(new Strings());
-        const expected = '{"s1":"","s2":"\\"","s3":"\r\n"}';
+        let s = new Strings();
+        expect(s.s1).toHaveLength(0);
+        expect(s.s2).toHaveLength(3);
+        expect(s.s3).toHaveLength(5);
+        expect(`"\\"\\/\\\\"`).toHaveLength(8);
+        let res = JSONSerializer.serialize(s);
+        const expected = `{"s1":"","s2":"\\"\\/\\\\","s3":"\\b\\f\\n\\r\\t"}`;
         expect(res).toBe(expected);
     });
 
@@ -156,6 +168,12 @@ describe("JSONSerializer", () => {
     it("Bools", () => {
         let res = JSONSerializer.serialize(new Bools());
         const expected = '{"b1":false,"b2":true}';
+        expect(res).toBe(expected);
+    });
+
+    it("TupleArrays", () => {
+        let res = JSONSerializer.serialize(new TupleArrays());
+        const expected = '["","AQ==",[],[1],["233"]]';
         expect(res).toBe(expected);
     });
 

@@ -1,7 +1,10 @@
 // @ts-nocheck
-import { IDeserialize } from "./index";
+import { isTuple, IDeserialize } from "./index";
 
-export abstract class CoreDeserializer {
+/**
+ * All methods of `CoreDeserializer` will be used in as-serde-transfrom
+ */
+abstract class CoreDeserializer {
     /**
      * startDeserializeField is called by a class `deserialize` method at the beginning.
      * This method does nothing by default
@@ -9,7 +12,6 @@ export abstract class CoreDeserializer {
     @inline
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     startDeserializeField(): void {}
-
     /**
      * endDeserializeField is called by a class `deserialize` method at the ending.
      * This method does nothing by default
@@ -17,35 +19,44 @@ export abstract class CoreDeserializer {
     @inline
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     endDeserializeField(): void {}
-
     /**
-     * deserializeField is called by a class `deserialize` method for nullable type.
+     * deserializeField is called by a class `deserialize` method for field of class.
      * @param name field name
      * @returns field value
      */
-    abstract deserializeField<T>(name: string | null): T;
-
+    abstract deserializeField<T>(name: string): T;
     /**
-     * deserializeNonNullField is called by a class `deserialize` method for non-null type.
+     * deserializeLastField is called by a class `deserialize` method for the last field of class.
      * @param name field name
      * @returns field value
      */
-    abstract deserializeNonNullField<T>(name: string | null): nonnull<T>;
+    deserializeLastField<T>(name: string): T {
+        return this.deserializeField<T>(name);
+    }
 
     /**
-     * deserializeNonNullField is called by a class `deserialize` method at the end for nullable type.
-     * @param name field name
-     * @returns field value
+     * Start to deserialize a statically sized sequence without looking at the serialized data.
+     * This call must be followed by zero or more calls to `deserializeTupleElem`,
+     * then a call to `endDeserializeTuple`
+     * @param len
      */
-    abstract deserializeLastField<T>(name: string | null): T;
+    abstract startDeserializeTuple(len: u32): void;
     /**
-     * deserializeNonNullField is called by a class `deserialize` method at the end for non-null type.
-     * @param name field name
-     * @returns field value
+     * End to serialize a statically sized sequence.
      */
-    abstract deserializeNonNullLastField<T>(name: string | null): nonnull<T>;
-
-    // TODO: maybe we can remove `deserializeLastField` and `deserializeNonNullLastField`
+    abstract endDeserializeTuple(): void;
+    /**
+     * This method should be used in after `startSerializeTuple` and before `endSerializeTuple`.
+     * @param value
+     */
+    abstract deserializeTupleElem<T>(): T;
+    /**
+     * deserializeLastTupleElem is called by a class `deserialize` method for the last field of tuple class.
+     * @returns value
+     */
+    deserializeLastTupleElem<T>(): T {
+        return this.deserializeTupleElem<T>();
+    }
 }
 
 export abstract class Deserializer extends CoreDeserializer {
@@ -116,28 +127,28 @@ export abstract class Deserializer extends CoreDeserializer {
 
     abstract deserializeArrayLike<A extends ArrayLike<valueof<A>>>(): A;
 
-    abstract deserializeNullable<T>(): T;
-    abstract deserializeClass<T>(): T;
+    /**
+     * Deserialize a value of nullable type.
+     * @param value value could be nullable
+     */
+    abstract deserializeNullable<T extends ISerialize>(): T;
+    /**
+     * Deserialize a value of nonull class.
+     * @param value value could not be nullable
+     */
+    abstract deserializeClass<T extends ISerialize>(): nonnull<T>;
+
+    /**
+     * Deserialize a value of nonull tuple class.
+     *
+     * # Note
+     *
+     * `extends` class is not supported for tuple class.
+     * @param value value could not be nullable
+     */
+    abstract deserializeTuple<T extends ISerialize>(): nonnull<T>;
 
     abstract deserializeIDeserialize<T extends IDeserialize>(): T;
-
-    abstract startDeserializeTuple(len: u32): void;
-    abstract endDeserializeTuple(): void;
-
-    abstract deserializeTupleElem<T>(): T;
-    abstract deserializeNonNullTupleElem<T>(): nonnull<T>;
-
-    deserializeNonNullField<T>(name: string | null): nonnull<T> {
-        return this.deserializeField<nonnull<T>>(name);
-    }
-
-    deserializeLastField<T>(name: string | null): T {
-        return this.deserializeField<T>(name);
-    }
-
-    deserializeNonNullLastField<T>(name: string | null): nonnull<T> {
-        return this.deserializeField<nonnull<T>>(name);
-    }
 
     @inline
     deserializeArray<A extends Array<valueof<A>>>(): A {
@@ -190,7 +201,6 @@ export abstract class Deserializer extends CoreDeserializer {
 
     @inline
     deserialize<T>(): T {
-        let value: T;
         if (isNullable<T>()) {
             return this.deserializeNullable<T>();
         } else if (isBoolean<T>()) {
@@ -199,10 +209,6 @@ export abstract class Deserializer extends CoreDeserializer {
             return this.deserializeNumber<T>();
         } else if (isString<T>()) {
             return this.deserializeString();
-        }
-        // try custom method first
-        else if (isDefined(value.deserialize)) {
-            return this.deserializeClass<T>();
         } else if (isArray<T>()) {
             return this.deserializeArray<T>();
         } else if (idof<T>() == idof<ArrayBuffer>()) {
@@ -246,15 +252,13 @@ export abstract class Deserializer extends CoreDeserializer {
         } else if (isArrayLike<T>()) {
             return this.deserializeArrayLike<T>();
         } else {
-            // return this.deserializeIDeserialize<T>();
             return this._deserializeDyn<T>();
         }
     }
 
     @inline
     protected _deserializeDyn<T>(): T {
-        let value: T = changetype<T>(__new(offsetof<T>(), idof<T>()));
-        // TODO: idof
+        let value: T = changetype<T>(0);
         // for sub-class
         if (value instanceof StaticArray) {
             return this.deserializeStaticArray<T>();
@@ -290,8 +294,9 @@ export abstract class Deserializer extends CoreDeserializer {
             return this.deserializeSet<indexof<T>, T>();
         } else if (value instanceof Map) {
             return this.deserializeMap<indexof<T>, valueof<T>, T>();
+        } else if (isTuple<T>(value)) {
+            return this.deserializeTuple<T>();
         } else {
-            // for compile error
             return this.deserializeClass<T>();
         }
     }

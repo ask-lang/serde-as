@@ -1,13 +1,98 @@
 // @ts-nocheck
 
 import { i128, u128 } from "../index";
-import { ISerialize, IDeserialize } from "as-serde";
+import {
+    IUnsafeInit,
+    ISerdeTuple,
+    ISerialize,
+    IDeserialize,
+    Serializer,
+    Deserializer,
+    FixedArray,
+} from "as-serde";
 
 export class TestData<T1, T2> {
     constructor(public readonly input: T1, public readonly output: T2) {}
 }
 
-@serde({ omitName: true })
+@final
+export class FixedArray8<T> extends FixedArray<T> {
+    static SIZE: i32 = 8;
+
+    constructor(inner: StaticArray<T> = new StaticArray<T>(FixedArray8.SIZE)) {
+        super(inner);
+    }
+    clone(): this {
+        return new FixedArray8<T>(this.inner.slice<StaticArray<T>>());
+    }
+
+    deserialize<__S extends Deserializer>(deserializer: __S): this {
+        return super.deserialize<__S>(deserializer) as this;
+    }
+}
+
+@final
+export class Matrix8<T> implements ISerdeTuple, IUnsafeInit, IDeserialize, ISerialize {
+    static SIZE: i32 = 8;
+    inner: FixedArray8<FixedArray8<T>> | null = null;
+
+    unsafeInit(): void {
+        this.inner = new FixedArray8();
+        for (let i = 0; i < Matrix8.SIZE; i++) {
+            this[i] = new FixedArray8<T>();
+        }
+    }
+
+    serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
+        serializer.startSerializeTuple(Matrix8.SIZE);
+        for (let i = 0; i < Matrix8.SIZE - 1; i++) {
+            serializer.serializeTupleElem<FixedArray8<T>>(this[i]);
+        }
+        serializer.serializeLastTupleElem<FixedArray8<T>>(this[Matrix8.SIZE - 1]);
+        return serializer.endSerializeTuple();
+    }
+
+    deserialize<__S extends Deserializer>(deserializer: __S): this {
+        deserializer.startDeserializeTuple(Matrix8.SIZE);
+        for (let i = 0; i < Matrix8.SIZE - 1; i++) {
+            this[i] = deserializer.deserializeTupleElem<FixedArray8<T>>();
+        }
+        this[Matrix8.SIZE - 1] = deserializer.deserializeLastTupleElem<FixedArray8<T>>();
+        deserializer.endDeserializeTuple();
+
+        return this;
+    }
+
+    @operator("[]") private __get(index: i32): FixedArray8<T> {
+        return (this.inner as FixedArray8<FixedArray8<T>>)[index];
+    }
+
+    @operator("[]=") private __set(index: i32, value: FixedArray8<T>): void {
+        (this.inner as FixedArray8<FixedArray8<T>>)[index] = value;
+    }
+}
+
+export class Custom implements ISerialize, IDeserialize {
+    v1: Empty = new Empty();
+    serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
+        serializer.startSerializeField();
+        serializer.serializeBool(true);
+        serializer.serializeClass<Empty>(this.v1);
+        return serializer.endSerializeField();
+    }
+
+    deserialize<__S extends Deserializer>(deserializer: __S): Custom {
+        deserializer.startDeserializeField();
+        const b = deserializer.deserializeBool();
+        assert(b);
+        this.v1 = deserializer.deserializeClass<Empty>();
+        deserializer.endDeserializeField();
+
+        return this;
+    }
+}
+
+@serde()
 export class Numbers {
     u8: u8 = 0;
     u16: u16 = 0;
@@ -54,6 +139,15 @@ export class Bools implements ISerialize, IDeserialize {
 @serde()
 export class SuperBools extends Bools {
     b3: bool = false;
+}
+
+@serdeTuple()
+export class TupleArrays implements ISerdeTuple {
+    a1: Array<u8> = [];
+    a2: Array<u8> = [1];
+    a3: Array<u32> = [];
+    a4: Array<u32> = [1];
+    a5: Array<string> = ["233"];
 }
 
 @serde()
@@ -141,6 +235,7 @@ export class Nulls {
 
     static test1(): Nulls {
         let res = new Nulls();
+        res.n4 = new Map();
         res.n5 = [0x02];
         return res;
     }

@@ -1,12 +1,11 @@
 import { newProgram, newOptions } from "assemblyscript/dist/assemblyscript.js";
 import { SerdeVisitor } from "../../visitors/index.js";
-import { Case, checkVisitor } from "./common.js";
-import { ClassSerdeKind } from "../../consts.js";
+import { Case, commonCheckVisitor } from "./common.js";
 import { SerdeConfig } from "../../ast.js";
 
 // Note: in tests we have to use two spaces as ident because of ASTBuilder.
 
-function checkSerdeVisitor(
+function checkVisitor(
     code: string,
     expected: string,
     cfg: SerdeConfig,
@@ -15,30 +14,26 @@ function checkSerdeVisitor(
 ): void {
     const program = newProgram(newOptions());
     const visitor = new SerdeVisitor(program, cfg);
-    checkVisitor(visitor, code, expected, warn, error, ClassSerdeKind.Serde);
+    commonCheckVisitor(visitor, code, expected, warn, error);
 }
 
 describe("SerdeVisitor", () => {
     it("normal @serde", () => {
-        const code = `
-@serde
-${Case.Foo}
-`.trim();
+        const code = Case.Foo;
         const expected = `
-@serde
 class Foo {
   s: string = "test";
   b: bool = false;
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeNonNullField<string>("s", this.s);
-    serializer.serializeNonNullLastField<bool>("b", this.b);
+    serializer.serializeField<string>("s", this.s);
+    serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
-    this.s = deserializer.deserializeNonNullField<string>("s");
-    this.b = deserializer.deserializeNonNullLastField<bool>("b");
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
     deserializer.endDeserializeField();
     return this;
   }
@@ -46,118 +41,96 @@ class Foo {
     `.trim();
 
         const cfg = { omitName: false, skipSuper: false };
-        checkSerdeVisitor(code, expected, cfg);
+        checkVisitor(code, expected, cfg);
     });
 
-    it("@serde with omitName", () => {
-        const code = `
-@serde({
-  omitName: true
-})
-${Case.Foo}
-`.trim();
+    it("@serde with `omitName`", () => {
+        const code = Case.Foo;
         const expected = `
-@serde({
-  omitName: true
-})
 class Foo {
   s: string = "test";
   b: bool = false;
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeNonNullField<string>(null, this.s);
-    serializer.serializeNonNullLastField<bool>(null, this.b);
+    serializer.serializeField<string>("", this.s);
+    serializer.serializeLastField<bool>("", this.b);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
-    this.s = deserializer.deserializeNonNullField<string>(null);
-    this.b = deserializer.deserializeNonNullLastField<bool>(null);
+    this.s = deserializer.deserializeField<string>("");
+    this.b = deserializer.deserializeLastField<bool>("");
     deserializer.endDeserializeField();
     return this;
   }
 }
 `.trim();
         const cfg = { omitName: true, skipSuper: false };
-        checkSerdeVisitor(code, expected, cfg);
+        checkVisitor(code, expected, cfg);
     });
 
     it("normal @serde with super", () => {
-        const code = `
-@serde
-${Case.BarExtendsFoo}
-`.trim();
+        const code = Case.BarExtendsFoo;
         const expected = `
-@serde
 class Bar extends Foo {
   s: string = "test";
   b: bool = false;
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     super.serialize<__R, __S>(serializer);
-    serializer.serializeNonNullField<string>("s", this.s);
-    serializer.serializeNonNullLastField<bool>("b", this.b);
+    serializer.serializeField<string>("s", this.s);
+    serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
     super.deserialize<__S>(deserializer);
-    this.s = deserializer.deserializeNonNullField<string>("s");
-    this.b = deserializer.deserializeNonNullLastField<bool>("b");
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
     deserializer.endDeserializeField();
     return this;
   }
 }
     `.trim();
         const cfg = { omitName: false, skipSuper: false };
-        checkSerdeVisitor(code, expected, cfg);
+        checkVisitor(code, expected, cfg);
     });
 
-    it("@serde with skipSuper", () => {
-        const code = `
-@serde({ skipSuper: true })
-${Case.BarExtendsFoo}
-`.trim();
+    it("@serde with `skipSuper`", () => {
+        const code = Case.BarExtendsFoo;
         const expected = `
-@serde({
-  skipSuper: true
-})
 class Bar extends Foo {
   s: string = "test";
   b: bool = false;
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
-    serializer.serializeNonNullField<string>("s", this.s);
-    serializer.serializeNonNullLastField<bool>("b", this.b);
+    serializer.serializeField<string>("s", this.s);
+    serializer.serializeLastField<bool>("b", this.b);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
-    this.s = deserializer.deserializeNonNullField<string>("s");
-    this.b = deserializer.deserializeNonNullLastField<bool>("b");
+    this.s = deserializer.deserializeField<string>("s");
+    this.b = deserializer.deserializeLastField<bool>("b");
     deserializer.endDeserializeField();
     return this;
   }
 }
     `.trim();
         const cfg = { omitName: false, skipSuper: true };
-        checkSerdeVisitor(code, expected, cfg);
+        checkVisitor(code, expected, cfg);
     });
 
     it("empty @serde with super", () => {
-        const code = `
-@serde
-${Case.EmptyBarExtendsFoo}
-`.trim();
+        const code = Case.EmptyBarExtendsFoo;
         const expected = `
-@serde
 class Bar extends Foo {
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     super.serialize<__R, __S>(serializer);
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
     super.deserialize<__S>(deserializer);
     deserializer.endDeserializeField();
@@ -166,21 +139,17 @@ class Bar extends Foo {
 }
 `.trim();
         const cfg = { omitName: false, skipSuper: false };
-        checkSerdeVisitor(code, expected, cfg);
+        checkVisitor(code, expected, cfg);
     });
-    it("empty @serde without super", () => {
-        const code = `
-@serde
-${Case.EmptyBar}
-`.trim();
+    it("empty @serde with `skipSuper`", () => {
+        const code = Case.EmptyBar;
         const expected = `
-@serde
 class Bar {
-  serialize<__R, __S extends CoreSerializer<__R>>(serializer: __S): __R {
+  serialize<__R, __S extends Serializer<__R>>(serializer: __S): __R {
     serializer.startSerializeField();
     return serializer.endSerializeField();
   }
-  deserialize<__S extends CoreDeserializer>(deserializer: __S): this {
+  deserialize<__S extends Deserializer>(deserializer: __S): this {
     deserializer.startDeserializeField();
     deserializer.endDeserializeField();
     return this;
@@ -188,17 +157,12 @@ class Bar {
 }
 `.trim();
         const cfg = { omitName: false, skipSuper: true };
-        checkSerdeVisitor(code, expected, cfg);
+        checkVisitor(code, expected, cfg);
     });
 
     it("field missing type", () => {
-        const code = `
-@serde
-class Bar {
-  b = false;
-}
-`.trim();
+        const code = Case.MissingFieldType;
         const cfg = { omitName: false, skipSuper: false };
-        checkSerdeVisitor(code, "", cfg, false, true);
+        checkVisitor(code, "", cfg, false, true);
     });
 });
