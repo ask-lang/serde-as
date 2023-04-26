@@ -13,7 +13,6 @@ abstract class CoreSerializer<R> {
      */
     abstract endSerializeField(): R;
     /**
-<<<<<<< HEAD
      * startSerializeEnum is called by a enum class `serialize` method at the beginning.
      */
     abstract startSerializeEnum(): R;
@@ -25,9 +24,7 @@ abstract class CoreSerializer<R> {
 
     /**
      * serializeField is called by a class `serialize` method for nullable type.
-=======
      * serializeField is called by a class `serialize` method for field of class.
->>>>>>> main
      * @param name field name
      * @param value field value
      */
