@@ -638,6 +638,11 @@ as-bignum@^0.2:
   resolved "https://registry.yarnpkg.com/as-bignum/-/as-bignum-0.2.31.tgz#065159d5a239efb70897d13aff409cf3b0b662f8"
   integrity sha512-4DRQ9pHu8BCfse4xvZucg5t7mkDtiM93dBzZkXpcpAJ2fmf+p/wbYxN24nCvRVACRPavPYreea5k3ugWD1C3Fg==
 
+as-variant@^0.4.0:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/as-variant/-/as-variant-0.4.1.tgz#a0c6e0379e53936e9ca888114096b85d9b3d6f6e"
+  integrity sha512-NCeerOfp1JRXRcT4WCqOBANPoDTE2zqS4eN+jPtdyNWJybUgG/rX9ugUxICkSQZzCfnG84zzxr3osQbjAkyiww==
+
 asap@^2.0.0:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"

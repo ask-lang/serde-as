@@ -13,9 +13,7 @@ class Foo implements IEnumU8 {
 
 @serdeEnum()
 class Bar {
-    v: bool;
-    constructor(v: bool) {
-        this.v = v;
+    constructor(public readonly v: bool) {
     }
 }
 
@@ -36,7 +34,7 @@ class Gen<T> {
 })
 class Enum<T> {}
 
-// generate the followings:
+// generate the followings code:
 class Enum2<T2> {
     private __enum: u8 = 0;
     private __val: Variant = changetype<Variant>(__new(offsetof<Variant>(), idof<Variant>()));
