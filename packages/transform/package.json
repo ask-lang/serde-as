@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.6",
-    "@types/lodash": "4.14.192",
+    "@types/lodash": "4.14.194",
     "@types/mocha": "^10.0"
   },
   "files": [
