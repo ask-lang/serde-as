@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ISerialize, Serializer } from "as-serde";
+import { ISerialize, Option, Result, Serializer } from "as-serde";
 import { BytesBuffer } from "as-buffers";
 import { Compact } from "./compactInt";
 import { FLOAT_UNSPPORTED } from "./misc";
@@ -150,6 +150,37 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
         return this._buffer;
     }
 
+    serializeOption<T>(value: Option<T>): R {
+        if (value.isSome) {
+            this._buffer.writeByte(0x01);
+            this.serialize(value.unwrap());
+        } else {
+            this._buffer.writeByte(0x00);
+        }
+    }
+
+    serializeResult<O, E>(value: Result<O, E>): R {
+        if (value.isOk) {
+            this._buffer.writeByte(0x01);
+            this.serialize(value.unwrap());
+        } else {
+            this._buffer.writeByte(0x00);
+            this.serialize(value.unwrapErr());
+        }
+    }
+
+    @inline
+    serializeNullable<T>(t: T): BytesBuffer {
+        // check null
+        if (changetype<usize>(t) == 0) {
+            this._buffer.writeByte(0x00);
+        } else {
+            this._buffer.writeByte(0x01);
+            this.serialize(t as nonnull<T>);
+        }
+        return this._buffer;
+    }
+
     @inline
     serializeClass<T extends ISerialize>(value: nonnull<T>): BytesBuffer {
         return value.serialize<BytesBuffer, this>(this);
@@ -192,18 +223,6 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     @inline
     serializeTupleElem<T>(value: T): BytesBuffer {
         return this.serialize<T>(value);
-    }
-
-    @inline
-    serializeNullable<T>(t: T): BytesBuffer {
-        // check null
-        if (changetype<usize>(t) == 0) {
-            this._buffer.writeByte(0x00);
-        } else {
-            this._buffer.writeByte(0x01);
-            this.serialize(t as nonnull<T>);
-        }
-        return this._buffer;
     }
 
     serializeArrayLike<A extends ArrayLike<valueof<A>>>(value: A): BytesBuffer {

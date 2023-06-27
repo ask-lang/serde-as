@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ISerialize, isTuple } from "as-serde";
+import { ISerialize, Option, Result, isTuple } from "as-serde";
 /**
  * All methods of` CoreSerializer` will be used in as-serde-transfrom
  */
@@ -90,6 +90,9 @@ export abstract class Serializer<R> extends CoreSerializer<R> {
     abstract serializeString(value: string): R;
     abstract serializeSet<K, T extends Set<K>>(value: T): R;
     abstract serializeMap<K, V, T extends Map<K, V>>(value: T): R;
+
+    abstract serializeOption<T>(value: Option<T>): R;
+    abstract serializeResult<O, E>(value: Result<O, E>): R;
 
     /**
      * Serialize a value of nullable type.
