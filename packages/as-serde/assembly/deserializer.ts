@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { isTuple, IDeserialize } from "./index";
+import { isTuple, IDeserialize } from ".";
 
 /**
  * All methods of `CoreDeserializer` will be used in as-serde-transfrom

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ISerialize, Option, Result, Serializer } from "as-serde";
+import { ISerialize, Serializer } from "as-serde";
 import { BytesBuffer } from "as-buffers";
 import { Compact } from "./compactInt";
 import { FLOAT_UNSPPORTED } from "./misc";
@@ -148,25 +148,6 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
             this.serialize<V>(value.get(keys[i]));
         }
         return this._buffer;
-    }
-
-    serializeOption<T>(value: Option<T>): R {
-        if (value.isSome) {
-            this._buffer.writeByte(0x01);
-            this.serialize(value.unwrap());
-        } else {
-            this._buffer.writeByte(0x00);
-        }
-    }
-
-    serializeResult<O, E>(value: Result<O, E>): R {
-        if (value.isOk) {
-            this._buffer.writeByte(0x01);
-            this.serialize(value.unwrap());
-        } else {
-            this._buffer.writeByte(0x00);
-            this.serialize(value.unwrapErr());
-        }
     }
 
     @inline

@@ -189,6 +189,17 @@ export class JSONSerializer extends Serializer<StringBuffer> {
     }
 
     @inline
+    serializeNullable<T>(t: T): StringBuffer {
+        // check null
+        if (changetype<usize>(t) == 0) {
+            this._buffer.write(NULL);
+        } else {
+            this.serialize(t as nonnull<T>);
+        }
+        return this._buffer;
+    }
+
+    @inline
     serializeClass<T extends ISerialize>(value: nonnull<T>): StringBuffer {
         this._buffer.write("{");
         value.serialize<StringBuffer, this>(this);
@@ -253,17 +264,6 @@ export class JSONSerializer extends Serializer<StringBuffer> {
 
     serializeLastTupleElem<T>(value: T): StringBuffer {
         this.serialize<T>(value);
-        return this._buffer;
-    }
-
-    @inline
-    serializeNullable<T>(t: T): StringBuffer {
-        // check null
-        if (changetype<usize>(t) == 0) {
-            this._buffer.write(NULL);
-        } else {
-            this.serialize(t as nonnull<T>);
-        }
         return this._buffer;
     }
 
