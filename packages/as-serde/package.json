@@ -25,7 +25,7 @@
   "dependencies": {
     "as-base64": "^0.2.0",
     "as-serde-transform": "^0.3.0",
-    "as-container": "0.7"
+    "as-container": "^0.8"
   },
   "scripts": {
     "build": "echo no build",

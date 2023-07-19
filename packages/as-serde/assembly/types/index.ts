@@ -84,10 +84,5 @@ export class Result<O, E> extends container.Result<O, E> implements ISerialize, 
         }
 
         return res;
-        // unreachable();
     }
 }
-
-// function __new(arg0: number, arg1: number): any {
-//     throw new Error("Function not implemented.");
-// }
