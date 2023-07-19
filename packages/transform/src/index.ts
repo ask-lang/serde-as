@@ -37,8 +37,13 @@ class SerdeTransform extends TransformVisitor {
         const deConfig = extractMapFromDecoratorNode(this.parser, node, ClassSerdeKind.Deserialize);
 
         if (serdeTupleConfig) {
-            if(serdeConfig || serConfig || deConfig) {
-                this.parser.error(DiagnosticCode.Transform_0_1, node.range, TARGET, "Duplicated serde decorator");
+            if (serdeConfig || serConfig || deConfig) {
+                this.parser.error(
+                    DiagnosticCode.Transform_0_1,
+                    node.range,
+                    TARGET,
+                    "Duplicated serde decorator",
+                );
                 return node;
             }
 
@@ -48,8 +53,13 @@ class SerdeTransform extends TransformVisitor {
         }
 
         if (serdeConfig) {
-            if(serdeTupleConfig || serConfig || deConfig) {
-                this.parser.error(DiagnosticCode.Transform_0_1, node.range, TARGET, "Duplicated serde decorator");
+            if (serdeTupleConfig || serConfig || deConfig) {
+                this.parser.error(
+                    DiagnosticCode.Transform_0_1,
+                    node.range,
+                    TARGET,
+                    "Duplicated serde decorator",
+                );
                 return node;
             }
             this.hasSerde = true;
@@ -58,8 +68,13 @@ class SerdeTransform extends TransformVisitor {
         }
 
         if (serConfig) {
-            if(serdeTupleConfig || serdeConfig) {
-                this.parser.error(DiagnosticCode.Transform_0_1, node.range, TARGET, "Duplicated serde decorator");
+            if (serdeTupleConfig || serdeConfig) {
+                this.parser.error(
+                    DiagnosticCode.Transform_0_1,
+                    node.range,
+                    TARGET,
+                    "Duplicated serde decorator",
+                );
                 return node;
             }
             this.hasSerde = true;
@@ -68,8 +83,13 @@ class SerdeTransform extends TransformVisitor {
         }
 
         if (deConfig) {
-            if(serdeTupleConfig || serdeConfig) {
-                this.parser.error(DiagnosticCode.Transform_0_1, node.range, TARGET, "Duplicated serde decorator");
+            if (serdeTupleConfig || serdeConfig) {
+                this.parser.error(
+                    DiagnosticCode.Transform_0_1,
+                    node.range,
+                    TARGET,
+                    "Duplicated serde decorator",
+                );
                 return node;
             }
             this.hasSerde = true;

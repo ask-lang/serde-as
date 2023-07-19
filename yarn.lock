@@ -648,6 +648,11 @@ as-bignum@^0.2:
   resolved "https://registry.yarnpkg.com/as-bignum/-/as-bignum-0.2.40.tgz#d4dc94d77d2e781219d25a9cb408a61eb272f7c6"
   integrity sha512-fql9j63qUCmWwgWB3qW7+S8vp1DUrqSgFnpn/L3O2bjHMW52GZ0H/DfwLCQUAgQS15gsMsjwzMT14A2KCxu0cA==
 
+as-container@^0.8:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/as-container/-/as-container-0.8.0.tgz#cd7add5c7127bcb4eca61c0cb07dfb9661a49245"
+  integrity sha512-Q3KTMylq12uGhYQJyOLD2zfwq+xxXvWaRMFE66EqJO4QdZtekqcQ8dHlnriU8E4Fyj71mdjm20X0MIupNhppEQ==
+
 asap@^2.0.0:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
