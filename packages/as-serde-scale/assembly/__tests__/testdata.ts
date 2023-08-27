@@ -14,7 +14,10 @@ import {
 } from "as-serde";
 
 export class TestData<T1, T2> {
-    constructor(public readonly input: T1, public readonly output: T2) {}
+    constructor(
+        public readonly input: T1,
+        public readonly output: T2,
+    ) {}
 }
 
 @final

@@ -25,6 +25,48 @@ declare function serialize(cfg?: SerdeConfig): any;
 declare function deserialize(cfg?: SerdeConfig): any;
 
 /**
+ * The decorated class will be a enum type defined by serde.
+ */
+declare function serdeEnum(cfg?: {
+    fields: Array<{
+        /**
+         * The enum tag name.
+         * 
+         * Will be a static method name.
+         */
+        tag: string,
+        /**
+         * The namespace the type stored in.
+         */
+        namespace: string,
+        /**
+         * The type of current enum field.
+         */
+        type: string | object,
+        /**
+         * Tell compiler that there is a type not a generic param.
+         */
+        noGeneric?: boolean,
+    } |
+    // Skip current index. 
+    null |
+    // Skip until the next index. 
+    number
+    >,
+}): any;
+
+/**
+ * The decorated class will be a enum field defined by serde.
+ * 
+ */
+declare function serdeEnumField(cfg?: {
+    /**
+     * Define the namespace for this enum field.
+     */
+    namespace: string
+}): any;
+
+/**
  * A config for both `serialize` and `deserialize`.
  */
 interface SerdeConfig {
