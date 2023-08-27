@@ -4,7 +4,10 @@ import { SerializeVisitor, DeserializeVisitor } from "./index.js";
 import { SerdeConfig } from "../ast.js";
 
 export class SerdeVisitor extends TransformVisitor {
-    constructor(public readonly emitter: DiagnosticEmitter, private readonly cfg: SerdeConfig) {
+    constructor(
+        public readonly emitter: DiagnosticEmitter,
+        private readonly cfg: SerdeConfig,
+    ) {
         super();
     }
 

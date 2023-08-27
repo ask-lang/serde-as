@@ -4,7 +4,10 @@ import { DeserializeTupleVisitor, SerializeTupleVisitor } from "./index.js";
 import { SerdeConfig } from "../ast.js";
 
 export class SerdeTupleVisitor extends TransformVisitor {
-    constructor(public readonly emitter: DiagnosticEmitter, private readonly cfg: SerdeConfig) {
+    constructor(
+        public readonly emitter: DiagnosticEmitter,
+        private readonly cfg: SerdeConfig,
+    ) {
         super();
     }
 
