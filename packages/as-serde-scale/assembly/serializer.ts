@@ -151,6 +151,18 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     }
 
     @inline
+    serializeNullable<T>(t: T): BytesBuffer {
+        // check null
+        if (changetype<usize>(t) == 0) {
+            this._buffer.writeByte(0x00);
+        } else {
+            this._buffer.writeByte(0x01);
+            this.serialize(t as nonnull<T>);
+        }
+        return this._buffer;
+    }
+
+    @inline
     serializeClass<T extends ISerialize>(value: nonnull<T>): BytesBuffer {
         return value.serialize<BytesBuffer, this>(this);
     }
@@ -192,18 +204,6 @@ export class ScaleSerializer extends Serializer<BytesBuffer> {
     @inline
     serializeTupleElem<T>(value: T): BytesBuffer {
         return this.serialize<T>(value);
-    }
-
-    @inline
-    serializeNullable<T>(t: T): BytesBuffer {
-        // check null
-        if (changetype<usize>(t) == 0) {
-            this._buffer.writeByte(0x00);
-        } else {
-            this._buffer.writeByte(0x01);
-            this.serialize(t as nonnull<T>);
-        }
-        return this._buffer;
     }
 
     serializeArrayLike<A extends ArrayLike<valueof<A>>>(value: A): BytesBuffer {

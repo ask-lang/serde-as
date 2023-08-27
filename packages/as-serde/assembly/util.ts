@@ -1,11 +1,21 @@
 // @ts-nocheck
 import { ISerdeTuple } from './index';
 
+/**
+ * Return true if val have `serialize` method.
+ * @param val
+ * @returns 
+ */
 @inline
 export function hasSerialize<T>(val: T): bool {
     return isDefined(val.serialize);
 }
 
+/**
+ * Return true if val have `deserialize` method.
+ * @param val 
+ * @returns 
+ */
 @inline
 export function hasDeserialize<T>(val: T): bool {
     return isDefined(val.deserialize);
@@ -40,8 +50,9 @@ export interface IUnsafeInit {
     unsafeInit(): void;
 }
 
+
 /**
- * 
+ * Return a zero value for primitive type or return null for reference type.
  * @returns 
  */
 @unsafe
@@ -53,11 +64,21 @@ export function instantiateRaw<T>(): T {
     else if (isString<T>()) {
         return "";
     } else if (changetype<T>(0) instanceof IUnsafeInit) {
-        const res = changetype<T>(__new(offsetof<T>(), idof<T>()));            
+        const res = unsafeNew<T>();
         res.unsafeInit();
         return res;
     } else {
         return instantiate<T>();
     }
+}
+
+/**
+ * Allocate a heap for a type without instancing its fields.
+ * @returns 
+ */
+@unsafe
+@inline
+export function unsafeNew<T>(): T {
+    return changetype<T>(__new(offsetof<T>(), idof<T>()));
 }
 

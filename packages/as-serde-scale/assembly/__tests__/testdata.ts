@@ -9,6 +9,8 @@ import {
     Serializer,
     Deserializer,
     FixedArray,
+    Option,
+    Result,
 } from "as-serde";
 
 export class TestData<T1, T2> {
@@ -248,3 +250,32 @@ export class Empty implements ISerialize, IDeserialize {
 
 @serde()
 export class SuperEmpty extends Empty {}
+
+@serde()
+export class Options {
+    constructor(
+        public o1: Option<u8> = Option.None<u8>(),
+        public o2: Option<u8> | null = Option.None<u8>(),
+    ) {}
+
+    static test1(): Options {
+        let res = new Options();
+        res.o2 = Option.Some<u8>(2);
+        return res;
+    }
+}
+
+@serde()
+export class Results {
+    constructor(
+        public r1: Result<u8, string> = Result.Ok<u8, string>(1),
+        public r2: Result<u8, string> | null = Result.Ok<u8, string>(2),
+    ) {}
+
+    static test1(): Results {
+        let res = new Results();
+        res.r1 = Result.Err<u8, string>("err");
+        res.r2 = Result.Err<u8, string>("err");
+        return res;
+    }
+}
