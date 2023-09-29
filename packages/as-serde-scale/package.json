@@ -23,7 +23,7 @@
     "as-serde-transform": "^0.3.0"
   },
   "dependencies": {
-    "as-bignum": "^0.2",
+    "as-bignum": "^0.3",
     "as-buffers": "^0.3.0",
     "as-serde": "^0.3.0"
   },
